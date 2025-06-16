@@ -6,8 +6,8 @@ export default function Side() {
     <>
       <div className="flex flex-col">
         <Link to={"/"}>Dashboard</Link>
-        <Link to={"trade-admin"}>Trade</Link>
-        <Link to={"key-admin"}>Key ACC</Link>
+        <Link to={"/trade-admin"}>Trade</Link>
+        <Link to={"/key-admin"}>Key ACC</Link>
       </div>
     </>
   );
