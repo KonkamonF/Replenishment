@@ -1,7 +1,8 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import SupperAdmin from "../Dashboard/SupperAdmin/SupperAdmin";
 import TradeAdmin from "../Dashboard/TradeAdmin/TradeAdmin";
 import KeyAdmin from "../Dashboard/KeyAdmin/KeyAdmin";
+
 const route = createBrowserRouter([
   {
     path: "/",
@@ -12,3 +13,11 @@ const route = createBrowserRouter([
     ],
   },
 ]);
+
+export default function AppRoute() {
+  return (
+    <div>
+      <RouterProvider router={route} />
+    </div>
+  );
+}
