@@ -13,6 +13,7 @@ export default function App() {
             <Side/>
           </div>
           <div className="mx-auto p-6">
+            <SupperAdmin/>
             <Outlet/>
           </div>
         </div>
