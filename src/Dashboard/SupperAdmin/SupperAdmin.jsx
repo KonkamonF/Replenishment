@@ -8,7 +8,7 @@ import NonMove from "./Amount/Nonmove";
 
 export default function SupperAdmin() {
   return (
-    <div className="bg-white h-screen w-svw flex flex-col p-4 space-y-4">
+    <div className="bg-white text-white h-screen flex flex-col p-4 space-y-4 text-center">
       <div className="flex gap-4">
         <div className="w-1/2">
           <ClassA />

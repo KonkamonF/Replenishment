@@ -12,7 +12,7 @@ export default function App() {
           <div className="h-screen bg-white w-[200px]">
             <Side/>
           </div>
-          <div className="mx-auto p-6">
+          <div className="p-6 w-screen">
             <SupperAdmin/>
             <Outlet/>
           </div>

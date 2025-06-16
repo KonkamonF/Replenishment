@@ -2,6 +2,6 @@ import React from 'react'
 
 export default function NonMove() {
   return (
-    <div className="border-2 border-[#640037] p-2 rounded-3xl ">Non-move</div>
+    <div className="border-2 bg-[#640037] p-2 rounded-3xl ">Non-move</div>
   )
 }
