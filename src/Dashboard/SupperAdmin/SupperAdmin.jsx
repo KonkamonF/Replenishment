@@ -1,10 +1,40 @@
 import React from "react";
+import ClassA from "./Amount/ClassA";
+import ClassB from "./Amount/ClassB";
+import ClassC from "./Amount/ClassC";
+import ClassN from "./Amount/ClassN";
+import Best from "./Amount/Best";
+import NonMove from "./Amount/Nonmove";
 
 export default function SupperAdmin() {
   return (
-    <>
-      <div className="bg-white h-screen w-screen">
-        SupperAdmin</div>
-    </>
+    <div className="bg-white h-screen w-svh p-4 space-y-4">
+      <div className="flex gap-4">
+        <div className="w-1/2">
+          <ClassA />
+        </div>
+        <div className="w-1/2">
+          <ClassB />
+        </div>
+      </div>
+
+      <div className="flex gap-4">
+        <div className="w-1/2">
+          <ClassC />
+        </div>
+        <div className="w-1/2">
+          <ClassN />
+        </div>
+      </div>
+
+      <div className="flex gap-4">
+        <div className="w-1/2">
+          <Best />
+        </div>
+        <div className="w-1/2">
+          <NonMove />
+        </div>
+      </div>
+    </div>
   );
 }
