@@ -1,7 +1,10 @@
-import React from 'react'
+import React from "react";
 
 export default function SupperAdmin() {
   return (
-    <div>SupperAdmin</div>
-  )
+    <>
+      <div className="bg-white h-screen w-screen">
+        SupperAdmin</div>
+    </>
+  );
 }
