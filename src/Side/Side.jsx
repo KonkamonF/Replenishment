@@ -1,15 +1,21 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const hover = "hover:bg-gray-50 p-2 w-full text-center"
+const hover = "hover:bg-gray-50 p-2 w-full text-center";
 
 export default function Side() {
   return (
     <>
       <div className="flex flex-col">
-        <Link to={"/"} className={hover}>Dashboard</Link>
-        <Link to={"/trade-admin"} className={hover}>Trade</Link>
-        <Link to={"/key-admin"} className={hover}>Key ACC</Link>
+        <Link to="/" className={hover}>
+          Dashboard
+        </Link>
+        <Link to="/trade-admin" className={hover}>
+          Trade
+        </Link>
+        <Link to="/key-admin" className={hover}>
+          Key ACC
+        </Link>
       </div>
     </>
   );

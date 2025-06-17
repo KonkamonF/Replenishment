@@ -2,6 +2,9 @@ import React from "react";
 import SupperAdmin from "./Dashboard/SupperAdmin/SupperAdmin";
 import Side from "./Side/Side";
 import { Outlet } from "react-router-dom";
+import TradeAdmin from "./Dashboard/TradeAdmin/TradeAdmin";
+import KeyAdmin from "./Dashboard/KeyAdmin/KeyAdmin";
+
 
 export default function App() {
   return (
@@ -14,7 +17,9 @@ export default function App() {
           </div>
           <div className="p-6 w-screen">
             <SupperAdmin/>
-            <Outlet/>
+            <TradeAdmin/>
+            <KeyAdmin/>
+            {/* <Outlet/> */}
           </div>
         </div>
       </div>
