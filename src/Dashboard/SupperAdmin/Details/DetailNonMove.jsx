@@ -8,14 +8,14 @@ export default function DetailNonMove({ setIsDetailsNonMove }) {
   ];
   return (
     <>
-      <div className="bg-amber-50 w-screen h-screen absolute mx-auto z-0 right-0 top-0 text-black">
+      <div className="bg-white w-screen h-screen absolute mx-auto z-0 right-0 top-0 text-black">
         <div
           onClick={() => setIsDetailsNonMove(false)}
           className=" text-end px-6 text-3xl cursor-pointer"
         >
           x
         </div>
-        <p className="text-3xl font-bold py-4">Non Move</p>
+        <p className="text-3xl font-bold py-4 text-[#640037]">Non Move</p>
 
         <div>
           {" "}
