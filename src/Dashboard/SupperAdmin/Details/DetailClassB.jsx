@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function DetailClassA({ setIsDetailsClassA }) {
+export default function DetailClassB({ setIsDetailsClassB }) {
   const users = [
     { id: 1, name: "สมชาย", email: "somchai@example.com" },
     { id: 2, name: "สมหญิง", email: "somying@example.com" },
@@ -10,13 +10,12 @@ export default function DetailClassA({ setIsDetailsClassA }) {
     <>
       <div className="bg-amber-50 w-screen h-screen absolute mx-auto z-0 right-0 top-0 text-black">
         <div
-          onClick={() => setIsDetailsClassA(false)}
+          onClick={() => setIsDetailsClassB(false)}
           className=" text-end px-6 text-3xl cursor-pointer"
         >
           x
         </div>
-        <p className="text-3xl font-bold py-4">Class A</p>
-
+        <p className="text-3xl font-bold py-4">Class B</p>
         <div>
           {" "}
           <table className="table-auto w-full border-collapse border border-gray-200">

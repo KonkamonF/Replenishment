@@ -1,9 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
+import DetailClassB from "../Details/DetailClassB";
 
 export default function ClassB() {
+  const [isDetailsClassB, setIsDetailsClassB] = useState(false);
   return (
-    <div className="border-2 bg-[#640037] p-2 rounded-3xl w-[40%] hover:bg-gray-500">
-      <p className="text-3xl font-bold">60 Units</p>Class B
-    </div>
+    <>
+      {isDetailsClassB && (
+        <DetailClassB setIsDetailsClassB={setIsDetailsClassB} />
+      )}
+
+      <div
+        onClick={() => setIsDetailsClassB(true)}
+        className="border-2 bg-[#640037] p-2 rounded-3xl w-[40%] hover:bg-gray-500"
+      >
+        <p className="text-3xl font-bold">60 Units</p>Class B
+      </div>
+    </>
   );
 }
