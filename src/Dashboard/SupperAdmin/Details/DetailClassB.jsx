@@ -8,14 +8,14 @@ export default function DetailClassB({ setIsDetailsClassB }) {
   ];
   return (
     <>
-      <div className="bg-amber-50 w-screen h-screen absolute mx-auto z-0 right-0 top-0 text-black">
+      <div className="bg-white w-screen h-screen absolute mx-auto z-0 right-0 top-0 text-black">
         <div
           onClick={() => setIsDetailsClassB(false)}
           className=" text-end px-6 text-3xl cursor-pointer"
         >
           x
         </div>
-        <p className="text-3xl font-bold py-4">Class B</p>
+        <p className="text-3xl font-bold py-4 text-[#640037]">Class B</p>
         <div>
           {" "}
           <table className="table-auto w-full border-collapse border border-gray-200">
