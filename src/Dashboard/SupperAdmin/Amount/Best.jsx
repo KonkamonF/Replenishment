@@ -1,10 +1,17 @@
-import React from 'react'
+import React, { useState } from "react";
+import DetailBest from "../Details/DetailBest";
 
 export default function Best() {
+  const [isDetailsBest, setIsDetailsBest] = useState(false);
   return (
-    <div className="border-2 bg-[#640037] p-2 rounded-3xl w-[40%] hover:bg-gray-500">
-       <p className="text-3xl font-bold">11 Units</p>Best
-    </div>
-  )
+    <>
+      {isDetailsBest && <DetailBest setIsDetailsBest={setIsDetailsBest} />}
+      <div
+        onClick={() => setIsDetailsBest(true)}
+        className="border-2 bg-[#640037] p-2 rounded-3xl w-[40%] hover:bg-gray-500"
+      >
+        <p className="text-3xl font-bold">11 Units</p>Best
+      </div>
+    </>
+  );
 }
-
