@@ -1,9 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
+import DetailClassN from "../Details/DetailClassN";
 
 export default function ClassN() {
+  const [isDetailsClassN, setIsDetailsClassN] = useState(false);
   return (
-    <div className="border-2 bg-[#640037] p-2 rounded-3xl w-[40%] hover:bg-gray-500">
-      <p className="text-3xl font-bold">2 Units</p>Class N
-    </div>
+    <>
+      {isDetailsClassN && (
+        <DetailClassN setIsDetailsClassN={setIsDetailsClassN} />
+      )}
+      <div
+        onClick={() => setIsDetailsClassN(true)}
+        className="border-2 bg-[#640037] p-2 rounded-3xl w-[40%] hover:bg-gray-500"
+      >
+        <p className="text-3xl font-bold">2 Units</p>Class N
+      </div>
+    </>
   );
 }
