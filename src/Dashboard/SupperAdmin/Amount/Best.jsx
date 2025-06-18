@@ -8,7 +8,7 @@ export default function Best() {
       {isDetailsBest && <DetailBest setIsDetailsBest={setIsDetailsBest} />}
       <div
         onClick={() => setIsDetailsBest(true)}
-        className="border-2 bg-[#640037] p-2 rounded-3xl hover:bg-gray-500"
+        className="border-2 p-2 rounded-3xl hover:bg-gray-200"
       >
         <p className="text-3xl font-bold">11 Units</p>Best
       </div>
