@@ -5,6 +5,7 @@ import ClassC from "./Amount/ClassC";
 import ClassN from "./Amount/ClassN";
 import Best from "./Amount/Best";
 import NonMove from "./Amount/Nonmove";
+import AcAndFc from "./Amount/AcAndFc";
 
 export default function SupperAdmin() {
   return (
@@ -35,6 +36,7 @@ export default function SupperAdmin() {
           <NonMove />
         </div>
       </div>
+      <AcAndFc />
     </div>
   );
 }
