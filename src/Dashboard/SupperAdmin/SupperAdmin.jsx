@@ -9,33 +9,36 @@ import AcAndFc from "./Amount/AcAndFc";
 
 export default function SupperAdmin() {
   return (
-    <div className="bg-white text-white h-screen flex flex-col p-4 space-y-4 text-center">
-      <div className="flex gap-4">
-        <div className="w-[50%]">
-          <ClassA />
+    <div className="bg-white text-white h-screen flex text-center">
+      <div className="flex flex-col p-4 space-y-4 text-center">
+        <div className="flex gap-4">
+          <div className="w-[20%]">
+            <ClassA />
+          </div>
+          <div className="w-[20%]">
+            <ClassB />
+          </div>
         </div>
-        <div className="w-[50%]">
-          <ClassB />
+
+        <div className="flex gap-4">
+          <div className="w-[20%]">
+            <ClassC />
+          </div>
+          <div className="w-[20%]">
+            <ClassN />
+          </div>
+        </div>
+
+        <div className="flex gap-4">
+          <div className="w-[20%]">
+            <Best />
+          </div>
+          <div className="w-[20%]">
+            <NonMove />
+          </div>
         </div>
       </div>
 
-      <div className="flex gap-4">
-        <div className="w-[50%]">
-          <ClassC />
-        </div>
-        <div className="w-[50%]">
-          <ClassN />
-        </div>
-      </div>
-
-      <div className="flex gap-4">
-        <div className="w-[50%]">
-          <Best />
-        </div>
-        <div className="w-[50%]">
-          <NonMove />
-        </div>
-      </div>
       <AcAndFc />
     </div>
   );
