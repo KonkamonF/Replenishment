@@ -1,12 +1,13 @@
-import { createBrowserRouter, RouterProvider , Outlet } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import SupperAdmin from "../Dashboard/SupperAdmin/SupperAdmin";
 import TradeAdmin from "../Dashboard/TradeAdmin/TradeAdmin";
 import KeyAdmin from "../Dashboard/KeyAdmin/KeyAdmin";
+import Appp from "../Appp";
 
 const route = createBrowserRouter([
   {
     path: "/",
-    element: <Outlet/>,
+    element: <Appp />,
     children: [
       { index: true, element: <SupperAdmin /> },
       { path: "trade-admin", element: <TradeAdmin /> },
