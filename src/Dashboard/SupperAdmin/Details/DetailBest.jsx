@@ -19,7 +19,7 @@ export default function DetailBest({ setIsDetailsBest }) {
 
         <div>
           {" "}
-          <table className="table-auto w-full border-collapse border border-gray-200">
+          <table className="table-auto w-full border-collapse border border-gray-200 ">
             <thead className="bg-gray-100">
               <tr>
                 <th className="border p-2">ID</th>
@@ -29,7 +29,7 @@ export default function DetailBest({ setIsDetailsBest }) {
             </thead>
             <tbody>
               {users.map((user, index) => (
-                <tr key={user.id} className="hover:bg-gray-50 text-start">
+                <tr key={user.id} className="text-start hover:bg-gray-200">
                   <td className="border p-2 text-center">{index + 1}</td>
                   <td className="border p-2">{user.name}</td>
                   <td className="border p-2">{user.email}</td>

@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const hover = "hover:bg-gray-50 p-2 w-full text-center";
+const hover = "hover:bg-gray-300 p-2 w-full text-center";
 
 export default function Side() {
   return (

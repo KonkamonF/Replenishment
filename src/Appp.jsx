@@ -8,8 +8,8 @@ import KeyAdmin from "./Dashboard/KeyAdmin/KeyAdmin";
 export default function Appp() {
   return (
     <>
-      <div className="bg-gray-50">
-        <div className="h-[64px] bg-white">head</div>
+      <div className="bg-gray-100">
+        <div className="bg-white h-[64px]">head</div>
         <div className="flex">
           <div className="h-screen bg-white w-[200px]">
             <Side />
