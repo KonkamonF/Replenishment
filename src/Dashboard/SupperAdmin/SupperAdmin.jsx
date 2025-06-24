@@ -4,7 +4,7 @@ import ClassB from "./Amount/ClassB";
 import ClassC from "./Amount/ClassC";
 import ClassN from "./Amount/ClassN";
 import Best from "./Amount/Best";
-import NonMove from "./Amount/Nonmove";
+import NonMove from "./Amount/NonMove";
 import AcAndFc from "./Amount/AcAndFc";
 
 export default function SupperAdmin() {
