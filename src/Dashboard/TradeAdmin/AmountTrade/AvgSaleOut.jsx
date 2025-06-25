@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import DetailAvgSaleOut from "../DetailsTrade/DetailAvgSaleOut";
+import DetailAvgSaleOut from "../../SupperAdmin/DetailsAdmin/DetailAvgSaleOut";
 
 export default function AvgSaleOut() {
   const [isDetailsAvg, setIsDetailsAvg] = useState(false);

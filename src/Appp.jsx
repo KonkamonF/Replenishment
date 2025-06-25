@@ -1,4 +1,4 @@
-import Side from "./Side/Side";
+import Side from "./SideBar/Side";
 import { Outlet } from "react-router-dom";
 
 
