@@ -11,7 +11,7 @@ export default function ClassB() {
 
       <div
         onClick={() => setIsDetailsClassB(true)}
-        className="border-2 p-2 rounded-3xl hover:bg-gray-500"
+        className="border-2 p-2 rounded-3xl hover:bg-gray-300"
       >
         <p className="text-3xl font-bold">60 Units</p>Class B
       </div>
