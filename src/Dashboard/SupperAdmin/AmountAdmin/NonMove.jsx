@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import DetailNonMove from "../Details/DetailNonMove";
+import DetailNonMove from "../DetailsAdmin/DetailNonMove";
 
 export default function NonMove() {
   const [isDetailsNonMove, setIsDetailsNonMove] = useState(false);

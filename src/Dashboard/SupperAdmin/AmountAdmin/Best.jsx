@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import DetailBest from "../Details/DetailBest";
+import DetailBest from "../DetailsAdmin/DetailBest";
 
 export default function Best() {
   const [isDetailsBest, setIsDetailsBest] = useState(false);

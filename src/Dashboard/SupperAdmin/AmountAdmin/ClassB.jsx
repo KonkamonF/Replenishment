@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import DetailClassB from "../Details/DetailClassB";
+import DetailClassB from "../DetailsAdmin/DetailClassB";
 
 export default function ClassB() {
   const [isDetailsClassB, setIsDetailsClassB] = useState(false);

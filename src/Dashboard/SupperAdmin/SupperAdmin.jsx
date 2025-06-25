@@ -1,11 +1,11 @@
 import React from "react";
-import ClassA from "./Amount/ClassA";
-import ClassB from "./Amount/ClassB";
-import ClassC from "./Amount/ClassC";
-import ClassN from "./Amount/ClassN";
-import Best from "./Amount/Best";
-import NonMove from "./Amount/NonMove";
-import AcAndFc from "./Amount/AcAndFc";
+import ClassA from "./AmountAdmin/ClassA";
+import ClassB from "./AmountAdmin/ClassB";
+import ClassC from "./AmountAdmin/ClassC";
+import ClassN from "./AmountAdmin/ClassN";
+import Best from "./AmountAdmin/Best";
+import NonMove from "./AmountAdmin/NonMove";
+import AcAndFc from "./AmountAdmin/AcAndFc";
 
 export default function SupperAdmin() {
   return (
