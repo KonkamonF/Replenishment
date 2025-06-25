@@ -5,8 +5,8 @@ import { Pie, Bar, Doughnut } from "react-chartjs-2";
 export default function AcAndFc() {
   return (
     <>
-      <div className="text-[#640037] text-3xl font-bold">
-        Actual เทียบ Forecast
+      <div className="text-[#640037] text-3xl font-bold w-[300px]">
+        Actual ภาพรวม เทียบ Forecast ภาพรวม
         <Doughnut
           data={{
             labels: ["Actual", "Forecast"],

@@ -1,9 +1,17 @@
-import React from 'react'
+import React, { useState } from "react";
+import DetailAvgSaleOut from "../DetailsTrade/DetailAvgSaleOut";
 
 export default function AvgSaleOut() {
+  const [isDetailsAvg, setIsDetailsAvg] = useState(false);
   return (
     <>
-    <div>ยอดตัดจ่าย</div>
+      {isDetailsAvg && <DetailAvgSaleOut setIsDetailsAvg={setIsDetailsAvg} />}
+      <div
+        onClick={() => setIsDetailsAvg(true)}
+        className="border-2 p-2 rounded-3xl hover:bg-gray-300"
+      >
+        ยอดตัดจ่ายเทียบ Forecast ราย SKU
+      </div>
     </>
-  )
+  );
 }
