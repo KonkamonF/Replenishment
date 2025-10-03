@@ -393,7 +393,7 @@ export default function InventoryTradeMonitor() {
       </header>
 
       {/* --- Key Metrics (Condensed Summary) --- */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 ">
         <div className="bg-pink-50 p-4 rounded-lg shadow-inner">
           <p className="text-sm text-pink-600 font-semibold">Total SKUs</p>
           <p className="text-2xl font-extrabold text-[#640037]">
@@ -421,8 +421,8 @@ export default function InventoryTradeMonitor() {
       </div>
 
       {/* --- Data Table Container --- */}
-      <div className="overflow-x-auto shadow-xl rounded-xl">
-        <table className="min-w-full table-auto border-collapse bg-white">
+      <div className="overflow-x-auto shadow-xl h-[420px] rounded-xl">
+        <table className="min-w-full table-auto  border-collapse bg-white">
           <thead className="bg-[#640037] text-white sticky top-0">
             <tr>
               <th className="p-3 text-left w-[100px] border-r border-pink-700">

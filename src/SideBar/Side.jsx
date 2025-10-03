@@ -15,7 +15,7 @@ export default function Side() {
       {/* Super Admin / Dashboard */}
       <Link
         to="/"
-        className={`${baseClass} ${activeClass} ${hoverClass} bg-pink-50 rounded-lg`} // ให้เมนูนี้เป็นเมนูเริ่มต้น (Active)
+        className={`${baseClass} ${activeClass} ${hoverClass} rounded-lg`} // ให้เมนูนี้เป็นเมนูเริ่มต้น (Active)
       >
         <div className="flex items-center space-x-2">
           <svg

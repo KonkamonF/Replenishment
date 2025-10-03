@@ -46,7 +46,7 @@ export default function Appp() {
         <div className="flex">
           
           {/* Sidebar */}
-          <div className="min-h-screen bg-white w-[250px] shadow-lg sticky top-0 pt-4 hidden md:block">
+          <div className=" bg-white w-[200px] shadow-lg sticky top-0 pt-4 hidden md:block">
             <Side />
           </div>
           

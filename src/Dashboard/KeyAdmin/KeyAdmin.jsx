@@ -364,7 +364,7 @@ export default function InventoryTradeMonitorWithFilters() {
       {/* --- Header & Summary --- */}
       <header className="mb-6 border-b pb-4">
         <h1 className="text-3xl font-extrabold text-[#640037] mb-2">
-          Inventory & Trade Monitor
+          Key Account
         </h1>
         <p className="text-gray-500">
           ข้อมูลคงคลัง (Stock) และยอดขาย (Sale Out) พร้อมระบบค้นหาและกรองข้อมูล
@@ -466,9 +466,9 @@ export default function InventoryTradeMonitorWithFilters() {
       </p>
 
       {/* --- Data Table Container --- */}
-      <div className="overflow-x-auto shadow-xl rounded-xl">
-        <table className="min-w-full table-auto border-collapse bg-white">
-          <thead className="bg-[#640037] text-white">
+      <div className="overflow-x-auto shadow-xl h-[370px] rounded-xl">
+        <table className="min-w-full table-auto border-collapse bg-white ">
+          <thead className="bg-[#640037] text-white sticky top-0">
             <tr>
               <th className="p-3 text-left w-[100px]">Code/Brand</th>
               <th className="p-3 text-left w-[250px] min-w-[250px]">

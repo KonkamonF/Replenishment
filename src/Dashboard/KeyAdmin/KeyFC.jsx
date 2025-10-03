@@ -351,12 +351,12 @@ export default function KeyFC() {
       </p>
 
       {/* --- Data Table --- */}
-      <div className="overflow-x-auto border border-gray-200 rounded-lg">
-        <table className="min-w-full table-auto border-collapse">
+      <div className="overflow-x-auto border h-[530px] border-gray-200 rounded-lg">
+        <table className="min-w-full table-auto border-collapse ">
           <thead className="bg-[#640037] text-white sticky top-0">
             {/* Table Header (คงเดิม) */}
             <tr>
-              <th className="p-3 text-left w-[120px] sticky left-0 bg-[#640037] z-20">
+              <th className="p-3 text-left w-[120px] left-0 bg-[#640037] z-20">
                 Code
               </th>
               <th className="p-3 text-left w-[250px]">Description</th>
@@ -385,7 +385,7 @@ export default function KeyFC() {
                 className="border-b border-gray-200 hover:bg-pink-50 transition duration-150"
               >
                 {/* Code (Sticky) */}
-                <td className="p-3 text-left font-mono text-sm sticky left-0 bg-white hover:bg-pink-50 border-r border-gray-200 z-10">
+                <td className="p-3 text-left font-mono text-sm  left-0 bg-white hover:bg-pink-50 border-r border-gray-200 z-10">
                   {item.Code}
                 </td>
 
@@ -445,7 +445,7 @@ export default function KeyFC() {
             <tr>
               <th
                 colSpan="4"
-                className="p-3 text-right font-extrabold text-lg text-[#640037] sticky left-0 bg-pink-100 z-20"
+                className="p-3 text-right font-extrabold text-lg  text-[#640037] sticky left-0 bg-pink-100 z-20"
               >
                 GRAND TOTAL:
               </th>
