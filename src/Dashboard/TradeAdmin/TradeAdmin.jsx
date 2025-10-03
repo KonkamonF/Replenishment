@@ -165,14 +165,14 @@ export default function TradeAdmin() {
         <table className="min-w-full bg-white border-collapse">
           <thead className="bg-[#640037] text-white sticky top-0">
             <tr>
-              <th className="p-4 text-left">Order ID</th>
+              <th className="p-4 text-left">Code</th>
               <th className="p-4 text-left">สินค้า (SKU)</th>
               <th className="p-4 text-left">ผู้สั่งซื้อ/พื้นที่</th>
               <th className="p-4 text-right">จำนวนสั่งซื้อ</th>
               <th className="p-4 text-right">ยอดขายต่อชิ้น</th>
               <th className="p-4 text-center">สถานะ</th>
-              <th className="p-4 text-center w-[100px]">Comment</th>
-              <th className="p-4 text-center w-[120px]">Action</th>
+              <th className="p-4 text-center">Comment</th>
+              <th className="p-4 text-center">Action</th>
             </tr>
           </thead>
           <tbody>
