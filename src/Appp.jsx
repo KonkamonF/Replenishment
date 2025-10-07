@@ -80,7 +80,7 @@ export default function Appp() {
             ></path>
           </svg>
           <span className="text-xl font-bold text-[#640037]">
-            Replenishment ADMIN
+            Replenishment System
           </span>
         </Link>
 
