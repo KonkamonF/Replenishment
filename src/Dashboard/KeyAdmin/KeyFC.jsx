@@ -1,485 +1,659 @@
 import React, { useState, useMemo } from "react";
+import { Search, Eye, EyeOff, ChevronDown } from "lucide-react"; // ใช้ ChevronDown
 
-// --- Mock Data (คงเดิม) ---
-const initialKeyFCData = [
+// --- Mock Data (ชุดข้อมูล Inventory/Trade ที่คุณต้องการ) ---
+const mockInventoryData = [
   {
-    Code: "20-0326-02",
-    Description: "Gas regulator TNP R326S",
-    Type: "ACC",
-    Class: "A",
-    Total: 2877,
-    "Other(K Beer)": 0,
-    "GBH Beer": 300,
-    "GBH P Ann": 0,
-    "HP Beer": 1500,
-    "HP Online P Ann": 0,
-    "HP P Ann": 0,
-    BTV: 5,
-    Dealer: 22,
-    Dohome: 450,
-    "The Mall": 0,
-    TWD: 600,
-    "Online All": 5,
+    Code: "06-0005-01",
+    Type: "TableTop",
+    Class: "B",
+    YN_Best_2025: "",
+    Brand: "Tecno*",
+    Description: "TNS IR 05",
+    SubType: "s2il",
+    ราคา_กลาง_หน่วย: 1390,
+    ราคา_โปรล่าสุด: 1290,
+    DayOnHand_DOH: 1413,
+    DayOnHand_DOH_Stock2: 376.71,
+    TargetSaleUnit_1: 70,
+    SaleOutเฉลี่ยวัน: 1.42,
+    Stock_จบเหลือจริง: 879,
+    SaleOut_มีค68: 43,
+    SaleOut_เมย68: 41,
+    SaleOut_พค68: 48,
+    SaleOut_มิย68: 28,
+    Sale_in_Aging_Tier: "Aging1 M",
+    สถานะTrade: "Abnormal",
+    RemarkTrade: "AC น้อยกว่า FC เกิน 20%",
+    DiffPercent: "-90.48%",
+    LeadTime: 90,
+    ตัดจ่ายเฉลี่ย3เดือน: 6.67,
+    // *NEW FIELD* for conversation/tracking
+    KeyRemarks: [
+      {
+        key: 1,
+        date: "2025-10-01",
+        user: "Admin A",
+        text: "สินค้า DOH สูงมาก ควรทำโปรโมชั่นพิเศษด่วน.",
+      },
+    ],
   },
   {
-    Code: "20-0150-1",
-    Description: "Gas regulator TNS GH 150 B.0",
-    Type: "ACC",
-    Class: "MD",
-    Total: 1602,
-    "Other(K Beer)": 1299,
-    "GBH Beer": 0,
-    "GBH P Ann": 0,
-    "HP Beer": 150,
-    "HP Online P Ann": 2,
-    "HP P Ann": 350,
-    BTV: 20,
-    Dealer: 28,
-    Dohome: 100,
-    "The Mall": 0,
-    TWD: 500,
-    "Online All": 0,
+    Code: "06-0003-01",
+    Type: "TableTop",
+    Class: "B",
+    YN_Best_2025: "Yes",
+    Brand: "Tecno*",
+    Description: "Table top 1",
+    SubType: "s1g1il",
+    ราคา_กลาง_หน่วย: 1290,
+    ราคา_โปรล่าสุด: 1250,
+    DayOnHand_DOH: 310,
+    DayOnHand_DOH_Stock2: 148.32,
+    TargetSaleUnit_1: 140,
+    SaleOutเฉลี่ยวัน: 2.45,
+    Stock_จบเหลือจริง: 670,
+    SaleOut_มีค68: 64,
+    SaleOut_เมย68: 70,
+    SaleOut_พค68: 71,
+    SaleOut_มิย68: 65,
+    Sale_in_Aging_Tier: "No Aging",
+    สถานะTrade: "Abnormal",
+    RemarkTrade: "AC น้อยกว่า FC เกิน 20%",
+    DiffPercent: "-68.12%",
+    LeadTime: 80,
+    ตัดจ่ายเฉลี่ย3เดือน: 38.2,
+    KeyRemarks: [
+      {
+        key: 1,
+        date: "2025-10-02",
+        user: "KeyUser B",
+        text: "ลูกค้าบ่นเรื่องราคาโปร ไม่ดึงดูดใจเท่าที่ควร.",
+      },
+      {
+        key: 2,
+        date: "2025-10-03",
+        user: "Admin A",
+        text: "รับทราบ. จะพิจารณารายาโปรโมชั่นใหม่สำหรับเดือนหน้า.",
+      },
+    ],
   },
   {
-    Code: "09-10500-03",
-    Description: "SINK TNS 10500 SS.06",
-    Type: "Sink",
+    Code: "06-0003-02",
+    Type: "TableTop",
     Class: "A",
-    Total: 1234,
-    "Other(K Beer)": 70,
-    "GBH Beer": 100,
-    "GBH P Ann": 0,
-    "HP Beer": 0,
-    "HP Online P Ann": 0,
-    "HP P Ann": 0,
-    BTV: 50,
-    Dealer: 41,
-    Dohome: 120,
-    "The Mall": 0,
-    TWD: 500,
-    "Online All": 1,
+    YN_Best_2025: "",
+    Brand: "Tecno*",
+    Description: "Table top 2",
+    SubType: "s2g1il",
+    ราคา_กลาง_หน่วย: 1450,
+    ราคา_โปรล่าสุด: 1390,
+    DayOnHand_DOH: 295,
+    DayOnHand_DOH_Stock2: 160.44,
+    TargetSaleUnit_1: 120,
+    SaleOutเฉลี่ยวัน: 2.88,
+    Stock_จบเหลือจริง: 710,
+    SaleOut_มีค68: 72,
+    SaleOut_เมย68: 76,
+    SaleOut_พค68: 80,
+    SaleOut_มิย68: 78,
+    Sale_in_Aging_Tier: "Fresh",
+    สถานะTrade: "Normal",
+    RemarkTrade: "ยอดขายสอดคล้องกับแผน",
+    DiffPercent: "-25.32%",
+    LeadTime: 75,
+    ตัดจ่ายเฉลี่ย3เดือน: 42.5,
+    KeyRemarks: [], // No remarks yet
   },
   {
-    Code: "20-0326-02",
-    Description: "Gas regulator TNP R326S",
-    Type: "ACC",
-    Class: "A",
-    Total: 2877,
-    "Other(K Beer)": 0,
-    "GBH Beer": 300,
-    "GBH P Ann": 0,
-    "HP Beer": 1500,
-    "HP Online P Ann": 0,
-    "HP P Ann": 0,
-    BTV: 5,
-    Dealer: 22,
-    Dohome: 450,
-    "The Mall": 0,
-    TWD: 600,
-    "Online All": 5,
+    Code: "06-0003-03",
+    Type: "TableTop",
+    Class: "C",
+    YN_Best_2025: "",
+    Brand: "Tecno*",
+    Description: "Table top 3",
+    SubType: "s3g2il",
+    ราคา_กลาง_หน่วย: 1100,
+    ราคา_โปรล่าสุด: 990,
+    DayOnHand_DOH: 420,
+    DayOnHand_DOH_Stock2: 190.12,
+    TargetSaleUnit_1: 90,
+    SaleOutเฉลี่ยวัน: 1.95,
+    Stock_จบเหลือจริง: 560,
+    SaleOut_มีค68: 38,
+    SaleOut_เมย68: 42,
+    SaleOut_พค68: 39,
+    SaleOut_มิย68: 40,
+    Sale_in_Aging_Tier: "Aging2 M",
+    สถานะTrade: "Abnormal",
+    RemarkTrade: "สินค้าเคลื่อนไหวน้อย",
+    DiffPercent: "-82.67%",
+    LeadTime: 95,
+    ตัดจ่ายเฉลี่ย3เดือน: 18.6,
+    KeyRemarks: [],
   },
   {
-    Code: "20-0326-02",
-    Description: "Gas regulator TNP R326S",
-    Type: "ACC",
-    Class: "A",
-    Total: 2877,
-    "Other(K Beer)": 0,
-    "GBH Beer": 300,
-    "GBH P Ann": 0,
-    "HP Beer": 1500,
-    "HP Online P Ann": 0,
-    "HP P Ann": 0,
-    BTV: 5,
-    Dealer: 22,
-    Dohome: 450,
-    "The Mall": 0,
-    TWD: 600,
-    "Online All": 5,
-  },
-  {
-    Code: "20-0326-02",
-    Description: "Gas regulator TNP R326S",
-    Type: "ACC",
-    Class: "A",
-    Total: 2877,
-    "Other(K Beer)": 0,
-    "GBH Beer": 300,
-    "GBH P Ann": 0,
-    "HP Beer": 1500,
-    "HP Online P Ann": 0,
-    "HP P Ann": 0,
-    BTV: 5,
-    Dealer: 22,
-    Dohome: 450,
-    "The Mall": 0,
-    TWD: 600,
-    "Online All": 5,
-  },
-  {
-    Code: "20-0326-02",
-    Description: "Gas regulator TNP R326S",
-    Type: "ACC",
-    Class: "A",
-    Total: 2877,
-    "Other(K Beer)": 0,
-    "GBH Beer": 300,
-    "GBH P Ann": 0,
-    "HP Beer": 1500,
-    "HP Online P Ann": 0,
-    "HP P Ann": 0,
-    BTV: 5,
-    Dealer: 22,
-    Dohome: 450,
-    "The Mall": 0,
-    TWD: 600,
-    "Online All": 5,
-  },
-  {
-    Code: "20-0326-02",
-    Description: "Gas regulator TNP R326S",
-    Type: "ACC",
-    Class: "A",
-    Total: 2877,
-    "Other(K Beer)": 0,
-    "GBH Beer": 300,
-    "GBH P Ann": 0,
-    "HP Beer": 1500,
-    "HP Online P Ann": 0,
-    "HP P Ann": 0,
-    BTV: 5,
-    Dealer: 22,
-    Dohome: 450,
-    "The Mall": 0,
-    TWD: 600,
-    "Online All": 5,
-  },
-  {
-    Code: "20-0326-02",
-    Description: "Gas regulator TNP R326S",
-    Type: "ACC",
-    Class: "A",
-    Total: 2877,
-    "Other(K Beer)": 0,
-    "GBH Beer": 300,
-    "GBH P Ann": 0,
-    "HP Beer": 1500,
-    "HP Online P Ann": 0,
-    "HP P Ann": 0,
-    BTV: 5,
-    Dealer: 22,
-    Dohome: 450,
-    "The Mall": 0,
-    TWD: 600,
-    "Online All": 5,
-  },
-  {
-    Code: "20-0326-02",
-    Description: "Gas regulator TNP R326S",
-    Type: "ACC",
-    Class: "A",
-    Total: 2877,
-    "Other(K Beer)": 0,
-    "GBH Beer": 300,
-    "GBH P Ann": 0,
-    "HP Beer": 1500,
-    "HP Online P Ann": 0,
-    "HP P Ann": 0,
-    BTV: 5,
-    Dealer: 22,
-    Dohome: 450,
-    "The Mall": 0,
-    TWD: 600,
-    "Online All": 5,
-  },
-  {
-    Code: "20-0326-02",
-    Description: "Gas regulator TNP R326S",
-    Type: "ACC",
-    Class: "A",
-    Total: 2877,
-    "Other(K Beer)": 0,
-    "GBH Beer": 300,
-    "GBH P Ann": 0,
-    "HP Beer": 1500,
-    "HP Online P Ann": 0,
-    "HP P Ann": 0,
-    BTV: 5,
-    Dealer: 22,
-    Dohome: 450,
-    "The Mall": 0,
-    TWD: 600,
-    "Online All": 5,
-  },
-  {
-    Code: "20-0326-02",
-    Description: "Gas regulator TNP R326S",
-    Type: "ACC",
-    Class: "A",
-    Total: 2877,
-    "Other(K Beer)": 0,
-    "GBH Beer": 300,
-    "GBH P Ann": 0,
-    "HP Beer": 1500,
-    "HP Online P Ann": 0,
-    "HP P Ann": 0,
-    BTV: 5,
-    Dealer: 22,
-    Dohome: 450,
-    "The Mall": 0,
-    TWD: 600,
-    "Online All": 5,
+    Code: "06-0003-04",
+    Type: "TableTop",
+    Class: "B",
+    YN_Best_2025: "Yes",
+    Brand: "Tecno*",
+    Description: "Table top 4",
+    SubType: "s4g1il",
+    ราคา_กลาง_หน่วย: 1350,
+    ราคา_โปรล่าสุด: 1320,
+    DayOnHand_DOH: 285,
+    DayOnHand_DOH_Stock2: 140.56,
+    TargetSaleUnit_1: 150,
+    SaleOutเฉลี่ยวัน: 3.12,
+    Stock_จบเหลือจริง: 695,
+    SaleOut_มีค68: 81,
+    SaleOut_เมย68: 79,
+    SaleOut_พค68: 85,
+    SaleOut_มิย68: 83,
+    Sale_in_Aging_Tier: "Fresh",
+    สถานะTrade: "Normal",
+    RemarkTrade: "สินค้าขายดีตามแผน",
+    DiffPercent: "-15.24%",
+    LeadTime: 70,
+    ตัดจ่ายเฉลี่ย3เดือน: 55.4,
+    KeyRemarks: [],
   },
 ];
 // -----------------
 
-// ชื่อคอลัมน์ช่องทางจำหน่ายที่ต้องการแก้ไขได้
-const editableChannels = [
-  "Other(K Beer)",
-  "GBH Beer",
-  "GBH P Ann",
-  "HP Beer",
-  "HP Online P Ann",
-  "HP P Ann",
-  "BTV",
-  "Dealer",
-  "Dohome",
-  "The Mall",
-  "TWD",
-  "Online All",
-];
-
-const availableClasses = ["A", "B", "C", "MD", "N"];
-
-// Helper function คำนวณยอดรวมใหม่
-const calculateTotal = (item) => {
-  return editableChannels.reduce(
-    (sum, channel) => sum + (parseInt(item[channel]) || 0),
-    0
-  );
+// --- Helper Functions (สำหรับแสดงผล) ---
+const getDOHStyle = (doh) => {
+  if (doh === null || doh === undefined) return "text-gray-500";
+  if (doh > 365) return "text-red-600 font-extrabold bg-red-50";
+  if (doh > 180) return "text-orange-600 font-bold";
+  return "text-green-600 font-bold";
 };
 
-export default function KeyFC() {
-  const [data, setData] = useState(initialKeyFCData);
-  const [isDataChanged, setIsDataChanged] = useState(false);
+const getStatusStyle = (status) => {
+  switch (status) {
+    case "Abnormal":
+      return "bg-red-100 text-red-800 border-red-300";
+    case "Normal":
+      return "bg-green-100 text-green-800 border-green-300";
+    default:
+      return "bg-gray-100 text-gray-800 border-gray-300";
+  }
+};
 
-  // --- NEW: คำนวณยอดรวมทั้งหมด (Grand Totals) ---
-  const grandTotals = useMemo(() => {
-    const totals = { Total: 0 };
-    editableChannels.forEach((channel) => (totals[channel] = 0));
+// --- NEW Component: Trade Remark Modal ---
+function TradeRemarkModal({ product, onClose, onAddRemark }) {
+  const [remarkText, setRemarkText] = useState("");
+  const currentUser = "Key User (Admin)"; // จำลองผู้ใช้งานปัจจุบัน
 
-    data.forEach((item) => {
-      totals.Total += item.Total;
-      editableChannels.forEach((channel) => {
-        totals[channel] += parseInt(item[channel]) || 0;
-      });
-    });
-    return totals;
-  }, [data]);
-  // ----------------------------------------------
-
-  // Function จัดการการเปลี่ยนแปลงค่าในช่อง Input
-  const handleValueChange = (code, channel, value) => {
-    setIsDataChanged(true);
-
-    const newData = data.map((item) => {
-      if (item.Code === code) {
-        const numericValue = Math.max(0, parseInt(value) || 0);
-        const updatedItem = { ...item, [channel]: numericValue };
-
-        updatedItem.Total = calculateTotal(updatedItem);
-        return updatedItem;
-      }
-      return item;
-    });
-    setData(newData);
-  };
-
-  // Function จัดการการเปลี่ยนแปลง Class (เหมือนเดิม)
-  const handleClassChange = (code, newClass) => {
-    setIsDataChanged(true);
-
-    const newData = data.map((item) => {
-      if (item.Code === code) {
-        return { ...item, Class: newClass };
-      }
-      return item;
-    });
-    setData(newData);
-  };
-
-  // Function สำหรับการยืนยันการเปลี่ยนแปลง (Submit) (เหมือนเดิม)
-  const handleSubmit = () => {
-    if (!isDataChanged) {
-      alert("ไม่พบการเปลี่ยนแปลงข้อมูล กรุณาแก้ไขข้อมูลก่อนบันทึก.");
-      return;
+  const handleAddRemark = () => {
+    if (remarkText.trim()) {
+      const newRemark = {
+        date: new Date().toISOString().slice(0, 10), // Format YYYY-MM-DD
+        user: currentUser,
+        text: remarkText.trim(),
+      };
+      onAddRemark(product.Code, newRemark);
+      setRemarkText("");
     }
-
-    // ... API Call Logic ...
-    console.log("Submitting the following forecast data:", data);
-    alert(
-      `✅ ยืนยันการเปลี่ยนแปลงข้อมูล Forecast จำนวน ${data.length} รายการสำเร็จ! (ข้อมูลถูกส่งไปที่ Console)`
-    );
-
-    setIsDataChanged(false);
   };
 
   return (
-    <div className="p-6 bg-white shadow-2xl rounded-xl">
-      {/* --- Header with Save Button --- */}
-      <div className="flex justify-between items-center mb-6 border-b pb-3">
-        <h1 className="text-3xl font-extrabold text-[#640037]">
-          Key Product Forecast (FC)
+    <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-xl w-full max-w-xl p-6 shadow-2xl">
+        <div className="flex justify-between items-center border-b pb-3 mb-4">
+          <h2 className="text-xl font-bold text-[#640037]">
+            บันทึกการสื่อสาร/ติดตาม: {product.Code}
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-3xl text-gray-500 hover:text-red-500"
+          >
+            &times;
+          </button>
+        </div>
+
+        <p className="text-gray-700 mb-4 font-medium">{product.Description}</p>
+
+        {/* Remark History */}
+        <div className="h-64 overflow-y-auto mb-4 space-y-3 p-2 border rounded-lg bg-gray-50">
+          {product.KeyRemarks && product.KeyRemarks.length > 0 ? (
+            product.KeyRemarks.map((remark, index) => (
+              <div
+                key={index}
+                className="border-l-4 border-pink-400 pl-3 py-1 bg-white rounded shadow-sm"
+              >
+                <p className="font-semibold text-sm">
+                  {remark.user}
+                  <span className="text-xs font-normal text-gray-500 ml-2">
+                    ({remark.date})
+                  </span>
+                </p>
+                <p className="text-gray-800">{remark.text}</p>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-500 text-center pt-8">
+              ยังไม่มีบันทึกการสื่อสารเฉพาะกิจ
+            </p>
+          )}
+        </div>
+
+        {/* New Remark Input */}
+        <div className="pt-4 border-t border-gray-200">
+          <label className="block text-gray-700 font-semibold mb-2">
+            เพิ่มบันทึกใหม่ ในนาม: {currentUser}
+          </label>
+          <textarea
+            className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-pink-300"
+            rows="3"
+            placeholder="พิมพ์บันทึกการสื่อสารหรือข้อเสนอแนะ..."
+            value={remarkText}
+            onChange={(e) => setRemarkText(e.target.value)}
+          ></textarea>
+          <button
+            onClick={handleAddRemark}
+            className="mt-2 w-full px-4 py-2 bg-pink-600 text-white font-semibold rounded-lg hover:bg-pink-700 transition shadow-md"
+            disabled={!remarkText.trim()}
+          >
+            บันทึกการสื่อสาร
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// --- Main Component ---
+export default function InventoryTradeMonitorWithFilters() {
+  const [data, setData] = useState(mockInventoryData);
+  const [filters, setFilters] = useState({
+    liveSearch: "", // UPDATED: State for input field
+    brand: "All",
+    class: "All",
+    best2025: "All",
+    tradeStatus: "All",
+  });
+  const [finalSearchTerm, setFinalSearchTerm] = useState(""); // NEW: State used for filtering
+  const [modalRemarkProduct, setModalRemarkProduct] = useState(null);
+
+  // Unique Filter Options
+  const uniqueBrands = useMemo(
+    () => ["All", ...new Set(data.map((item) => item.Brand))],
+    [data]
+  );
+  const uniqueClasses = useMemo(
+    () => ["All", ...new Set(data.map((item) => item.Class))],
+    [data]
+  );
+  const uniqueBest2025 = useMemo(() => ["All", "Yes", "No"], []);
+  const uniqueTradeStatus = useMemo(
+    () => ["All", ...new Set(data.map((item) => item.สถานะTrade))],
+    [data]
+  );
+
+  // --- NEW FUNCTION: Trigger Search ---
+  const triggerSearch = () => {
+    setFinalSearchTerm(filters.liveSearch);
+  };
+  // ------------------------------------
+
+  // Filtered Data Logic
+  const filteredData = useMemo(() => {
+    return data.filter((item) => {
+      // 1. Search Filter (Code, Description, RemarkTrade) - Use finalSearchTerm
+      const searchTerm = finalSearchTerm.toLowerCase();
+      const matchesSearch =
+        item.Code.toLowerCase().includes(searchTerm) ||
+        item.Description.toLowerCase().includes(searchTerm) ||
+        item.RemarkTrade.toLowerCase().includes(searchTerm);
+
+      // 2. Brand Filter
+      const matchesBrand =
+        filters.brand === "All" || item.Brand === filters.brand;
+
+      // 3. Class Filter
+      const matchesClass =
+        filters.class === "All" || item.Class === filters.class;
+
+      // 4. Best 2025 Filter
+      const matchesBest2025 =
+        filters.best2025 === "All" ||
+        (filters.best2025 === "Yes" && item.YN_Best_2025 === "Yes") ||
+        (filters.best2025 === "No" && item.YN_Best_2025 !== "Yes");
+
+      // 5. Trade Status Filter
+      const matchesTradeStatus =
+        filters.tradeStatus === "All" ||
+        item.สถานะTrade === filters.tradeStatus;
+
+      return (
+        matchesSearch &&
+        matchesBrand &&
+        matchesClass &&
+        matchesBest2025 &&
+        matchesTradeStatus
+      );
+    });
+  }, [filters, data, finalSearchTerm]); // UPDATED: Depend on finalSearchTerm
+
+  const handleFilterChange = (name, value) => {
+    // Only update liveSearch state for the text input
+    if (name === "liveSearch") {
+      setFilters((prev) => ({ ...prev, liveSearch: value }));
+    } else {
+      // For other filters (dropdowns), update and trigger search instantly
+      setFilters((prev) => ({ ...prev, [name]: value }));
+      // Note: Filters that are not liveSearch trigger filter immediately.
+      setFinalSearchTerm(filters.liveSearch);
+    }
+  };
+
+  // NEW Function: Open Remark Modal
+  const handleOpenRemarkModal = (product) => {
+    setModalRemarkProduct(product);
+  };
+
+  // NEW Function: Add new remark to a product
+  const handleAddRemark = (productCode, newRemark) => {
+    setData((prevData) =>
+      prevData.map((item) =>
+        item.Code === productCode
+          ? { ...item, KeyRemarks: [...(item.KeyRemarks || []), newRemark] }
+          : item
+      )
+    );
+    // Update modal state to reflect new data immediately
+    setModalRemarkProduct((prevProduct) =>
+      prevProduct.Code === productCode
+        ? {
+            ...prevProduct,
+            KeyRemarks: [...(prevProduct.KeyRemarks || []), newRemark],
+          }
+        : prevProduct
+    );
+    // ใช้ Modal แทน alert ในแอปจริง
+    console.log(`บันทึกการสื่อสารสำหรับ ${productCode} สำเร็จ!`);
+  };
+
+  return (
+    <div className="p-8 bg-white shadow-2xl rounded-xl">
+      {/* --- Header & Summary --- */}
+      <header className="mb-6 border-b pb-4">
+        <h1 className="text-3xl font-extrabold text-[#640037] mb-2">
+          Key Account
         </h1>
-        <button
-          onClick={handleSubmit}
-          disabled={!isDataChanged}
-          className={`px-5 py-2 rounded-lg font-semibold transition duration-300 shadow-md
-                        ${
-                          isDataChanged
-                            ? "bg-green-600 text-white hover:bg-green-700"
-                            : "bg-gray-300 text-gray-600 cursor-not-allowed"
-                        }`}
-        >
-          {isDataChanged ? "💾 Save Forecast" : "No Changes"}
-        </button>
+        <p className="text-gray-500">
+          ข้อมูลคงคลัง (Stock) และยอดขาย (Sale Out) พร้อมระบบค้นหาและกรองข้อมูล
+        </p>
+      </header>
+
+      {/* --- Filters & Search Bar --- */}
+      <div className="grid grid-cols-1 md:grid-cols-6 gap-4 mb-8 items-end p-4 bg-pink-50 rounded-lg border border-pink-200">
+        {/* Search Bar - NOW WITH BUTTON */}
+        <div className="col-span-1 md:col-span-2">
+          <label className="block text-sm font-semibold text-gray-700 mb-1">
+            ค้นหาสินค้า (Code/Desc/Remark)
+          </label>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              placeholder="ค้นหา..."
+              value={filters.liveSearch}
+              onChange={(e) => handleFilterChange("liveSearch", e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  triggerSearch();
+                }
+              }}
+              className="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-pink-500 focus:border-pink-500"
+            />
+          </div>
+        </div>
+
+        {/* Brand Filter */}
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-1">
+            Brand
+          </label>
+          <div className="relative">
+            <select
+              value={filters.brand}
+              onChange={(e) => handleFilterChange("brand", e.target.value)}
+              className="w-full p-2 pr-10 border border-gray-300 rounded-lg shadow-sm appearance-none"
+            >
+              {uniqueBrands.map((brand) => (
+                <option key={brand} value={brand}>
+                  {brand}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          </div>
+        </div>
+
+        {/* Class Filter */}
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-1">
+            Class
+          </label>
+          <div className="relative">
+            <select
+              value={filters.class}
+              onChange={(e) => handleFilterChange("class", e.target.value)}
+              className="w-full p-2 pr-10 border border-gray-300 rounded-lg shadow-sm appearance-none"
+            >
+              {uniqueClasses.map((cls) => (
+                <option key={cls} value={cls}>
+                  {cls}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          </div>
+        </div>
+
+        {/* Best 2025 Filter */}
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-1">
+            YN Best 2025
+          </label>
+          <div className="relative">
+            <select
+              value={filters.best2025}
+              onChange={(e) => handleFilterChange("best2025", e.target.value)}
+              className="w-full p-2 pr-10 border border-gray-300 rounded-lg shadow-sm appearance-none"
+            >
+              {uniqueBest2025.map((opt) => (
+                <option key={opt} value={opt}>
+                  {opt === "" ? "(Blank)" : opt}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          </div>
+        </div>
+
+        {/* Trade Status Filter */}
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-1">
+            สถานะ Trade
+          </label>
+          <div className="relative">
+            <select
+              value={filters.tradeStatus}
+              onChange={(e) =>
+                handleFilterChange("tradeStatus", e.target.value)
+              }
+              className="w-full p-2 pr-10 border border-gray-300 rounded-lg shadow-sm appearance-none"
+            >
+              {uniqueTradeStatus.map((status) => (
+                <option key={status} value={status}>
+                  {status}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          </div>
+        </div>
       </div>
 
-      <p className="text-gray-500 mb-4">
-        ปรับปรุงยอดพยากรณ์การขายแยกตามช่องทางจำหน่าย (Channels) และแก้ไข Class
-        สินค้า
+      <p className="mb-4 text-sm text-gray-600 font-medium">
+        แสดงผล **{filteredData.length}** รายการ จากทั้งหมด **{data.length}**
+        รายการ
       </p>
 
-      {/* --- Data Table --- */}
-      <div className="overflow-x-auto border h-[530px] border-gray-200 rounded-lg">
-        <table className="min-w-full table-auto border-collapse ">
+      {/* --- Data Table Container --- */}
+      <div className="overflow-x-auto shadow-xl h-[370px] rounded-xl">
+        <table className="min-w-full table-auto border-collapse bg-white ">
           <thead className="bg-[#640037] text-white sticky top-0">
-            {/* Table Header (คงเดิม) */}
             <tr>
-              <th className="p-3 text-left w-[120px] left-0 bg-[#640037] z-20">
-                Code
+              <th className="p-3 text-left w-[100px]">Code/Brand</th>
+              <th className="p-3 text-left w-[250px] min-w-[250px]">
+                Description/Type
               </th>
-              <th className="p-3 text-left w-[250px]">Description</th>
-              <th className="p-3 text-center w-[80px]">Type</th>
-              <th className="p-3 text-center w-[100px] border-l border-pink-700">
-                Class
+              <th className="p-3 text-right w-[100px]">Stock (เหลือจริง)</th>
+              <th className="p-3 text-right w-[100px]">ยอด Forecast</th>
+              <th className="p-3 text-right w-[100px] font-extrabold">
+                DOH (วัน)
               </th>
-              <th className="p-3 text-right w-[120px] font-extrabold border-l border-pink-700">
-                Total FC
-              </th>
-              {editableChannels.map((channel) => (
-                <th
-                  key={channel}
-                  className="p-3 text-right w-[100px] text-xs font-normal border-l border-pink-700 whitespace-nowrap"
-                >
-                  {channel}
-                </th>
-              ))}
+              <th className="p-3 text-center w-[120px]">สถานะ Trade</th>
+              <th className="p-3 text-left w-[200px]">Remark Trade / Action</th>
             </tr>
           </thead>
           <tbody>
-            {/* Table Body (คงเดิม) */}
-            {data.map((item) => (
-              <tr
-                key={item.Code}
-                className="border-b border-gray-200 hover:bg-pink-50 transition duration-150"
-              >
-                {/* Code (Sticky) */}
-                <td className="p-3 text-left font-mono text-sm  left-0 bg-white hover:bg-pink-50 border-r border-gray-200 z-10">
-                  {item.Code}
-                </td>
-
-                <td className="p-3 text-left font-semibold text-gray-700">
-                  {item.Description}
-                </td>
-                <td className="p-3 text-center text-xs text-gray-500">
-                  {item.Type}
-                </td>
-
-                {/* Class Selector */}
-                <td className="p-1 text-center border-l border-gray-200">
-                  <select
-                    value={item.Class}
-                    onChange={(e) =>
-                      handleClassChange(item.Code, e.target.value)
-                    }
-                    className="p-1 w-full text-center bg-transparent border border-gray-300 rounded focus:ring-pink-500 focus:border-pink-500 text-sm font-bold"
-                  >
-                    {availableClasses.map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
-                  </select>
-                </td>
-
-                {/* Total FC */}
-                <td className="p-3 text-right font-extrabold text-lg text-red-600 border-l border-gray-200">
-                  {item.Total.toLocaleString()}
-                </td>
-
-                {/* Editable Channel Inputs */}
-                {editableChannels.map((channel) => (
-                  <td
-                    key={channel}
-                    className="p-1 text-center border-l border-gray-200"
-                  >
-                    <input
-                      type="number"
-                      min="0"
-                      value={item[channel]}
-                      onChange={(e) =>
-                        handleValueChange(item.Code, channel, e.target.value)
-                      }
-                      className="w-full p-1 text-right border-b border-pink-300 focus:border-pink-600 focus:ring-0 text-sm font-medium transition duration-100"
-                      style={{ backgroundColor: "transparent" }}
-                    />
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-
-          {/* --- NEW: Table Footer for Totals --- */}
-          <tfoot className="bg-pink-100 border-t-4 border-[#640037] sticky bottom-0">
-            <tr>
-              <th
-                colSpan="4"
-                className="p-3 text-right font-extrabold text-lg  text-[#640037] sticky left-0 bg-pink-100 z-20"
-              >
-                GRAND TOTAL:
-              </th>
-
-              {/* Grand Total FC */}
-              <th className="p-3 text-right font-extrabold text-xl text-red-800 border-l border-[#640037]">
-                {grandTotals.Total.toLocaleString()}
-              </th>
-
-              {/* Grand Totals by Channel */}
-              {editableChannels.map((channel) => (
-                <th
-                  key={`total-${channel}`}
-                  className="p-3 text-right font-bold text-sm text-gray-800 border-l border-[#640037] whitespace-nowrap"
+            {filteredData.length > 0 ? (
+              filteredData.map((item) => (
+                <tr
+                  key={item.Code}
+                  className="border-b border-gray-200 hover:bg-pink-50 transition duration-150"
                 >
-                  {grandTotals[channel].toLocaleString()}
-                </th>
-              ))}
-            </tr>
-          </tfoot>
+                  {/* Code/Brand */}
+                  <td className="p-3 text-left font-mono text-sm">
+                    <span className="font-bold text-[#640037]">
+                      {item.Code}
+                    </span>
+                    <br />
+                    <span className="text-xs text-gray-500">{item.Brand}</span>
+                  </td>
+
+                  {/* Description/Type */}
+                  <td className="p-3 text-left font-semibold text-gray-700">
+                    {item.Description}
+                    <span
+                      className={`ml-2 text-xs font-normal text-white px-2 py-0.5 rounded-full ${
+                        item.Class === "A" ? "bg-orange-500" : "bg-pink-500"
+                      }`}
+                    >
+                      Class {item.Class}
+                    </span>
+                    <br />
+                    <span className="text-xs text-gray-400">
+                      {item.Type} ({item.SubType})
+                    </span>
+                  </td>
+
+                  {/* Stock */}
+                  <td className="p-3 text-right font-bold text-lg">
+                    {item.Stock_จบเหลือจริง.toLocaleString()}
+                  </td>
+                  <td className="p-3 text-right font-bold text-lg">
+                    {item.Stock_จบเหลือจริง.toLocaleString() - 25}
+                  </td>
+
+                  {/* DOH (วัน) */}
+                  <td
+                    className={`p-3 text-right font-extrabold text-lg ${getDOHStyle(
+                      item.DayOnHand_DOH_Stock2
+                    )}`}
+                  >
+                    {(item.DayOnHand_DOH_Stock2 || 0)
+                      .toFixed(0)
+                      .toLocaleString()}
+                  </td>
+
+                  {/* สถานะ Trade */}
+                  <td className="p-3 text-center">
+                    <span
+                      className={`px-3 py-1 text-xs font-semibold rounded-full border ${getStatusStyle(
+                        item.สถานะTrade
+                      )}`}
+                    >
+                      {item.สถานะTrade}
+                    </span>
+                    {item.DiffPercent && (
+                      <p
+                        className={`text-xs mt-1 font-bold ${
+                          item.DiffPercent.startsWith("-")
+                            ? "text-red-500"
+                            : "text-green-500"
+                        }`}
+                      >
+                        {item.DiffPercent}
+                      </p>
+                    )}
+                  </td>
+
+                  {/* Remark Trade / Action (UPDATED) */}
+                  <td className="p-3 text-left text-sm max-w-xs whitespace-normal text-gray-600">
+                    <p className="text-xs mb-1 italic truncate">
+                      {item.RemarkTrade || "-"}
+                    </p>
+                    <button
+                      onClick={() => handleOpenRemarkModal(item)}
+                      className={`px-3 py-1 text-xs rounded-lg shadow-md transition font-medium
+							${
+                item.KeyRemarks && item.KeyRemarks.length > 0
+                  ? "bg-blue-600 text-white hover:bg-blue-700"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+                    >
+                      บันทึก/ดูการสื่อสาร (
+                      {item.KeyRemarks ? item.KeyRemarks.length : 0})
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan="7"
+                  className="p-6 text-center text-lg text-gray-500"
+                >
+                  ไม่พบข้อมูลสินค้าที่ตรงกับเงื่อนไขการกรอง
+                </td>
+              </tr>
+            )}
+          </tbody>
         </table>
       </div>
 
-      {/* ... Information Box (คงเดิม) ... */}
       <div className="mt-8 p-4 bg-blue-50 rounded-lg text-sm text-gray-700">
         <p>
-          ⚠️ **หมายเหตุ:** ข้อมูล **Total FC**
-          จะถูกคำนวณอัตโนมัติจากผลรวมของยอดขายตามช่องทางจำหน่ายที่ท่านกรอก
-        </p>
-        <p>
-          💡 **สถานะปุ่ม:** ปุ่ม **Save Forecast**
-          จะเปิดใช้งานเมื่อมีการแก้ไขข้อมูลในตารางเท่านั้น
+          💡 **คำอธิบาย DOH (Days On Hand):**
+          <span className="text-red-600 font-extrabold ml-2">
+            DOH &gt; 365 วัน
+          </span>{" "}
+          (Stock ล้นมาก) |
+          <span className="text-orange-600 font-bold ml-2">
+            180 &lt; DOH &lt; 365 วัน
+          </span>{" "}
+          (ควรระวัง) |
+          <span className="text-green-600 font-bold ml-2">
+            DOH &lt; 180 วัน
+          </span>{" "}
+          (ปกติ)
         </p>
       </div>
+
+      {/* --- TRADE REMARK MODAL --- */}
+      {modalRemarkProduct && (
+        <TradeRemarkModal
+          product={modalRemarkProduct}
+          onClose={() => setModalRemarkProduct(null)}
+          onAddRemark={handleAddRemark}
+        />
+      )}
     </div>
   );
 }

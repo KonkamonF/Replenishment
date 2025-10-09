@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import { Search, Eye, EyeOff, ChevronDown } from "lucide-react"; // ใช้ ChevronDown
 
 // --- Mock Data (ชุดข้อมูล Inventory/Trade ที่คุณต้องการ) ---
 const mockInventoryData = [
@@ -356,7 +357,8 @@ export default function InventoryTradeMonitorWithFilters() {
           }
         : prevProduct
     );
-    alert(`บันทึกการสื่อสารสำหรับ ${productCode} สำเร็จ!`);
+    // ใช้ Modal แทน alert ในแอปจริง
+    console.log(`บันทึกการสื่อสารสำหรับ ${productCode} สำเร็จ!`);
   };
 
   return (
@@ -392,17 +394,22 @@ export default function InventoryTradeMonitorWithFilters() {
           <label className="block text-sm font-semibold text-gray-700 mb-1">
             Brand
           </label>
-          <select
-            value={filters.brand}
-            onChange={(e) => handleFilterChange("brand", e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded-lg shadow-sm"
-          >
-            {uniqueBrands.map((brand) => (
-              <option key={brand} value={brand}>
-                {brand}
-              </option>
-            ))}
-          </select>
+          {/* --- MODIFIED: Add Chevron Down --- */}
+          <div className="relative">
+            <select
+              value={filters.brand}
+              onChange={(e) => handleFilterChange("brand", e.target.value)}
+              className="w-full p-2 pr-10 border border-gray-300 rounded-lg shadow-sm appearance-none"
+            >
+              {uniqueBrands.map((brand) => (
+                <option key={brand} value={brand}>
+                  {brand}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          </div>
+          {/* --- END MODIFIED --- */}
         </div>
 
         {/* Class Filter */}
@@ -410,17 +417,22 @@ export default function InventoryTradeMonitorWithFilters() {
           <label className="block text-sm font-semibold text-gray-700 mb-1">
             Class
           </label>
-          <select
-            value={filters.class}
-            onChange={(e) => handleFilterChange("class", e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded-lg shadow-sm"
-          >
-            {uniqueClasses.map((cls) => (
-              <option key={cls} value={cls}>
-                {cls}
-              </option>
-            ))}
-          </select>
+          {/* --- MODIFIED: Add Chevron Down --- */}
+          <div className="relative">
+            <select
+              value={filters.class}
+              onChange={(e) => handleFilterChange("class", e.target.value)}
+              className="w-full p-2 pr-10 border border-gray-300 rounded-lg shadow-sm appearance-none"
+            >
+              {uniqueClasses.map((cls) => (
+                <option key={cls} value={cls}>
+                  {cls}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          </div>
+          {/* --- END MODIFIED --- */}
         </div>
 
         {/* Best 2025 Filter */}
@@ -428,17 +440,22 @@ export default function InventoryTradeMonitorWithFilters() {
           <label className="block text-sm font-semibold text-gray-700 mb-1">
             YN Best 2025
           </label>
-          <select
-            value={filters.best2025}
-            onChange={(e) => handleFilterChange("best2025", e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded-lg shadow-sm"
-          >
-            {uniqueBest2025.map((opt) => (
-              <option key={opt} value={opt}>
-                {opt === "" ? "(Blank)" : opt}
-              </option>
-            ))}
-          </select>
+          {/* --- MODIFIED: Add Chevron Down --- */}
+          <div className="relative">
+            <select
+              value={filters.best2025}
+              onChange={(e) => handleFilterChange("best2025", e.target.value)}
+              className="w-full p-2 pr-10 border border-gray-300 rounded-lg shadow-sm appearance-none"
+            >
+              {uniqueBest2025.map((opt) => (
+                <option key={opt} value={opt}>
+                  {opt === "" ? "(Blank)" : opt}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          </div>
+          {/* --- END MODIFIED --- */}
         </div>
 
         {/* Trade Status Filter */}
@@ -446,17 +463,22 @@ export default function InventoryTradeMonitorWithFilters() {
           <label className="block text-sm font-semibold text-gray-700 mb-1">
             สถานะ Trade
           </label>
-          <select
-            value={filters.tradeStatus}
-            onChange={(e) => handleFilterChange("tradeStatus", e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded-lg shadow-sm"
-          >
-            {uniqueTradeStatus.map((status) => (
-              <option key={status} value={status}>
-                {status}
-              </option>
-            ))}
-          </select>
+          {/* --- MODIFIED: Add Chevron Down --- */}
+          <div className="relative">
+            <select
+              value={filters.tradeStatus}
+              onChange={(e) => handleFilterChange("tradeStatus", e.target.value)}
+              className="w-full p-2 pr-10 border border-gray-300 rounded-lg shadow-sm appearance-none"
+            >
+              {uniqueTradeStatus.map((status) => (
+                <option key={status} value={status}>
+                  {status}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          </div>
+          {/* --- END MODIFIED --- */}
         </div>
       </div>
 
@@ -564,11 +586,11 @@ export default function InventoryTradeMonitorWithFilters() {
                     <button
                       onClick={() => handleOpenRemarkModal(item)}
                       className={`px-3 py-1 text-xs rounded-lg shadow-md transition font-medium
-                            ${
-                              item.KeyRemarks && item.KeyRemarks.length > 0
-                                ? "bg-blue-600 text-white hover:bg-blue-700"
-                                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                            }`}
+							${
+                          item.KeyRemarks && item.KeyRemarks.length > 0
+                            ? "bg-blue-600 text-white hover:bg-blue-700"
+                            : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                        }`}
                     >
                       บันทึก/ดูการสื่อสาร (
                       {item.KeyRemarks ? item.KeyRemarks.length : 0})
@@ -579,7 +601,7 @@ export default function InventoryTradeMonitorWithFilters() {
             ) : (
               <tr>
                 <td
-                  colSpan="6"
+                  colSpan="7" // Changed colspan to 7 to cover all columns
                   className="p-6 text-center text-lg text-gray-500"
                 >
                   ไม่พบข้อมูลสินค้าที่ตรงกับเงื่อนไขการกรอง
