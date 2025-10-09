@@ -115,40 +115,42 @@ export default function KeyFC() {
   const [data, setData] = useState(initialKeyFCData);
   const [isDataChanged, setIsDataChanged] = useState(false);
 
-  // --- UPDATED: State สำหรับการกรองแบบแยกส่วน (เปลี่ยน Dropdown เป็น Text Search) ---
-  const [liveSearch, setLiveSearch] = useState(""); // Input field value
-  const [finalSearchTerm, setFinalSearchTerm] = useState(""); // Value used for filtering
-  const [classFilter, setClassFilter] = useState("All"); // 'All' คือไม่กรอง
+  // --- UPDATED: Unified State สำหรับการกรองทั้งหมด ---
+  const [filters, setFilters] = useState({
+    search: "", // ใช้สำหรับ Text Search (Code/Desc)
+    class: "All",
+    brand: "All",
+    ynBest: "All",
+    tradeStatus: "All",
+  });
   // ------------------------------------------
 
   // --- State สำหรับซ่อนคอลัมน์ (คงเดิม) ---
   const [hiddenColumns, setHiddenColumns] = useState({});
 
-  // --- NEW FUNCTION: Trigger Search ---
-  const triggerSearch = () => {
-    setFinalSearchTerm(liveSearch);
-  };
-
   // --- UPDATED: Filtered Data (ใช้ useMemo เพื่อกรองหลายเงื่อนไข) ---
   const filteredData = useMemo(() => {
     let currentData = data;
-    const lowerCaseSearch = finalSearchTerm.toLowerCase();
+    const lowerCaseSearch = filters.search.toLowerCase();
 
     // 1. กรองด้วย Item Search (Code หรือ Description)
-    if (lowerCaseSearch) {
-      currentData = currentData.filter((item) => 
-          item.Code.toLowerCase().includes(lowerCaseSearch) || 
-          item.Description.toLowerCase().includes(lowerCaseSearch)
-      );
-    }
-    
+    if (lowerCaseSearch) {
+      currentData = currentData.filter((item) => 
+          item.Code.toLowerCase().includes(lowerCaseSearch) || 
+          item.Description.toLowerCase().includes(lowerCaseSearch)
+      );
+    }
+    
     // 2. กรองด้วย Class Filter
-    if (classFilter !== "All") {
-      currentData = currentData.filter((item) => item.Class === classFilter);
+    if (filters.class !== "All") {
+      currentData = currentData.filter((item) => item.Class === filters.class);
     }
 
+    // Note: Brand, YN Best, Trade Status filters are mocked in the UI, but ready for implementation here.
+    // if (filters.brand !== "All") { /* ... filter logic ... */ }
+
     return currentData;
-  }, [data, finalSearchTerm, classFilter]);
+  }, [data, filters]); // เปลี่ยน dependency ให้เป็น filters ตัวเดียว
   // --------------------------------------------------------
 
   // --- คำนวณยอดรวมทั้งหมด (Grand Totals) สำหรับข้อมูลที่กรองแล้ว (คงเดิม) ---
@@ -196,20 +198,13 @@ export default function KeyFC() {
     setData(newData);
   };
 
-  // Function สำหรับการยืนยันการเปลี่ยนแปลง (Submit) (เหมือนเดิม)
+  // Function สำหรับการยืนยันการเปลี่ยนแปลง (Submit) (พร้อม Mock Logic)
   const handleSubmit = () => {
     if (!isDataChanged) {
       // ใช้ Modal แทน alert ในแอปจริง
       console.log("ไม่พบการเปลี่ยนแปลงข้อมูล กรุณาแก้ไขข้อมูลก่อนบันทึก.");
       return;
     }
-
-    // ... API Call Logic ...
-    console.log("Submitting the following forecast data:", data);
-    // ใช้ Modal แทน alert ในแอปจริง
-    console.log(
-      `✅ ยืนยันการเปลี่ยนแปลงข้อมูล Forecast จำนวน ${data.length} รายการสำเร็จ! (ข้อมูลถูกส่งไปที่ Console)`
-    );
 
     setIsDataChanged(false);
   };
@@ -293,37 +288,21 @@ export default function KeyFC() {
   };
   // ----------------------------------------------------
 
+  // --- UPDATED: Unified Filter Handler ---
   const handleFilterChange = (name, value) => {
-    // Update state based on filter type
-    if (name === "search") {
-      setLiveSearch(value);
-    } else if (name === "class") {
-      setClassFilter(value);
-    } 
-    // Mock other changes for completeness
-    // Note: Other dropdowns (Brand, YN, Trade Status) are mock and not tied to state yet
+    setFilters((prev) => ({ ...prev, [name]: value }));
   };
 
   return (
-    <>
-      <div className="p-6 bg-white shadow-2xl rounded-xl">
+  
+<>
+      <div className="bg-white rounded-xl w-7xl p-6 shadow-2xl">
         {/* --- Header with Save Button --- */}
         <div className="flex justify-between items-center mb-6 border-b pb-3">
           <h1 className="text-3xl font-extrabold text-[#640037]">
             Key Product Forecast (FC)
           </h1>
-          <button
-            onClick={handleSubmit}
-            disabled={!isDataChanged}
-            className={`px-5 py-2 rounded-lg font-semibold transition duration-300 shadow-md
-              ${
-                isDataChanged
-                  ? "bg-green-600 text-white hover:bg-green-700"
-                  : "bg-gray-300 text-gray-600 cursor-not-allowed"
-              }`}
-          >
-            {isDataChanged ? "💾 Save Forecast" : "No Changes"}
-          </button>
+        
         </div>
 
         <p className="text-gray-500 mb-4">
@@ -336,58 +315,46 @@ export default function KeyFC() {
         <div className="p-4 bg-pink-50 rounded-lg shadow-inner mb-6">
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         
-            {/* 1. ค้นหาสินค้า (Code/Desc) - เปลี่ยนเป็น Input พร้อมปุ่มค้นหา */}
+            {/* 1. ค้นหาสินค้า (Code/Desc) - Real-time filtering */}
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1">
                 ค้นหาสินค้า (Code/Desc)
               </label>
-              <div className="flex gap-2 items-center">
-                <div className="relative flex-grow">
-                  <input
-                    type="text"
-                    placeholder="ค้นหา..."
-                    value={liveSearch}
-                    onChange={(e) => handleFilterChange("search", e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        triggerSearch();
-                      }
-                    }}
-                    className="w-full p-2 pr-8 border border-gray-300 rounded-lg shadow-sm focus:ring-pink-500 focus:border-pink-500 bg-white"
-                  />
-                  {/* ปุ่มล้างการค้นหา (X icon) */}
-                  {liveSearch && (
-                    <button
-                      onClick={() => {
-                        setLiveSearch('');
-                        setFinalSearchTerm(''); // Clear filter state immediately
-                      }}
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-red-500 p-1"
-                      title="ล้างการค้นหา"
-                    >
-                      &times;
-                    </button>
-                  )}
-                </div>
-                {/* ปุ่มค้นหาหลัก */}
-                <button
-                  onClick={triggerSearch}
-                  className="p-2 bg-[#640037] text-white rounded-lg shadow-md hover:bg-[#50002b] transition flex items-center justify-center w-12 h-[42px]"
-                  title="ค้นหา"
-                >
-                  <Search className="w-5 h-5" />
-                </button>
-              </div>
+              <div className="relative flex-grow">
+                <input
+                  type="text"
+                  placeholder="ค้นหา..."
+                  value={filters.search} // ผูกกับ filters.search
+                  onChange={(e) => handleFilterChange("search", e.target.value)} // กรองทันที
+                  className="w-full p-2 pl-9 border border-gray-300 rounded-lg shadow-sm focus:ring-pink-500 focus:border-pink-500 bg-white"
+                />
+                {/* Search Icon */}
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+
+                {/* ปุ่มล้างการค้นหา (X icon) */}
+                {filters.search && (
+                  <button
+                    onClick={() => {
+                      handleFilterChange('search', ''); // Clear filter state immediately
+                    }}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-red-500 p-1 z-10"
+                    title="ล้างการค้นหา"
+                  >
+                    &times;
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* 2. Brand (Mock Filter) */}
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1">
-                Brand (Mock)
+                Brand
               </label>
               <div className="relative">
                 <select
-                  // เพิ่ม appearance-none และ pr-10
+                    value={filters.brand} // ผูกกับ filters.brand
+                    onChange={(e) => handleFilterChange("brand", e.target.value)} // กรองทันที
                   className="w-full p-2 pr-10 text-gray-900 border border-gray-300 rounded-md focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm appearance-none"
                 >
                   <option value="All">All</option>
@@ -395,6 +362,26 @@ export default function KeyFC() {
                   <option value="TNS">TNS</option>
                 </select>
                 {/* เพิ่มไอคอนลูกศร */}
+                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+              </div>
+            </div>
+    
+             <div>
+              <label className="block text-sm font-bold text-gray-700 mb-1">
+                Type
+              </label>
+              <div className="relative">
+                <select
+                    value={filters.tradeStatus}
+                    onChange={(e) => handleFilterChange("tradeStatus", e.target.value)}
+                  // เพิ่ม appearance-none และ pr-10
+                  className="w-full p-2 pr-10 text-gray-900 border border-gray-300 rounded-md focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm appearance-none"
+                >
+                  <option value="All">All</option>
+                  <option value="Active">ACC</option>
+                  <option value="Inactive">Sink</option>
+                </select>
+               
                 <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
               </div>
             </div>
@@ -406,8 +393,8 @@ export default function KeyFC() {
               </label>
               <div className="relative">
                 <select
-                  value={classFilter}
-                  onChange={(e) => handleFilterChange("class", e.target.value)}
+                  value={filters.class} // ผูกกับ filters.class
+                  onChange={(e) => handleFilterChange("class", e.target.value)} // กรองทันที
                   // เพิ่ม appearance-none และ pr-10
                   className="w-full p-2 pr-10 text-gray-900 border border-gray-300 rounded-md focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm appearance-none"
                 >
@@ -426,10 +413,12 @@ export default function KeyFC() {
             {/* 4. YN Best 2025 (Mock Filter) */}
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1">
-                YN Best 2025 (Mock)
+                YN Best 2025
               </label>
               <div className="relative">
                 <select
+                    value={filters.ynBest}
+                    onChange={(e) => handleFilterChange("ynBest", e.target.value)}
                   // เพิ่ม appearance-none และ pr-10
                   className="w-full p-2 pr-10 text-gray-900 border border-gray-300 rounded-md focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm appearance-none"
                 >
@@ -442,24 +431,8 @@ export default function KeyFC() {
               </div>
             </div>
 
-            {/* 5. สถานะ Trade (Mock Filter) */}
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">
-                สถานะ Trade (Mock)
-              </label>
-              <div className="relative">
-                <select
-                  // เพิ่ม appearance-none และ pr-10
-                  className="w-full p-2 pr-10 text-gray-900 border border-gray-300 rounded-md focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm appearance-none"
-                >
-                  <option value="All">All</option>
-                  <option value="Active">Active</option>
-                  <option value="Inactive">Inactive</option>
-                </select>
-                {/* เพิ่มไอคอนลูกศร */}
-                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-              </div>
-            </div>
+        
+
           </div>
         </div>
         {/* --- End Filter Bar --- */}
@@ -467,7 +440,20 @@ export default function KeyFC() {
         {/* --- Column Toggle Bar --- */}
         <div className="flex justify-end items-center mb-4 gap-4">
           <ColumnToggleDropdown />
+          <button
+            onClick={handleSubmit}
+            disabled={!isDataChanged}
+            className={`px-5 py-2 rounded-lg font-semibold transition duration-300 shadow-md
+              ${
+                isDataChanged
+                  ? "bg-green-600 text-white hover:bg-green-700"
+                  : "bg-gray-300 text-gray-600 cursor-not-allowed"
+              }`}
+          >
+            {isDataChanged ? "💾 Save Forecast" : "No Changes"}
+          </button>
         </div>
+
 
         {/* --- Data Table --- */}
         <div className="overflow-x-auto border border-gray-200 rounded-lg">
@@ -653,12 +639,13 @@ export default function KeyFC() {
             จะถูกคำนวณอัตโนมัติจากผลรวมของยอดขายตามช่องทางจำหน่ายที่ท่านกรอก
           </p>
           <p>
-            💡 **การใช้งาน:** ใช้ **Dropdown**
-            ในแถบตัวกรองเพื่อเลือกดูข้อมูลสินค้าเฉพาะรายการ
-            และใช้ปุ่ม **Show/Hide Columns** เพื่อจัดการการแสดงคอลัมน์ในตาราง
+            💡 **การใช้งาน:** ใช้ช่อง **ค้นหาสินค้า**
+            เพื่อกรองข้อมูลทันทีที่พิมพ์ และใช้ปุ่ม **Show/Hide Columns**
+            เพื่อจัดการการแสดงคอลัมน์ในตาราง
           </p>
         </div>
       </div>
-    </>
+</>
+    
   );
 }

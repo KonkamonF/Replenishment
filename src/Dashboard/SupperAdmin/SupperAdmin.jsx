@@ -31,7 +31,7 @@ export default function SuperAdmin() {
 
   return (
     // Main container, using 'min-h-screen' for full height and a light background
-    <div className="h-full bg-gray-50 p-6 text-gray-800">
+    <div className="h-full bg-white rounded-xl p-6 text-gray-800">
 
       {/* --- Header Section (Unchanged) --- */}
       <header className="flex justify-between items-center mb-8 pb-4 border-b border-pink-200">
@@ -55,7 +55,7 @@ export default function SuperAdmin() {
       </header>
       
       {/* --- Main Content Layout (Unchanged) --- */}
-      <div className="flex flex-col lg:flex-row gap-6">
+      <div className="flex flex-col lg:flex-row gap-6 ">
 
         {/* --- Left Column: Summary Cards (Unchanged) --- */}
         <div className="lg:w-3/5">
