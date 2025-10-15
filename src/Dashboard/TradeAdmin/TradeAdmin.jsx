@@ -200,7 +200,7 @@ const TradeCommunicationModal = ({
   }, [item.KeyRemarks]);
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-2xl w-full max-w-lg p-6">
         <div className="flex justify-between items-start mb-4 border-b pb-2">
             <h2 className="text-xl font-bold text-[#640037]">
