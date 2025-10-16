@@ -31,8 +31,6 @@ export default function SuperAdmin() {
     // Logic to display the chart's data
   };
 
-  const cssClasses = "text-center cursor-pointer p-6 bg-gradient-to-r from-yellow-400 to-yellow-100 rounded-xl shadow-md hover:shadow-xl"
-
   return (
     // Main container, using 'min-h-screen' for full height and a light background
     <div className="h-full bg-white rounded-xl p-6 ">
@@ -44,13 +42,13 @@ export default function SuperAdmin() {
         <div className="space-x-4">
           <button
             onClick={handleImport}
-            className="px-4 py-2 bg-[#640037] text-white font-semibold rounded-lg shadow-md hover:bg-pink-800 transition duration-300 ease-in-out"
+            className="px-4 py-2 bg-[#640037] text-white font-semibold rounded-lg shadow-md hover:shadow-xl hover:bg-pink-600"
           >
             Import Excel
           </button>
           <button
             onClick={handleExport}
-            className="px-4 py-2 bg-pink-500 text-white font-semibold rounded-lg shadow-md hover:bg-pink-600 transition duration-300 ease-in-out"
+            className="px-4 py-2 bg-pink-800 text-white font-semibold rounded-lg shadow-md hover:shadow-xl hover:bg-pink-600 "
           >
             Export Excel
           </button>
@@ -67,24 +65,24 @@ export default function SuperAdmin() {
 
           <div className="grid grid-cols-6 gap-6">
             {/* Class Cards */}
-            <div className={cssClasses}>
+            <div className="text-center cursor-pointer p-6 bg-gradient-to-t from-[#FEA405] to-yellow-200 rounded-xl shadow-md hover:shadow-xl">
               <ClassA />
             </div>
-            <div className={cssClasses}>
+            <div className="text-center cursor-pointer p-6 bg-gradient-to-b from-[#FF76CE] to-[#F6D6D6] rounded-xl shadow-md hover:shadow-xl">
               <ClassB />
             </div>
-            <div className={cssClasses}>
+            <div className="text-center cursor-pointer p-6 bg-gradient-to-t from-[#4CC9FE] to-[#A8F1FF] rounded-xl shadow-md hover:shadow-xl">
               <ClassC />
             </div>
-            <div className={cssClasses}>
+            <div className="text-center cursor-pointer p-6 bg-gradient-to-b from-[#7fad00] to-[#D2FF72] rounded-xl shadow-md hover:shadow-xl">
               <ClassN />
             </div>
 
             {/* Other Cards */}
-            <div className={cssClasses}>
+            <div className="text-center cursor-pointer p-6 bg-gradient-to-t from-yellow-400 to-yellow-100 rounded-xl shadow-md hover:shadow-xl">
               <Best />
             </div>
-            <div className={cssClasses}>
+            <div className="text-center cursor-pointer p-6 bg-gradient-to-b from-[#C68EFD] to-[#e3deff] rounded-xl shadow-md hover:shadow-xl">
               <NonMove />
             </div>
           </div>
