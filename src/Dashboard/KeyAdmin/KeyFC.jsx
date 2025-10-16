@@ -111,7 +111,7 @@ const calculateTotal = (item) => {
   );
 };
 
-export default function App() {
+export default function KeyFC() {
   const [data, setData] = useState(initialKeyFCData);
   const [isDataChanged, setIsDataChanged] = useState(false);
   const [filters, setFilters] = useState({
@@ -301,354 +301,342 @@ export default function App() {
   return (
     // ใช้ max-w-full และ h-full เพื่อให้ยืดหยุ่นในหน้าจอขนาดใหญ่/เล็ก
     <>
-      <div className="bg-white rounded-xl p-4 shadow-2xl fixed ">
-        <div className="w-screen">
-          {/* --- Header with Title and Info --- */}
-          <div className="flex justify-between items-start flex-col gap-4 mb-6 border-b-4 border-[#640037] pb-3">
-            <h1 className="text-4xl font-extrabold text-[#640037] leading-tight">
-              Key Product Forecast (FC) Editor
-            </h1>
-          </div>
-
-          <p className="text-gray-600 mb-6">
-            ปรับปรุงยอดพยากรณ์การขายแยกตามช่องทางจำหน่าย (Channels) และแก้ไข
-            Class สินค้า ใช้ช่อง **Filter Bar** ด้านบนเพื่อกรองข้อมูลเฉพาะเจาะจง
-            และใช้ปุ่ม **Show/Hide Columns** ในการจัดการการแสดงคอลัมน์ในตาราง
+      <div className="p-8 bg-white shadow-2xl rounded-xl">
+        {/* --- Header with Title and Info --- */}
+        <header className="mb-6 border-b pb-4">
+          <h1 className="text-3xl font-extrabold text-[#640037] mb-2">
+                     Key Product Forecast (FC) Editor        {" "}
+          </h1>
+          <p className="text-gray-500">
+                      ปรับปรุงยอดพยากรณ์การขายแยกตามช่องทางจำหน่าย (Channels)
+            และแก้ไข Class สินค้า ใช้ช่อง **Filter Bar**
+            ด้านบนเพื่อกรองข้อมูลเฉพาะเจาะจง และใช้ปุ่ม **Show/Hide Columns**
+            ในการจัดการการแสดงคอลัมน์ในตาราง        {" "}
           </p>
+        </header>
 
-          {/* --- Filter Bar --- */}
-          <div className="p-4 bg-pink-50 rounded-lg shadow-inner mb-6">
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-              {/* 1. ค้นหาสินค้า (Code/Desc) - Real-time filtering */}
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">
-                  ค้นหาสินค้า (Code/Desc)
-                </label>
-                <div className="relative flex-grow">
-                  <input
-                    type="text"
-                    placeholder="ค้นหา..."
-                    value={filters.search} // ผูกกับ filters.search
-                    onChange={(e) =>
-                      handleFilterChange("search", e.target.value)
-                    } // กรองทันที
-                    className="w-full p-2 pl-9 border border-gray-300 rounded-lg shadow-sm focus:ring-pink-500 focus:border-pink-500 bg-white"
-                  />
-                  {/* Search Icon */}
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-                  {/* ปุ่มล้างการค้นหา (X icon) */}
-                  {filters.search && (
-                    <button
-                      onClick={() => {
-                        handleFilterChange("search", ""); // Clear filter state immediately
-                      }}
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-red-500 p-1 z-10"
-                      title="ล้างการค้นหา"
-                    >
-                      &times;
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              {/* 2. Brand (Mock Filter) */}
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">
-                  Brand
-                </label>
-                <div className="relative">
-                  <select
-                    value={filters.brand} // ผูกกับ filters.brand
-                    onChange={(e) =>
-                      handleFilterChange("brand", e.target.value)
-                    } // กรองทันที
-                    className="w-full p-2 pr-10 text-gray-900 border border-gray-300 rounded-md focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm appearance-none"
+        {/* --- Filter Bar --- */}
+        <div className="p-4 bg-pink-50 rounded-lg shadow-inner mb-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+            {/* 1. ค้นหาสินค้า (Code/Desc) - Real-time filtering */}
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-1">
+                ค้นหาสินค้า (Code/Desc)
+              </label>
+              <div className="relative flex-grow">
+                <input
+                  type="text"
+                  placeholder="ค้นหา..."
+                  value={filters.search} // ผูกกับ filters.search
+                  onChange={(e) => handleFilterChange("search", e.target.value)} // กรองทันที
+                  className="w-full p-2 pl-9 border border-gray-300 rounded-lg shadow-sm focus:ring-pink-500 focus:border-pink-500 bg-white"
+                />
+                {/* Search Icon */}
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                {/* ปุ่มล้างการค้นหา (X icon) */}
+                {filters.search && (
+                  <button
+                    onClick={() => {
+                      handleFilterChange("search", ""); // Clear filter state immediately
+                    }}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-red-500 p-1 z-10"
+                    title="ล้างการค้นหา"
                   >
-                    <option value="All">All</option>
-                    <option value="TNP">TNP</option>
-                    <option value="TNS">TNS</option>
-                  </select>
-                  {/* เพิ่มไอคอนลูกศร */}
-                  <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-                </div>
+                    &times;
+                  </button>
+                )}
               </div>
+            </div>
 
-              {/* 3. Type Filter */}
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">
-                  Type
-                </label>
-                <div className="relative">
-                  <select
-                    value={filters.type}
-                    onChange={(e) => handleFilterChange("type", e.target.value)}
-                    className="w-full p-2 pr-10 text-gray-900 border border-gray-300 rounded-md focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm appearance-none"
-                  >
-                    <option value="All">All</option>
-                    <option value="ACC">ACC</option>
-                    <option value="Sink">Sink</option>
-                    <option value="Hood">Hood</option>
-                  </select>
-                  <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-                </div>
+            {/* 2. Brand (Mock Filter) */}
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-1">
+                Brand
+              </label>
+              <div className="relative">
+                <select
+                  value={filters.brand} // ผูกกับ filters.brand
+                  onChange={(e) => handleFilterChange("brand", e.target.value)} // กรองทันที
+                  className="w-full p-2 pr-10 text-gray-900 border border-gray-300 rounded-md focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm appearance-none"
+                >
+                  <option value="All">All</option>
+                  <option value="TNP">TNP</option>
+                  <option value="TNS">TNS</option>
+                </select>
+                {/* เพิ่มไอคอนลูกศร */}
+                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
               </div>
+            </div>
 
-              {/* 4. Class Filter */}
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">
-                  Class
-                </label>
-                <div className="relative">
-                  <select
-                    value={filters.class} // ผูกกับ filters.class
-                    onChange={(e) =>
-                      handleFilterChange("class", e.target.value)
-                    } // กรองทันที
-                    className="w-full p-2 pr-10 text-gray-900 border border-gray-300 rounded-md focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm appearance-none"
-                  >
-                    <option value="All">All</option>
-                    {availableClasses.map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
-                  </select>
-                  {/* เพิ่มไอคอนลูกศร */}
-                  <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-                </div>
+            {/* 3. Type Filter */}
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-1">
+                Type
+              </label>
+              <div className="relative">
+                <select
+                  value={filters.type}
+                  onChange={(e) => handleFilterChange("type", e.target.value)}
+                  className="w-full p-2 pr-10 text-gray-900 border border-gray-300 rounded-md focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm appearance-none"
+                >
+                  <option value="All">All</option>
+                  <option value="ACC">ACC</option>
+                  <option value="Sink">Sink</option>
+                  <option value="Hood">Hood</option>
+                </select>
+                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
               </div>
+            </div>
 
-              {/* 5. YN Best 2025 (Mock Filter) */}
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">
-                  YN Best 2025 (Mock)
-                </label>
-                <div className="relative">
-                  <select
-                    value={filters.ynBest}
-                    onChange={(e) =>
-                      handleFilterChange("ynBest", e.target.value)
-                    }
-                    className="w-full p-2 pr-10 text-gray-900 border border-gray-300 rounded-md focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm appearance-none"
-                  >
-                    <option value="All">All</option>
-                    <option value="Y">Yes</option>
-                    <option value="N">No</option>
-                  </select>
-                  {/* เพิ่มไอคอนลูกศร */}
-                  <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-                </div>
+            {/* 4. Class Filter */}
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-1">
+                Class
+              </label>
+              <div className="relative">
+                <select
+                  value={filters.class} // ผูกกับ filters.class
+                  onChange={(e) => handleFilterChange("class", e.target.value)} // กรองทันที
+                  className="w-full p-2 pr-10 text-gray-900 border border-gray-300 rounded-md focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm appearance-none"
+                >
+                  <option value="All">All</option>
+                  {availableClasses.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
+                {/* เพิ่มไอคอนลูกศร */}
+                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+              </div>
+            </div>
+
+            {/* 5. YN Best 2025 (Mock Filter) */}
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-1">
+                YN Best 2025 (Mock)
+              </label>
+              <div className="relative">
+                <select
+                  value={filters.ynBest}
+                  onChange={(e) => handleFilterChange("ynBest", e.target.value)}
+                  className="w-full p-2 pr-10 text-gray-900 border border-gray-300 rounded-md focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm appearance-none"
+                >
+                  <option value="All">All</option>
+                  <option value="Y">Yes</option>
+                  <option value="N">No</option>
+                </select>
+                {/* เพิ่มไอคอนลูกศร */}
+                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
               </div>
             </div>
           </div>
-          {/* --- End Filter Bar --- */}
+        </div>
+        {/* --- End Filter Bar --- */}
 
-          {/* --- Column Toggle Bar & Save Button --- */}
-          <div className="flex justify-between items-center mb-4 flex-wrap gap-4">
-            <div className="text-gray-500">
-              รายการที่แสดง: **{filteredData.length}** จาก **{data.length}**
-              รายการ
-            </div>
-            <div className="flex gap-4">
-              <ColumnToggleDropdown />
-              <button
-                onClick={handleSubmit}
-                disabled={!isDataChanged}
-                className={`px-6 py-2 rounded-lg font-semibold transition duration-300 shadow-lg text-lg
+        {/* --- Column Toggle Bar & Save Button --- */}
+        <div className="flex justify-between items-center mb-4 flex-wrap gap-4">
+          <div className="text-gray-500">
+            รายการที่แสดง: **{filteredData.length}** จาก **{data.length}**
+            รายการ
+          </div>
+          <div className="flex gap-4">
+            <ColumnToggleDropdown />
+            <button
+              onClick={handleSubmit}
+              disabled={!isDataChanged}
+              className={`px-6 py-2 rounded-lg font-semibold transition duration-300 shadow-lg text-lg
                 ${
                   isDataChanged
                     ? "bg-green-600 text-white hover:bg-green-700 transform hover:scale-105"
                     : "bg-gray-300 text-gray-600 cursor-not-allowed"
                 }`}
-              >
-                {isDataChanged ? "💾 Save Forecast" : "No Changes"}
-              </button>
-            </div>
+            >
+              {isDataChanged ? "💾 Save Forecast" : "No Changes"}
+            </button>
           </div>
+        </div>
 
-          {/* --- Data Table --- */}
-          <div className="relative overflow-x-auto overflow-y-auto max-h-[60vh] border-2 border-gray-300 rounded-lg shadow-xl">
-            <table className="min-w-full table-auto border-collapse">
-              <thead className="bg-[#640037] text-white sticky top-0">
-                <tr>
-                  {/* Code Header (Sticky Corner) */}
-                  <th className="p-3 text-left w-[120px] sticky left-0 bg-[#640037] z-30 shadow-md">
-                    Code
+        {/* --- Data Table --- */}
+        <div className="relative overflow-x-auto overflow-y-auto max-h-[60vh] border-2 border-gray-300 rounded-lg shadow-xl">
+          <table className="min-w-full table-auto border-collapse">
+            <thead className="bg-[#640037] text-white sticky top-0">
+              <tr>
+                {/* Code Header (Sticky Corner) */}
+                <th className="p-3 text-left w-[120px] sticky left-0 bg-[#640037] z-30 shadow-md">
+                  Code
+                </th>
+                {/* Description Header */}
+                {!isColumnHidden("Description") && (
+                  <th className="p-3 text-left w-[250px] font-normal">
+                    Description
                   </th>
-                  {/* Description Header */}
+                )}
+                {/* Type Header */}
+                {!isColumnHidden("Type") && (
+                  <th className="p-3 text-center w-[80px] font-normal">Type</th>
+                )}
+                {/* Class Header */}
+                {!isColumnHidden("Class") && (
+                  <th className="p-3 text-center w-[100px] border-l border-pink-700">
+                    Class
+                  </th>
+                )}
+                {/* Total FC Header (Non-Editable) */}
+                <th className="p-3 text-right w-[120px] font-extrabold border-l border-pink-700">
+                  Total FC
+                </th>
+                {/* Total AC Header (Mock) */}
+                <th className="p-3 text-right w-[120px] font-extrabold border-l border-pink-700">
+                  Total AC (Mock)
+                </th>
+                {/* Editable Channel Headers */}
+                {editableChannels.map((channel) =>
+                  !isColumnHidden(channel) ? (
+                    <th
+                      key={channel}
+                      className="p-3 text-right w-[100px] text-sm font-normal border-l border-pink-700 whitespace-nowrap"
+                    >
+                      {channel}
+                    </th>
+                  ) : null
+                )}
+              </tr>
+            </thead>
+
+            <tbody>
+              {/* Table Body (ใช้ filteredData) */}
+              {filteredData.map((item, index) => (
+                <tr
+                  key={item.Code + index} // ใช้ key ที่ Unique มากขึ้น
+                  className="border-b border-gray-200 odd:bg-white even:bg-gray-50 hover:bg-pink-100 transition duration-150"
+                >
+                  {/* Code (Sticky) */}
+                  <td className="p-3 text-left font-mono text-sm sticky left-0 bg-white odd:bg-white even:bg-gray-50 hover:bg-pink-100 border-r border-gray-200 z-10 font-bold text-gray-800">
+                    {item.Code}
+                  </td>
+                  {/* Description */}
                   {!isColumnHidden("Description") && (
-                    <th className="p-3 text-left w-[250px] font-normal">
-                      Description
-                    </th>
+                    <td className="p-3 text-left font-medium text-gray-700">
+                      {item.Description}
+                    </td>
                   )}
-                  {/* Type Header */}
+                  {/* Type */}
                   {!isColumnHidden("Type") && (
-                    <th className="p-3 text-center w-[80px] font-normal">
-                      Type
-                    </th>
+                    <td className="p-3 text-center text-xs text-gray-500">
+                      {item.Type}
+                    </td>
                   )}
-                  {/* Class Header */}
+                  {/* Class Selector */}
                   {!isColumnHidden("Class") && (
-                    <th className="p-3 text-center w-[100px] border-l border-pink-700">
-                      Class
-                    </th>
+                    <td className="p-1 text-center border-l border-gray-200">
+                      <select
+                        value={item.Class}
+                        onChange={(e) =>
+                          handleClassChange(item.Code, e.target.value)
+                        }
+                        className="p-1 w-full text-center bg-transparent border border-gray-300 rounded focus:ring-pink-500 focus:border-pink-500 text-sm font-bold"
+                      >
+                        {availableClasses.map((c) => (
+                          <option key={c} value={c}>
+                            {c}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
                   )}
-                  {/* Total FC Header (Non-Editable) */}
-                  <th className="p-3 text-right w-[120px] font-extrabold border-l border-pink-700">
-                    Total FC
-                  </th>
-                  {/* Total AC Header (Mock) */}
-                  <th className="p-3 text-right w-[120px] font-extrabold border-l border-pink-700">
-                    Total AC (Mock)
-                  </th>
-                  {/* Editable Channel Headers */}
+                  {/* Total FC */}
+                  <td className="p-3 text-right font-extrabold text-lg text-red-600 border-l border-gray-200">
+                    {item.Total.toLocaleString()}
+                  </td>
+                  {/* Total AC (Mock) */}
+                  <td className="p-3 text-right font-normal text-gray-600 border-l border-gray-200">
+                    {(item.Total * 0.9).toFixed(0).toLocaleString()}
+                  </td>
+                  {/* Editable Channel Inputs */}
                   {editableChannels.map((channel) =>
                     !isColumnHidden(channel) ? (
-                      <th
+                      <td
                         key={channel}
-                        className="p-3 text-right w-[100px] text-sm font-normal border-l border-pink-700 whitespace-nowrap"
+                        className="p-1 text-center border-l border-gray-200"
                       >
-                        {channel}
-                      </th>
-                    ) : null
-                  )}
-                </tr>
-              </thead>
-
-              <tbody>
-                {/* Table Body (ใช้ filteredData) */}
-                {filteredData.map((item, index) => (
-                  <tr
-                    key={item.Code + index} // ใช้ key ที่ Unique มากขึ้น
-                    className="border-b border-gray-200 odd:bg-white even:bg-gray-50 hover:bg-pink-100 transition duration-150"
-                  >
-                    {/* Code (Sticky) */}
-                    <td className="p-3 text-left font-mono text-sm sticky left-0 bg-white odd:bg-white even:bg-gray-50 hover:bg-pink-100 border-r border-gray-200 z-10 font-bold text-gray-800">
-                      {item.Code}
-                    </td>
-                    {/* Description */}
-                    {!isColumnHidden("Description") && (
-                      <td className="p-3 text-left font-medium text-gray-700">
-                        {item.Description}
-                      </td>
-                    )}
-                    {/* Type */}
-                    {!isColumnHidden("Type") && (
-                      <td className="p-3 text-center text-xs text-gray-500">
-                        {item.Type}
-                      </td>
-                    )}
-                    {/* Class Selector */}
-                    {!isColumnHidden("Class") && (
-                      <td className="p-1 text-center border-l border-gray-200">
-                        <select
-                          value={item.Class}
+                        <input
+                          type="number"
+                          min="0"
+                          value={item[channel]}
                           onChange={(e) =>
-                            handleClassChange(item.Code, e.target.value)
+                            handleValueChange(
+                              item.Code,
+                              channel,
+                              e.target.value
+                            )
                           }
-                          className="p-1 w-full text-center bg-transparent border border-gray-300 rounded focus:ring-pink-500 focus:border-pink-500 text-sm font-bold"
-                        >
-                          {availableClasses.map((c) => (
-                            <option key={c} value={c}>
-                              {c}
-                            </option>
-                          ))}
-                        </select>
+                          className="w-full p-1 text-right border-b-2 border-pink-300 focus:border-pink-600 focus:ring-0 text-sm font-medium transition duration-100 bg-transparent"
+                          style={{ backgroundColor: "transparent" }}
+                        />
                       </td>
-                    )}
-                    {/* Total FC */}
-                    <td className="p-3 text-right font-extrabold text-lg text-red-600 border-l border-gray-200">
-                      {item.Total.toLocaleString()}
-                    </td>
-                    {/* Total AC (Mock) */}
-                    <td className="p-3 text-right font-normal text-gray-600 border-l border-gray-200">
-                      {(item.Total * 0.9).toFixed(0).toLocaleString()}
-                    </td>
-                    {/* Editable Channel Inputs */}
-                    {editableChannels.map((channel) =>
-                      !isColumnHidden(channel) ? (
-                        <td
-                          key={channel}
-                          className="p-1 text-center border-l border-gray-200"
-                        >
-                          <input
-                            type="number"
-                            min="0"
-                            value={item[channel]}
-                            onChange={(e) =>
-                              handleValueChange(
-                                item.Code,
-                                channel,
-                                e.target.value
-                              )
-                            }
-                            className="w-full p-1 text-right border-b-2 border-pink-300 focus:border-pink-600 focus:ring-0 text-sm font-medium transition duration-100 bg-transparent"
-                            style={{ backgroundColor: "transparent" }}
-                          />
-                        </td>
-                      ) : null
-                    )}
-                  </tr>
-                ))}
-              </tbody>
-
-              {/* --- Table Footer for Totals (คำนวณจาก filteredData) --- */}
-              <tfoot className="bg-pink-100 border-t-4 border-[#640037] sticky bottom-0 shadow-lg">
-                <tr>
-                  {/* Grand Total Label (Sticky Left) */}
-                  <th
-                    colSpan={
-                      1 + // Code
-                      (isColumnHidden("Description") ? 0 : 1) +
-                      (isColumnHidden("Type") ? 0 : 1) +
-                      (isColumnHidden("Class") ? 0 : 1)
-                    }
-                    className="p-3 text-right font-extrabold text-lg text-[#640037] sticky left-0 bg-pink-100 z-20"
-                  >
-                    GRAND TOTAL:
-                  </th>
-                  {/* Grand Total FC & AC (AC is Mock) */}
-                  <th className="p-3 text-right font-extrabold text-xl text-red-800 border-l border-[#640037]">
-                    {grandTotals.Total.toLocaleString()}
-                  </th>
-                  <th className="p-3 text-right font-extrabold text-xl text-red-800 border-l border-[#640037]">
-                    {(grandTotals.Total * 0.9).toFixed(0).toLocaleString()}
-                  </th>
-                  {/* Grand Totals by Channel */}
-                  {editableChannels.map((channel) =>
-                    !isColumnHidden(channel) ? (
-                      <th
-                        key={`total-${channel}`}
-                        className="p-3 text-right font-bold text-base text-gray-800 border-l border-[#640037] whitespace-nowrap"
-                      >
-                        {grandTotals[channel].toLocaleString()}
-                      </th>
                     ) : null
                   )}
                 </tr>
-              </tfoot>
-            </table>
+              ))}
+            </tbody>
 
-            {/* แสดงเมื่อไม่มีข้อมูล */}
-            {filteredData.length === 0 && (
-              <div className="p-8 text-center text-gray-500 bg-white text-lg">
-                ไม่พบข้อมูลตามเงื่อนไขการค้นหา
-              </div>
-            )}
-          </div>
+            {/* --- Table Footer for Totals (คำนวณจาก filteredData) --- */}
+            <tfoot className="bg-pink-100 border-t-4 border-[#640037] sticky bottom-0 shadow-lg">
+              <tr>
+                {/* Grand Total Label (Sticky Left) */}
+                <th
+                  colSpan={
+                    1 + // Code
+                    (isColumnHidden("Description") ? 0 : 1) +
+                    (isColumnHidden("Type") ? 0 : 1) +
+                    (isColumnHidden("Class") ? 0 : 1)
+                  }
+                  className="p-3 text-right font-extrabold text-lg text-[#640037] sticky left-0 bg-pink-100 z-20"
+                >
+                  GRAND TOTAL:
+                </th>
+                {/* Grand Total FC & AC (AC is Mock) */}
+                <th className="p-3 text-right font-extrabold text-xl text-red-800 border-l border-[#640037]">
+                  {grandTotals.Total.toLocaleString()}
+                </th>
+                <th className="p-3 text-right font-extrabold text-xl text-red-800 border-l border-[#640037]">
+                  {(grandTotals.Total * 0.9).toFixed(0).toLocaleString()}
+                </th>
+                {/* Grand Totals by Channel */}
+                {editableChannels.map((channel) =>
+                  !isColumnHidden(channel) ? (
+                    <th
+                      key={`total-${channel}`}
+                      className="p-3 text-right font-bold text-base text-gray-800 border-l border-[#640037] whitespace-nowrap"
+                    >
+                      {grandTotals[channel].toLocaleString()}
+                    </th>
+                  ) : null
+                )}
+              </tr>
+            </tfoot>
+          </table>
 
-          {/* --- Information Box (คงเดิม) --- */}
-          <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg text-sm text-gray-700 shadow-inner">
-            <p className="mb-2">
-              ⚠️ **หมายเหตุ:** ข้อมูล **Total FC**
-              จะถูกคำนวณอัตโนมัติจากผลรวมของยอดขายตามช่องทางจำหน่ายที่ท่านกรอก
-            </p>
-            <p>
-              💡 **เคล็ดลับ:** ใช้ช่อง **ค้นหาสินค้า**
-              เพื่อกรองข้อมูลทันทีที่พิมพ์ และใช้ปุ่ม **Show/Hide Columns**
-              เพื่อจัดการการแสดงคอลัมน์ในตารางสำหรับการแก้ไขเฉพาะช่องทางที่ต้องการ
-            </p>
-          </div>
+          {/* แสดงเมื่อไม่มีข้อมูล */}
+          {filteredData.length === 0 && (
+            <div className="p-8 text-center text-gray-500 bg-white text-lg">
+              ไม่พบข้อมูลตามเงื่อนไขการค้นหา
+            </div>
+          )}
+        </div>
+
+        {/* --- Information Box (คงเดิม) --- */}
+        <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg text-sm text-gray-700 shadow-inner">
+          <p className="mb-2">
+            ⚠️ **หมายเหตุ:** ข้อมูล **Total FC**
+            จะถูกคำนวณอัตโนมัติจากผลรวมของยอดขายตามช่องทางจำหน่ายที่ท่านกรอก
+          </p>
+          <p>
+            💡 **เคล็ดลับ:** ใช้ช่อง **ค้นหาสินค้า**
+            เพื่อกรองข้อมูลทันทีที่พิมพ์ และใช้ปุ่ม **Show/Hide Columns**
+            เพื่อจัดการการแสดงคอลัมน์ในตารางสำหรับการแก้ไขเฉพาะช่องทางที่ต้องการ
+          </p>
         </div>
       </div>
     </>

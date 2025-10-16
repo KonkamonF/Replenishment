@@ -31,7 +31,7 @@ export default function SuperAdmin() {
 
   return (
     // Main container, using 'min-h-screen' for full height and a light background
-    <div className="h-full bg-white rounded-xl p-6 text-gray-800">
+    <div className="h-full bg-white rounded-xl p-6 ">
 
       {/* --- Header Section (Unchanged) --- */}
       <header className="flex justify-between items-center mb-8 pb-4 border-b border-pink-200">
