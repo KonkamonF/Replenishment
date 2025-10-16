@@ -11,7 +11,7 @@ export default function ClassA() {
       <div
         onClick={() => setIsDetailsClassA(true)}>
         <p className="text-3xl font-bold">50 Units</p>
-        Class A
+        Class <span className="font-bold">A</span> 
       </div>
     </>
   );
