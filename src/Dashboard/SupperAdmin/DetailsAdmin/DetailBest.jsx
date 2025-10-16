@@ -30,7 +30,7 @@ export default function DetailBest({ setIsDetailsBest }) {
     <div className="fixed inset-0 bg-black bg-opacity-50 z-40 flex justify-end">
       
       {/* Modal / Side Panel */}
-      <div className="bg-white w-full lg:w-3/5 xl:w-1/2 h-full overflow-y-auto p-6 shadow-2xl z-50 transform transition-transform duration-300 ease-out translate-x-0">
+      <div className="bg-white w-full h-full  p-6 shadow-2xl z-50 ">
         
         {/* Header และ ปุ่มปิด */}
         <div className="flex justify-between items-start mb-6 border-b pb-4">
