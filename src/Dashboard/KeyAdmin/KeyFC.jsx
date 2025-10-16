@@ -266,7 +266,7 @@ export default function KeyFC() {
 
         <div
           id="column-menu"
-          className="hidden origin-top-right absolute right-0 mt-2 w-56 rounded-xl shadow-2xl bg-white ring-1 ring-pink-500 ring-opacity-20 focus:outline-none z-50"
+          className="hidden origin-top-right absolute right-0 mt-2 w-56 rounded-lg shadow-2xl bg-white ring-1 ring-pink-800 ring-opacity-20 focus:outline-none z-50"
           role="menu"
           aria-orientation="vertical"
           aria-labelledby="menu-button"
