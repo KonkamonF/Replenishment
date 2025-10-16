@@ -11,7 +11,7 @@ const activeClass = "text-[#640037]"; // ใช้สีหลัก
 export default function Side() {
   return (
     // Padding ด้านข้าง 4 (1rem) เพื่อไม่ให้เมนูชิดขอบซ้ายจนเกินไป
-    <div className="flex flex-col space-y-1 px-4">
+    <div className="flex flex-col py-4">
       {/* Super Admin / Dashboard */}
       <Link
         to="/"

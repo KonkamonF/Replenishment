@@ -250,7 +250,7 @@ export default function KeyFC() {
               ${
                 hasHiddenColumns
                   ? "bg-red-500 text-white border-red-600 hover:bg-red-600"
-                  : "bg-gray-200 text-gray-700 border-gray-300 hover:bg-gray-300"
+                  : "bg-gray-200 text-gray-600 border-gray-300 hover:bg-gray-300"
               }`}
         >
           {hasHiddenColumns ? (
@@ -259,8 +259,8 @@ export default function KeyFC() {
             <Eye className="w-4 h-4" />
           )}
           {hasHiddenColumns
-            ? `Show/Hide Columns (${hiddenColumnsList.length})`
-            : "Hide/Show Columns"}
+            ? `Show/Hide Columns (${hiddenColumnsList}) (${hiddenColumnsList.length})`
+            : `Hide/Show Columns`}
           <ChevronDown className="w-4 h-4 ml-1" />
         </button>
 
@@ -276,7 +276,7 @@ export default function KeyFC() {
               <div
                 key={col.key}
                 onClick={() => toggleColumnVisibility(col.key)}
-                className="flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-pink-100 cursor-pointer transition duration-100"
+                className="flex items-center justify-between px-4 py-2 text-sm text-gray-600 hover:bg-pink-100 cursor-pointer transition duration-100"
                 role="menuitem"
               >
                 <span className="font-medium">{col.name}</span>
@@ -427,7 +427,7 @@ export default function KeyFC() {
                   <option value="N">No</option>
                 </select>
                 {/* เพิ่มไอคอนลูกศร */}
-                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-600 pointer-events-none" />
               </div>
             </div>
           </div>
@@ -436,7 +436,7 @@ export default function KeyFC() {
 
         {/* --- Column Toggle Bar & Save Button --- */}
         <div className="flex justify-between items-center mb-4 flex-wrap gap-4">
-          <div className="text-gray-500">
+          <div className="text-gray-600">
             รายการที่แสดง: **{filteredData.length}** จาก **{data.length}**
             รายการ
           </div>
@@ -445,14 +445,14 @@ export default function KeyFC() {
             <button
               onClick={handleSubmit}
               disabled={!isDataChanged}
-              className={`px-6 py-2 rounded-lg font-semibold transition duration-300 shadow-lg text-lg
+              className={`px-4 py-2  rounded-lg font-semibold shadow-lg text-sm
                 ${
                   isDataChanged
                     ? "bg-green-600 text-white hover:bg-green-700 transform hover:scale-105"
-                    : "bg-gray-300 text-gray-600 cursor-not-allowed"
+                    : "bg-gray-200 text-gray-600 cursor-not-allowed"
                 }`}
             >
-              {isDataChanged ? "💾 Save Forecast" : "No Changes"}
+              {isDataChanged ? "🔒 Save Forecast" : "No Changes"}
             </button>
           </div>
         </div>

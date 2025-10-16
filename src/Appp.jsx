@@ -13,7 +13,7 @@ export default function Appp() {
   };
 
   // กำหนดความกว้างของ Sidebar
-  const sidebarWidth = "200px";
+  const sidebarWidth = "250px";
 
   return (
     <>
@@ -24,7 +24,7 @@ export default function Appp() {
           {/* Sidebar Toggle Button (แสดงตลอดเวลาใน Header) */}
           <button
             onClick={toggleSidebar}
-            className="text-[#640037] p-2 rounded-md hover:bg-pink-50 mr-4 transition-colors"
+            className="text-[#640037] p-2 rounded-md hover:bg-pink-100 mr-4 transition-colors"
             title={isSidebarOpen ? "Collapse Sidebar" : "Expand Sidebar"}
           >
             {/* ใช้ Icon ตามสถานะ: เปิดใช้ลูกศรซ้าย, ปิดใช้เมนู */}
@@ -87,9 +87,7 @@ export default function Appp() {
 
           {/* User Profile / Notifications */}
           <div className="flex items-center space-x-4 ml-auto">
-            <div className="text-sm text-gray-500 hidden sm:block">
-              Welcome, Admin User
-            </div>
+            <div className="text-sm text-gray-500 ">Welcome, Admin User</div>
             <div className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center text-[#640037] font-semibold cursor-pointer border-2 border-pink-300">
               AD
             </div>
@@ -98,18 +96,23 @@ export default function Appp() {
 
         {/* --- Main Layout: Sidebar and Content --- */}
         {/* ใช้ Flexbox จัดเรียง Sidebar และ Content */}
-        <div className="flex relative">
+        <div className="flex">
           {/* Sidebar: ใช้ Sticky เพื่ออยู่ติดด้านบน และใช้ Transition จัดการการเปิด-ปิด */}
           <div
-            className="bg-white shadow-lg pt-4 transition-all duration-300 ease-in-out sticky top-16" // top-16 = 64px (ความสูง Header)
+            className="bg-white shadow-lg pt-4  sticky top-16" // top-16 = 64px (ความสูง Header)
             style={{
               width: isSidebarOpen ? sidebarWidth : "0", // ควบคุมความกว้าง
               minHeight: "calc(100vh - 64px)", // ความสูงเต็มหน้าจอ ลบความสูง Header
-              overflow: "hidden", // ซ่อนเนื้อหาเมื่อยุบ
+        
             }}
           >
             {/* Side Component ถูกห่อด้วย div เพื่อป้องกันการย่อขนาด */}
-            <div style={{ width: sidebarWidth }}>
+            <div
+              style={{
+                width: isSidebarOpen ? sidebarWidth : "0",
+                overflow: "hidden",
+              }}
+            >
               <Side />
             </div>
           </div>
