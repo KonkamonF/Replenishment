@@ -31,6 +31,8 @@ export default function SuperAdmin() {
     // Logic to display the chart's data
   };
 
+  const cssClasses = "text-center cursor-pointer p-6 bg-gradient-to-r from-pink-300 to-pink-100 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-100 ease-in-out"
+
   return (
     // Main container, using 'min-h-screen' for full height and a light background
     <div className="h-full bg-white rounded-xl p-6 ">
@@ -65,24 +67,24 @@ export default function SuperAdmin() {
 
           <div className="grid grid-cols-6 gap-6">
             {/* Class Cards */}
-            <div className="">
+            <div className={cssClasses}>
               <ClassA />
             </div>
-            <div className="">
+            <div className={cssClasses}>
               <ClassB />
             </div>
-            <div className="">
+            <div className={cssClasses}>
               <ClassC />
             </div>
-            <div className="">
+            <div className={cssClasses}>
               <ClassN />
             </div>
 
             {/* Other Cards */}
-            <div className="">
+            <div className={cssClasses}>
               <Best />
             </div>
-            <div className="">
+            <div className={cssClasses}>
               <NonMove />
             </div>
           </div>

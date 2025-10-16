@@ -10,7 +10,6 @@ export default function ClassN() {
       )}
       <div
         onClick={() => setIsDetailsClassN(true)}
-        className="border-2 p-2 rounded-3xl hover:bg-gray-300"
       >
         <p className="text-3xl font-bold">2 Units</p>Class N
       </div>

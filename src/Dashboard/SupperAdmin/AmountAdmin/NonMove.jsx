@@ -8,10 +8,7 @@ export default function NonMove() {
       {isDetailsNonMove && (
         <DetailNonMove setIsDetailsNonMove={setIsDetailsNonMove} />
       )}
-      <div
-        onClick={() => setIsDetailsNonMove(true)}
-        className="border-2 p-2 rounded-3xl hover:bg-gray-300"
-      >
+      <div onClick={() => setIsDetailsNonMove(true)}>
         <p className="text-3xl font-bold">1 Units</p>Non-Move
       </div>
     </>
