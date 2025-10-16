@@ -31,7 +31,7 @@ export default function SuperAdmin() {
     // Logic to display the chart's data
   };
 
-  const cssClasses = "text-center cursor-pointer p-6 bg-gradient-to-r from-pink-300 to-pink-100 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-100 ease-in-out"
+  const cssClasses = "text-center cursor-pointer p-6 bg-gradient-to-r from-yellow-400 to-yellow-100 rounded-xl shadow-md hover:shadow-xl"
 
   return (
     // Main container, using 'min-h-screen' for full height and a light background
