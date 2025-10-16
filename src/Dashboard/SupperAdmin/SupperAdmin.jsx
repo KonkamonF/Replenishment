@@ -65,24 +65,24 @@ export default function SuperAdmin() {
 
           <div className="grid grid-cols-6 gap-6">
             {/* Class Cards */}
-            <div className="text-center cursor-pointer p-6 bg-gradient-to-t from-[#FEA405] to-yellow-200 rounded-xl shadow-md hover:shadow-xl">
+            <div className="text-center cursor-pointer p-6 bg-gradient-to-t from-[#ffc766] to-yellow-200 rounded-xl shadow-md hover:shadow-xl">
               <ClassA />
             </div>
-            <div className="text-center cursor-pointer p-6 bg-gradient-to-b from-[#FF76CE] to-[#F6D6D6] rounded-xl shadow-md hover:shadow-xl">
+            <div className="text-center cursor-pointer p-6 bg-gradient-to-b from-[#ffb6e5] to-[#ffe5e5] rounded-xl shadow-md hover:shadow-xl">
               <ClassB />
             </div>
-            <div className="text-center cursor-pointer p-6 bg-gradient-to-t from-[#4CC9FE] to-[#A8F1FF] rounded-xl shadow-md hover:shadow-xl">
+            <div className="text-center cursor-pointer p-6 bg-gradient-to-t from-[#7ed8ff] to-[#def9ff] rounded-xl shadow-md hover:shadow-xl">
               <ClassC />
             </div>
-            <div className="text-center cursor-pointer p-6 bg-gradient-to-b from-[#7fad00] to-[#D2FF72] rounded-xl shadow-md hover:shadow-xl">
+            <div className="text-center cursor-pointer p-6 bg-gradient-to-b from-[#a8dd16] to-[#eaffbe] rounded-xl shadow-md hover:shadow-xl">
               <ClassN />
             </div>
 
             {/* Other Cards */}
-            <div className="text-center cursor-pointer p-6 bg-gradient-to-t from-yellow-400 to-yellow-100 rounded-xl shadow-md hover:shadow-xl">
+            <div className="text-center cursor-pointer p-6 bg-gradient-to-t from-yellow-300 to-yellow-100 rounded-xl shadow-md hover:shadow-xl">
               <Best />
             </div>
-            <div className="text-center cursor-pointer p-6 bg-gradient-to-b from-[#C68EFD] to-[#e3deff] rounded-xl shadow-md hover:shadow-xl">
+            <div className="text-center cursor-pointer p-6 bg-gradient-to-b from-[#cf9fff] to-[#f0edff] rounded-xl shadow-md hover:shadow-xl">
               <NonMove />
             </div>
           </div>
