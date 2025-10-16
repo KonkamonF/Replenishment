@@ -7,7 +7,7 @@ import ClassN from "./AmountAdmin/ClassN";
 import Best from "./AmountAdmin/Best";
 import NonMove from "./AmountAdmin/NonMove";
 // Import Component กราฟ
-import AcAndFc from "./AmountAdmin/AcAndFc"; 
+import AcAndFc from "./AmountAdmin/AcAndFc";
 import Charts from "./AmountAdmin/Charts";
 
 export default function SuperAdmin() {
@@ -25,14 +25,15 @@ export default function SuperAdmin() {
   // New function for viewing chart data
   const handleViewChartData = () => {
     // ในการใช้งานจริง จะเปิด Modal แสดงตารางข้อมูลดิบของกราฟ
-    alert("Functionality to show the underlying chart data (e.g., in a table or modal) will go here! (Show Data Table)");
+    alert(
+      "Functionality to show the underlying chart data (e.g., in a table or modal) will go here! (Show Data Table)"
+    );
     // Logic to display the chart's data
   };
 
   return (
     // Main container, using 'min-h-screen' for full height and a light background
     <div className="h-full bg-white rounded-xl p-6 ">
-
       {/* --- Header Section (Unchanged) --- */}
       <header className="flex justify-between items-center mb-8 pb-4 border-b border-pink-200">
         <h1 className="text-3xl font-extrabold text-[#640037]">
@@ -53,67 +54,74 @@ export default function SuperAdmin() {
           </button>
         </div>
       </header>
-      
-      {/* --- Main Content Layout (Unchanged) --- */}
-      <div className="flex flex-col lg:flex-row gap-6 ">
 
+      {/* --- Main Content Layout (Unchanged) --- */}
+      <div className="flex flex-col gap-8">
         {/* --- Left Column: Summary Cards (Unchanged) --- */}
-        <div className="lg:w-3/5">
-          <h2 className="text-xl font-bold mb-4 text-[#640037]">Summary Metrics</h2>
-          
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-            
+        <div className="text-[#640037]">
+          <h2 className="text-2xl font-bold mb-6 text-[#640037]">
+            Summary Metrics
+          </h2>
+
+          <div className="grid grid-cols-6 gap-6">
             {/* Class Cards */}
-            <div className="bg-white p-4 rounded-xl shadow-lg border border-pink-100 h-full">
+            <div className="">
               <ClassA />
             </div>
-            <div className="bg-white p-4 rounded-xl shadow-lg border border-pink-100 h-full">
+            <div className="">
               <ClassB />
             </div>
-            <div className="bg-white p-4 rounded-xl shadow-lg border border-pink-100 h-full">
+            <div className="">
               <ClassC />
             </div>
-            <div className="bg-white p-4 rounded-xl shadow-lg border border-pink-100 h-full">
+            <div className="">
               <ClassN />
             </div>
 
             {/* Other Cards */}
-            <div className="bg-white p-4 rounded-xl shadow-lg border border-pink-100 h-full">
+            <div className="">
               <Best />
             </div>
-            <div className="bg-white p-4 rounded-xl shadow-lg border border-pink-100 h-full">
+            <div className="">
               <NonMove />
             </div>
           </div>
         </div>
-
+        <hr />
         {/* --- Right Column: Primary Component (AcAndFc) - FOCUS OF CHANGE --- */}
-        <div className="lg:w-2/5">
-          <h2 className="text-xl font-bold mb-4 text-[#640037]">Analysis & Forecast (Interactive Chart)</h2>
-          
-          {/* ⭐️ การปรับปรุง: เพิ่ม max-h-96 และ overflow-y-auto 
-            - max-h-96: กำหนดความสูงสูงสุด (96 units = 24rem = 384px)
-            - overflow-y-auto: เปิดใช้งาน scrollbar แนวตั้งเมื่อเนื้อหาสูงเกิน
-          */}
-          <div className="bg-white p-6 rounded-xl shadow-2xl border-t-4 border-[#640037] max-h-[600px] overflow-y-auto"> 
-            
+        <div className="">
+          <h2 className="text-2xl font-bold mb-6 text-[#640037]">
+            Analysis & Forecast (Interactive Charts)
+          </h2>
+
+          <div className="bg-white p-6 rounded-xl shadow-2xl border-4 border-[#640037]">
             {/* The chart component itself */}
             <AcAndFc />
-            <Charts/>
-            
+            <Charts />
+
             {/* Button to view the data behind the chart */}
             <div className="mt-4 flex justify-end">
-                <button
-                    onClick={handleViewChartData}
-                    className="mt-6 flex items-center space-x-1 px-3 py-1 text-sm text-[#640037] border border-pink-300 rounded-md hover:bg-pink-50 transition duration-150"
-                    aria-label="View underlying chart data"
+              <button
+                onClick={handleViewChartData}
+                className="mt-6 flex items-center space-x-1 px-3 py-1 text-sm text-[#640037] border border-pink-300 rounded-md hover:bg-pink-50 transition duration-150"
+                aria-label="View underlying chart data"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
                 >
-                    {/* Placeholder for an icon, e.g., using Heroicons or Font Awesome */}
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-                    </svg>
-                    <span>View Data Table</span>
-                </button>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M4 6h16M4 10h16M4 14h16M4 18h16"
+                  />
+                </svg>
+                <span>View Data Table</span>
+              </button>
             </div>
           </div>
         </div>
