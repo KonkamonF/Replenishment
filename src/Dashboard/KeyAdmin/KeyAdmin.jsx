@@ -181,7 +181,7 @@ const getStatusStyle = (status) => {
   }
 };
 
-// --- NEW Component: Trade Remark Modal ---
+// --- Trade Remark Modal Component ---
 function TradeRemarkModal({ product, onClose, onAddRemark }) {
   const [remarkText, setRemarkText] = useState("");
   const currentUser = "Key User (Admin)"; // จำลองผู้ใช้งานปัจจุบัน
@@ -330,6 +330,37 @@ export default function InventoryTradeMonitorWithFilters() {
     });
   }, [filters, data]);
 
+  // --- NEW: Summary Calculation ---
+  const summaryMetrics = useMemo(() => {
+    const totalSKUs = filteredData.length;
+    const totalStock = filteredData.reduce(
+      (sum, item) => sum + (item.Stock_จบเหลือจริง || 0),
+      0
+    );
+    // Calculate weighted average DOH for Avg DOH (using DOH Stock2 for consistency)
+    // Formula: Sum(Stock * DOH) / Sum(Stock)
+    const totalStockWeightedDOH = filteredData.reduce((sum, item) => {
+      return sum + (item.Stock_จบเหลือจริง * item.DayOnHand_DOH_Stock2 || 0);
+    }, 0);
+
+    const avgDOH = totalStock > 0 ? totalStockWeightedDOH / totalStock : 0;
+
+    const abnormalCount = filteredData.filter(
+      (item) => item.สถานะTrade === "Abnormal"
+    ).length;
+
+    return {
+      totalSKUs,
+      totalStock,
+      avgDOH,
+      abnormalCount,
+    };
+  }, [filteredData]);
+
+  // Destructure for easier use in JSX
+  const { totalSKUs, totalStock, avgDOH, abnormalCount } = summaryMetrics;
+  // --- END NEW: Summary Calculation ---
+
   const handleFilterChange = (name, value) => {
     setFilters((prev) => ({ ...prev, [name]: value }));
   };
@@ -349,14 +380,15 @@ export default function InventoryTradeMonitorWithFilters() {
       )
     );
     // Update modal state to reflect new data immediately
-    setModalRemarkProduct((prevProduct) =>
-      prevProduct.Code === productCode
-        ? {
-            ...prevProduct,
-            KeyRemarks: [...(prevProduct.KeyRemarks || []), newRemark],
-          }
-        : prevProduct
-    );
+    setModalRemarkProduct((prevProduct) => {
+        if (prevProduct && prevProduct.Code === productCode) {
+            return {
+                ...prevProduct,
+                KeyRemarks: [...(prevProduct.KeyRemarks || []), newRemark],
+            };
+        }
+        return prevProduct;
+    });
     // ใช้ Modal แทน alert ในแอปจริง
     console.log(`บันทึกการสื่อสารสำหรับ ${productCode} สำเร็จ!`);
   };
@@ -366,15 +398,50 @@ export default function InventoryTradeMonitorWithFilters() {
       {/* --- Header & Summary --- */}
       <header className="mb-6 border-b pb-4">
         <h1 className="text-3xl font-extrabold text-[#640037] mb-2">
-          Key Account
+          Inventory & Trade Monitor
         </h1>
         <p className="text-gray-500">
           ข้อมูลคงคลัง (Stock) และยอดขาย (Sale Out) พร้อมระบบค้นหาและกรองข้อมูล
         </p>
       </header>
+      
+      {/* --- NEW: Summary Card Component --- */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-8">
+        <div className="bg-pink-50 p-4 rounded-lg shadow-inner">
+          <p className="text-sm text-pink-600 font-semibold">Total SKUs</p>
+          <p className="text-2xl font-extrabold text-[#640037]">
+            {totalSKUs.toLocaleString()}
+          </p>
+        </div>
+        <div className="bg-blue-50 p-4 rounded-lg shadow-inner">
+          <p className="text-sm text-blue-600 font-semibold">Total Stock</p>
+          <p className="text-2xl font-extrabold">
+            {totalStock.toLocaleString()}
+          </p>
+        </div>
+        <div className="bg-yellow-50 p-4 rounded-lg shadow-inner">
+          <p className="text-sm text-yellow-600 font-semibold">
+            Avg. DOH (Weighted)
+          </p>
+          <p className="text-2xl font-extrabold">
+            {avgDOH.toFixed(0).toLocaleString()} วัน
+          </p>
+        </div>
+        <div className="bg-red-50 p-4 rounded-lg shadow-inner">
+          <p className="text-sm text-red-600 font-semibold">Abnormal Count</p>
+          <p className="text-2xl font-extrabold">{abnormalCount.toLocaleString()}</p>
+        </div>
+        <div className="bg-gray-50 p-4 rounded-lg shadow-inner hidden xl:block">
+            <p className="text-sm text-gray-600 font-semibold">Total Data</p>
+            <p className="text-2xl font-extrabold text-gray-700">
+                {data.length.toLocaleString()}
+            </p>
+        </div>
+      </div>
+      {/* --- END NEW: Summary Card Component --- */}
 
       {/* --- Filters & Search Bar --- */}
-      <div className="grid grid-cols-1 md:grid-cols-6 gap-4 mb-8 items-end p-4 bg-pink-50 rounded-lg border border-pink-200">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-4 mb-8 items-end p-4 bg-pink-50 rounded-lg border border-pink-200">
         {/* Search Bar */}
         <div className="col-span-1 md:col-span-2">
           <label className="block text-sm font-semibold text-gray-700 mb-1">
@@ -394,7 +461,6 @@ export default function InventoryTradeMonitorWithFilters() {
           <label className="block text-sm font-semibold text-gray-700 mb-1">
             Brand
           </label>
-          {/* --- MODIFIED: Add Chevron Down --- */}
           <div className="relative">
             <select
               value={filters.brand}
@@ -409,7 +475,6 @@ export default function InventoryTradeMonitorWithFilters() {
             </select>
             <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           </div>
-          {/* --- END MODIFIED --- */}
         </div>
 
         {/* Class Filter */}
@@ -417,7 +482,6 @@ export default function InventoryTradeMonitorWithFilters() {
           <label className="block text-sm font-semibold text-gray-700 mb-1">
             Class
           </label>
-          {/* --- MODIFIED: Add Chevron Down --- */}
           <div className="relative">
             <select
               value={filters.class}
@@ -432,7 +496,6 @@ export default function InventoryTradeMonitorWithFilters() {
             </select>
             <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           </div>
-          {/* --- END MODIFIED --- */}
         </div>
 
         {/* Best 2025 Filter */}
@@ -440,7 +503,6 @@ export default function InventoryTradeMonitorWithFilters() {
           <label className="block text-sm font-semibold text-gray-700 mb-1">
             YN Best 2025
           </label>
-          {/* --- MODIFIED: Add Chevron Down --- */}
           <div className="relative">
             <select
               value={filters.best2025}
@@ -455,7 +517,6 @@ export default function InventoryTradeMonitorWithFilters() {
             </select>
             <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           </div>
-          {/* --- END MODIFIED --- */}
         </div>
 
         {/* Trade Status Filter */}
@@ -463,7 +524,6 @@ export default function InventoryTradeMonitorWithFilters() {
           <label className="block text-sm font-semibold text-gray-700 mb-1">
             สถานะ Trade
           </label>
-          {/* --- MODIFIED: Add Chevron Down --- */}
           <div className="relative">
             <select
               value={filters.tradeStatus}
@@ -478,7 +538,6 @@ export default function InventoryTradeMonitorWithFilters() {
             </select>
             <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           </div>
-          {/* --- END MODIFIED --- */}
         </div>
       </div>
 
@@ -542,7 +601,7 @@ export default function InventoryTradeMonitorWithFilters() {
                     {item.Stock_จบเหลือจริง.toLocaleString()}
                   </td>
                   <td className="p-3 text-right font-bold text-lg">
-                    {item.Stock_จบเหลือจริง.toLocaleString() - 25}
+                    {(item.Stock_จบเหลือจริง - 25).toLocaleString()}
                   </td>
 
                   {/* DOH (วัน) */}
@@ -586,11 +645,11 @@ export default function InventoryTradeMonitorWithFilters() {
                     <button
                       onClick={() => handleOpenRemarkModal(item)}
                       className={`px-3 py-1 text-xs rounded-lg shadow-md transition font-medium
-							${
-                          item.KeyRemarks && item.KeyRemarks.length > 0
-                            ? "bg-blue-600 text-white hover:bg-blue-700"
-                            : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                        }`}
+                  ${
+                    item.KeyRemarks && item.KeyRemarks.length > 0
+                      ? "bg-blue-600 text-white hover:bg-blue-700"
+                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  }`}
                     >
                       บันทึก/ดูการสื่อสาร (
                       {item.KeyRemarks ? item.KeyRemarks.length : 0})
@@ -601,7 +660,7 @@ export default function InventoryTradeMonitorWithFilters() {
             ) : (
               <tr>
                 <td
-                  colSpan="7" // Changed colspan to 7 to cover all columns
+                  colSpan="7" 
                   className="p-6 text-center text-lg text-gray-500"
                 >
                   ไม่พบข้อมูลสินค้าที่ตรงกับเงื่อนไขการกรอง
