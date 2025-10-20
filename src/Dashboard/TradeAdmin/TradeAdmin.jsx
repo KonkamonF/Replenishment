@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { Search, ChevronDown } from "lucide-react"; // นำเข้า Search และ ChevronDown
+import { Search, ChevronDown } from "lucide-react";
 
 // --- Mock Data (ข้อมูลใหม่ พร้อม KeyRemarks) ---
 const initialInventoryData = [
@@ -335,7 +335,7 @@ export default function InventoryTradeMonitor() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
 
-  // --- NEW: Filter States ---
+  // --- Filter States ---
   const [filters, setFilters] = useState({
     search: "",
     brand: "All",
@@ -352,8 +352,8 @@ export default function InventoryTradeMonitor() {
 
   // Hardcoded current user for demonstration
   const CURRENT_USER = "Trade Planner (Key)";
-  
-  // --- NEW: Filter Handlers ---
+
+  // --- Filter Handlers ---
   const handleFilterChange = (name, value) => {
     setFilters((prev) => ({ ...prev, [name]: value }));
   };
@@ -373,7 +373,7 @@ export default function InventoryTradeMonitor() {
     [data]
   );
 
-  // --- NEW: Filtered Data Logic ---
+  // --- Filtered Data Logic ---
   const filteredData = useMemo(() => {
     return data.filter((item) => {
       // 1. Search Filter (Code, Description, RemarkTrade)
@@ -381,7 +381,8 @@ export default function InventoryTradeMonitor() {
       const matchesSearch =
         item.Code.toLowerCase().includes(searchTerm) ||
         item.Description.toLowerCase().includes(searchTerm) ||
-        (item.RemarkTrade && item.RemarkTrade.toLowerCase().includes(searchTerm)); // Safe check for RemarkTrade
+        (item.RemarkTrade &&
+          item.RemarkTrade.toLowerCase().includes(searchTerm)); // Safe check for RemarkTrade
 
       // 2. Brand Filter
       const matchesBrand =
@@ -411,7 +412,7 @@ export default function InventoryTradeMonitor() {
       );
     });
   }, [filters, data]);
-  // --- END NEW: Filtered Data Logic ---
+  // --- END Filtered Data Logic ---
 
   const handleOpenModal = (item) => {
     setSelectedItem(item);
@@ -487,8 +488,10 @@ export default function InventoryTradeMonitor() {
   // Calculate Avg DOH for summary (using DayOnHand_DOH_Stock2)
   const avgDOH =
     totalSKUs > 0
-      ? filteredData.reduce((sum, item) => sum + (item.DayOnHand_DOH_Stock2 || 0), 0) /
-        totalSKUs
+      ? filteredData.reduce(
+          (sum, item) => sum + (item.DayOnHand_DOH_Stock2 || 0),
+          0
+        ) / totalSKUs
       : 0;
   const abnormalCount = filteredData.filter(
     (item) => item.สถานะTrade === "Abnormal"
@@ -531,17 +534,19 @@ export default function InventoryTradeMonitor() {
         </div>
         <div className="bg-red-50 p-4 rounded-lg shadow-inner">
           <p className="text-sm text-red-600 font-semibold">Abnormal Count</p>
-          <p className="text-2xl font-extrabold">{abnormalCount.toLocaleString()}</p>
+          <p className="text-2xl font-extrabold">
+            {abnormalCount.toLocaleString()}
+          </p>
         </div>
         <div className="bg-gray-50 p-4 rounded-lg shadow-inner hidden xl:block">
-            <p className="text-sm text-gray-600 font-semibold">Total Data</p>
-            <p className="text-2xl font-extrabold text-gray-700">
-                {data.length.toLocaleString()}
-            </p>
+          <p className="text-sm text-gray-600 font-semibold">Total Data</p>
+          <p className="text-2xl font-extrabold text-gray-700">
+            {data.length.toLocaleString()}
+          </p>
         </div>
       </div>
 
-      {/* --- Filter Bar (UPDATED TO REFLECT ALL FILTERS) --- */}
+      {/* --- Filter Bar (UPDATED WITH CORRECT W-FULL ON SELECTS) --- */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-4 mb-8 items-end p-4 bg-pink-50 rounded-lg border border-pink-200">
         {/* 1. ค้นหาสินค้า (Code/Desc) - Real-time filtering */}
         <div className="md:col-span-2">
@@ -552,15 +557,15 @@ export default function InventoryTradeMonitor() {
             <input
               type="text"
               placeholder="ค้นหา..."
-              value={filters.search} // ผูกกับ filters.search
-              onChange={(e) => handleFilterChange("search", e.target.value)} // กรองทันที
-              className="p-2 pl-9 pr-8 border border-gray-300 rounded-lg shadow-sm focus:ring-pink-500 focus:border-pink-500 bg-white w-full"
+              value={filters.search}
+              onChange={(e) => handleFilterChange("search", e.target.value)}
+              className="p-1.5 pl-9 pr-8 border border-gray-300 rounded-lg shadow-sm focus:ring-pink-500 focus:border-pink-500 bg-white w-full"
             />
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
             {filters.search && (
               <button
                 onClick={() => {
-                  handleFilterChange("search", ""); // Clear filter state immediately
+                  handleFilterChange("search", "");
                 }}
                 className="absolute right-2 top-1/2 transform -translate-y-1/2 text-lg text-gray-500 hover:text-red-500 font-bold p-1 leading-none"
                 title="ล้างการค้นหา"
@@ -578,9 +583,9 @@ export default function InventoryTradeMonitor() {
           </label>
           <div className="relative w-full">
             <select
-              value={filters.brand} // ผูกกับ filters.brand
-              onChange={(e) => handleFilterChange("brand", e.target.value)} // กรองทันที
-              className="p-2 pr-10 text-gray-900 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm appearance-none w-full"
+              value={filters.brand}
+              onChange={(e) => handleFilterChange("brand", e.target.value)}
+              className="p-2 pr-10 text-gray-500 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm  w-full"
             >
               {uniqueBrands.map((brand) => (
                 <option key={brand} value={brand}>
@@ -588,7 +593,6 @@ export default function InventoryTradeMonitor() {
                 </option>
               ))}
             </select>
-            <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           </div>
         </div>
 
@@ -597,11 +601,11 @@ export default function InventoryTradeMonitor() {
           <label className="block text-sm font-bold text-gray-700 mb-1">
             Class
           </label>
-          <div className="relative ">
+          <div className="relative w-full">
             <select
-              value={filters.class} // ผูกกับ filters.class
-              onChange={(e) => handleFilterChange("class", e.target.value)} // กรองทันที
-              className="p-2 pr-10 text-gray-900 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm appearance-none w-full"
+              value={filters.class}
+              onChange={(e) => handleFilterChange("class", e.target.value)}
+              className="p-2 pr-10 text-gray-500 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm  w-full"
             >
               {uniqueClasses.map((c) => (
                 <option key={c} value={c}>
@@ -609,20 +613,19 @@ export default function InventoryTradeMonitor() {
                 </option>
               ))}
             </select>
-            <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           </div>
         </div>
 
-        {/* 4. YN Best 2025 Filter (ใช้ uniqueBest2025 จาก state) */}
+        {/* 4. YN Best 2025 Filter */}
         <div>
           <label className="block text-sm font-bold text-gray-700 mb-1">
             YN Best 2025
           </label>
-          <div className="relative ">
+          <div className="relative w-full">
             <select
               value={filters.best2025}
               onChange={(e) => handleFilterChange("best2025", e.target.value)}
-              className="p-2 pr-10 text-gray-900 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm appearance-none w-full"
+              className="p-2 pr-10 text-gray-500 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm  w-full"
             >
               {uniqueBest2025.map((opt) => (
                 <option key={opt} value={opt}>
@@ -630,20 +633,21 @@ export default function InventoryTradeMonitor() {
                 </option>
               ))}
             </select>
-            <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           </div>
         </div>
 
-        {/* 5. Trade Status Filter (ใช้ uniqueTradeStatus จาก state) */}
+        {/* 5. Trade Status Filter */}
         <div>
           <label className="block text-sm font-bold text-gray-700 mb-1">
             สถานะ Trade
           </label>
-          <div className="relative ">
+          <div className="relative w-full">
             <select
               value={filters.tradeStatus}
-              onChange={(e) => handleFilterChange("tradeStatus", e.target.value)}
-              className="p-2 pr-10 text-gray-900 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm appearance-none w-full"
+              onChange={(e) =>
+                handleFilterChange("tradeStatus", e.target.value)
+              }
+              className="p-2 pr-10 text-gray-500 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm  w-full"
             >
               {uniqueTradeStatus.map((status) => (
                 <option key={status} value={status}>
@@ -651,7 +655,6 @@ export default function InventoryTradeMonitor() {
                 </option>
               ))}
             </select>
-            <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           </div>
         </div>
       </div>
@@ -738,7 +741,9 @@ export default function InventoryTradeMonitor() {
                       item.DayOnHand_DOH_Stock2
                     )}`}
                   >
-                    {(item.DayOnHand_DOH_Stock2 || 0).toFixed(0).toLocaleString()}
+                    {(item.DayOnHand_DOH_Stock2 || 0)
+                      .toFixed(0)
+                      .toLocaleString()}
                   </td>
 
                   {/* สถานะ Trade */}
@@ -781,11 +786,14 @@ export default function InventoryTradeMonitor() {
                 </tr>
               ))
             ) : (
-                <tr>
-                    <td colSpan="10" className="p-6 text-center text-lg text-gray-500">
-                        ไม่พบข้อมูลสินค้าที่ตรงกับเงื่อนไขการกรอง
-                    </td>
-                </tr>
+              <tr>
+                <td
+                  colSpan="10"
+                  className="p-6 text-center text-lg text-gray-500"
+                >
+                  ไม่พบข้อมูลสินค้าที่ตรงกับเงื่อนไขการกรอง
+                </td>
+              </tr>
             )}
           </tbody>
         </table>

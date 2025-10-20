@@ -381,13 +381,13 @@ export default function InventoryTradeMonitorWithFilters() {
     );
     // Update modal state to reflect new data immediately
     setModalRemarkProduct((prevProduct) => {
-        if (prevProduct && prevProduct.Code === productCode) {
-            return {
-                ...prevProduct,
-                KeyRemarks: [...(prevProduct.KeyRemarks || []), newRemark],
-            };
-        }
-        return prevProduct;
+      if (prevProduct && prevProduct.Code === productCode) {
+        return {
+          ...prevProduct,
+          KeyRemarks: [...(prevProduct.KeyRemarks || []), newRemark],
+        };
+      }
+      return prevProduct;
     });
     // ใช้ Modal แทน alert ในแอปจริง
     console.log(`บันทึกการสื่อสารสำหรับ ${productCode} สำเร็จ!`);
@@ -404,7 +404,7 @@ export default function InventoryTradeMonitorWithFilters() {
           ข้อมูลคงคลัง (Stock) และยอดขาย (Sale Out) พร้อมระบบค้นหาและกรองข้อมูล
         </p>
       </header>
-      
+
       {/* --- NEW: Summary Card Component --- */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-8">
         <div className="bg-pink-50 p-4 rounded-lg shadow-inner">
@@ -429,13 +429,15 @@ export default function InventoryTradeMonitorWithFilters() {
         </div>
         <div className="bg-red-50 p-4 rounded-lg shadow-inner">
           <p className="text-sm text-red-600 font-semibold">Abnormal Count</p>
-          <p className="text-2xl font-extrabold">{abnormalCount.toLocaleString()}</p>
+          <p className="text-2xl font-extrabold">
+            {abnormalCount.toLocaleString()}
+          </p>
         </div>
         <div className="bg-gray-50 p-4 rounded-lg shadow-inner hidden xl:block">
-            <p className="text-sm text-gray-600 font-semibold">Total Data</p>
-            <p className="text-2xl font-extrabold text-gray-700">
-                {data.length.toLocaleString()}
-            </p>
+          <p className="text-sm text-gray-600 font-semibold">Total Data</p>
+          <p className="text-2xl font-extrabold text-gray-700">
+            {data.length.toLocaleString()}
+          </p>
         </div>
       </div>
       {/* --- END NEW: Summary Card Component --- */}
@@ -443,18 +445,36 @@ export default function InventoryTradeMonitorWithFilters() {
       {/* --- Filters & Search Bar --- */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-4 mb-8 items-end p-4 bg-pink-50 rounded-lg border border-pink-200">
         {/* Search Bar */}
-        <div className="col-span-1 md:col-span-2">
-          <label className="block text-sm font-semibold text-gray-700 mb-1">
-            ค้นหาสินค้า (Code/Desc/Remark)
-          </label>
-          <input
+       <div className="col-span-1 md:col-span-2">
+    <label className="block text-sm font-bold text-gray-700 mb-1">
+        ค้นหาสินค้า (Code/Desc/Remark)
+    </label>
+    {/* Corrected: This div is now the relative container */}
+    <div className="relative w-full">
+        <input
             type="text"
             placeholder="ค้นหา..."
             value={filters.search}
             onChange={(e) => handleFilterChange("search", e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
-          />
-        </div>
+            className="w-full p-2 pl-9 pr-8 border border-gray-300 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
+        />
+        {/* Search Icon (Absolute position inside the relative container) */}
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+        
+        {/* Clear Button (Absolute position inside the relative container) */}
+        {filters.search && (
+            <button
+                onClick={() => {
+                    handleFilterChange("search", "");
+                }}
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-lg text-gray-500 hover:text-red-500 font-bold p-1 leading-none"
+                title="ล้างการค้นหา"
+            >
+                &times;
+            </button>
+        )}
+    </div>
+</div>
 
         {/* Brand Filter */}
         <div>
@@ -465,7 +485,7 @@ export default function InventoryTradeMonitorWithFilters() {
             <select
               value={filters.brand}
               onChange={(e) => handleFilterChange("brand", e.target.value)}
-              className="w-full p-2 pr-10 border border-gray-300 rounded-lg shadow-sm appearance-none bg-white"
+              className="w-full p-2 pr-10 border border-gray-300 text-gray-500 rounded-lg shadow-sm  bg-white"
             >
               {uniqueBrands.map((brand) => (
                 <option key={brand} value={brand}>
@@ -473,7 +493,6 @@ export default function InventoryTradeMonitorWithFilters() {
                 </option>
               ))}
             </select>
-            <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           </div>
         </div>
 
@@ -486,7 +505,7 @@ export default function InventoryTradeMonitorWithFilters() {
             <select
               value={filters.class}
               onChange={(e) => handleFilterChange("class", e.target.value)}
-              className="w-full p-2 pr-10 border border-gray-300 rounded-lg shadow-sm appearance-none bg-white"
+              className="w-full p-2 pr-10 border border-gray-300 text-gray-500 rounded-lg shadow-sm  bg-white"
             >
               {uniqueClasses.map((cls) => (
                 <option key={cls} value={cls}>
@@ -494,7 +513,6 @@ export default function InventoryTradeMonitorWithFilters() {
                 </option>
               ))}
             </select>
-            <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           </div>
         </div>
 
@@ -507,7 +525,7 @@ export default function InventoryTradeMonitorWithFilters() {
             <select
               value={filters.best2025}
               onChange={(e) => handleFilterChange("best2025", e.target.value)}
-              className="w-full p-2 pr-10 border border-gray-300 rounded-lg shadow-sm appearance-none bg-white"
+              className="w-full p-2 pr-10 border border-gray-300 rounded-lg shadow-sm text-gray-500 bg-white"
             >
               {uniqueBest2025.map((opt) => (
                 <option key={opt} value={opt}>
@@ -515,7 +533,6 @@ export default function InventoryTradeMonitorWithFilters() {
                 </option>
               ))}
             </select>
-            <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           </div>
         </div>
 
@@ -527,8 +544,10 @@ export default function InventoryTradeMonitorWithFilters() {
           <div className="relative">
             <select
               value={filters.tradeStatus}
-              onChange={(e) => handleFilterChange("tradeStatus", e.target.value)}
-              className="w-full p-2 pr-10 border border-gray-300 rounded-lg shadow-sm appearance-none bg-white"
+              onChange={(e) =>
+                handleFilterChange("tradeStatus", e.target.value)
+              }
+              className="w-full p-2 pr-10 border border-gray-300 rounded-lg shadow-sm text-gray-500 bg-white"
             >
               {uniqueTradeStatus.map((status) => (
                 <option key={status} value={status}>
@@ -536,7 +555,6 @@ export default function InventoryTradeMonitorWithFilters() {
                 </option>
               ))}
             </select>
-            <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           </div>
         </div>
       </div>
@@ -660,7 +678,7 @@ export default function InventoryTradeMonitorWithFilters() {
             ) : (
               <tr>
                 <td
-                  colSpan="7" 
+                  colSpan="7"
                   className="p-6 text-center text-lg text-gray-500"
                 >
                   ไม่พบข้อมูลสินค้าที่ตรงกับเงื่อนไขการกรอง

@@ -416,7 +416,7 @@ export default function KeyFC() {
                   value={filters.brand} // ผูกกับ filters.brand
                   onChange={(e) => handleFilterChange("brand", e.target.value)} // กรองทันที
                   // *** เพิ่ม w-full ที่นี่ ***
-                  className="p-2 pr-10 text-gray-900 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm w-full"
+                  className="p-2 pr-10 text-gray-500 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm w-full"
                 >
                   <option value="All">All</option>
                   <option value="TNP">TNP</option>
@@ -436,7 +436,7 @@ export default function KeyFC() {
                   value={filters.type}
                   onChange={(e) => handleFilterChange("type", e.target.value)}
                   // *** เพิ่ม w-full ที่นี่ ***
-                  className="p-2 pr-10 text-gray-900 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm w-full"
+                  className="p-2 pr-10 text-gray-500 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm w-full"
                 >
                   <option value="All">All</option>
                   <option value="ACC">ACC</option>
@@ -456,7 +456,7 @@ export default function KeyFC() {
                   value={filters.class} // ผูกกับ filters.class
                   onChange={(e) => handleFilterChange("class", e.target.value)} // กรองทันที
                   // *** เพิ่ม w-full ที่นี่ ***
-                  className="p-2 pr-10 text-gray-900 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm w-full"
+                  className="p-2 pr-10 text-gray-500 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm w-full"
                 >
                   <option value="All">All</option>
                   {availableClasses.map((c) => (
@@ -478,7 +478,7 @@ export default function KeyFC() {
                   value={filters.ynBest}
                   onChange={(e) => handleFilterChange("ynBest", e.target.value)}
                   // *** เพิ่ม w-full ที่นี่ ***
-                  className="p-2 pr-10 text-gray-900 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm w-full"
+                  className="p-2 pr-10 text-gray-500 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm w-full"
                 >
                   <option value="All">All</option>
                   <option value="Y">Yes</option>
