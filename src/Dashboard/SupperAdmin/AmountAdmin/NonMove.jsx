@@ -9,7 +9,8 @@ export default function NonMove() {
         <DetailNonMove setIsDetailsNonMove={setIsDetailsNonMove} />
       )}
       <div onClick={() => setIsDetailsNonMove(true)}>
-        <p className="text-3xl font-bold">1 Units</p>Non-Move
+        <p className="text-3xl font-bold">1 Units</p>
+        <span className="font-bold text-lg">Non-Move</span>
       </div>
     </>
   );

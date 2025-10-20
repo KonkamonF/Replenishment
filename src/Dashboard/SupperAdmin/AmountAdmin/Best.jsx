@@ -6,10 +6,9 @@ export default function Best() {
   return (
     <>
       {isDetailsBest && <DetailBest setIsDetailsBest={setIsDetailsBest} />}
-      <div
-        onClick={() => setIsDetailsBest(true)}
-      >
-        <p className="text-3xl font-bold">11 Units</p>Best
+      <div onClick={() => setIsDetailsBest(true)}>
+        <p className="text-3xl font-bold">11 Units</p>
+        <span className="font-bold text-lg">Best</span>
       </div>
     </>
   );

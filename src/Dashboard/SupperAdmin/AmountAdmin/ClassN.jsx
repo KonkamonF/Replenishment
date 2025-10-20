@@ -8,10 +8,9 @@ export default function ClassN() {
       {isDetailsClassN && (
         <DetailClassN setIsDetailsClassN={setIsDetailsClassN} />
       )}
-      <div
-        onClick={() => setIsDetailsClassN(true)}
-      >
-        <p className="text-3xl font-bold">2 Units</p>Class N
+      <div onClick={() => setIsDetailsClassN(true)}>
+        <p className="text-3xl font-bold">2 Units</p> Class{" "}
+        <span className="font-bold text-xl">N</span>
       </div>
     </>
   );

@@ -65,24 +65,24 @@ export default function SuperAdmin() {
 
           <div className="grid grid-cols-6 gap-6 text-white">
             {/* Class Cards */}
-            <div className="text-center cursor-pointer p-6 bg-gradient-to-t from-[#ff5e00] to-yellow-400 rounded-xl shadow-md hover:shadow-xl">
+            <div className="text-center cursor-pointer p-6 bg-gradient-to-t from-[#ffd9c3] to-yellow-100 text-[#e25e00] rounded-xl shadow-md hover:shadow-xl">
               <ClassA />
             </div>
-            <div className="text-center cursor-pointer p-6 bg-gradient-to-b from-[#ee089d] to-[#ff7474] rounded-xl shadow-md hover:shadow-xl">
+            <div className="text-center cursor-pointer p-6 bg-gradient-to-b from-[#ffd4f0] to-[#ffb8b8] text-[#b35052] rounded-xl shadow-md hover:shadow-xl">
               <ClassB />
             </div>
-            <div className="text-center cursor-pointer p-6 bg-gradient-to-t from-[#009de0] to-[#230ec0] rounded-xl shadow-md hover:shadow-xl">
+            <div className="text-center cursor-pointer p-6 bg-gradient-to-t from-[#c3edff] to-[#d0d7ff] text-[#16087b] rounded-xl shadow-md hover:shadow-xl">
               <ClassC />
             </div>
-            <div className="text-center cursor-pointer p-6 bg-gradient-to-b from-[#A7D129] to-[#0a5511] rounded-xl shadow-md hover:shadow-xl">
+            <div className="text-center cursor-pointer p-6 bg-gradient-to-b from-[#f2ffc9] to-[#c3ffc9] text-[#0a5511] rounded-xl shadow-md hover:shadow-xl">
               <ClassN />
             </div>
 
             {/* Other Cards */}
-            <div className="text-center cursor-pointer p-6 bg-gradient-to-t from-[#FFD717] to-[#EB5B00] rounded-xl shadow-md hover:shadow-xl">
+            <div className="text-center cursor-pointer p-6 bg-gradient-to-t from-[#fff8d3] to-[#ffd4b9] text-[#d15000] rounded-xl shadow-md hover:shadow-xl">
               <Best />
             </div>
-            <div className="text-center cursor-pointer p-6 bg-gradient-to-b from-[#a042ff] to-[#640D5F] rounded-xl shadow-md hover:shadow-xl">
+            <div className="text-center cursor-pointer p-6 bg-gradient-to-b from-[#dcb8ff] to-[#ffccfc] text-[#640D5F] rounded-xl shadow-md hover:shadow-xl">
               <NonMove />
             </div>
           </div>

@@ -8,10 +8,9 @@ export default function ClassC() {
       {isDetailsClassC && (
         <DetailClassC setIsDetailsClassC={setIsDetailsClassC} />
       )}
-      <div
-        onClick={() => setIsDetailsClassC(true)}
-      >
-        <p className="text-3xl font-bold">20 Units</p>Class C
+      <div onClick={() => setIsDetailsClassC(true)}>
+        <p className="text-3xl font-bold">20 Units</p> Class{" "}
+        <span className="font-bold text-xl">C</span>
       </div>
     </>
   );

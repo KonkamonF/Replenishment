@@ -9,10 +9,9 @@ export default function ClassB() {
         <DetailClassB setIsDetailsClassB={setIsDetailsClassB} />
       )}
 
-      <div
-        onClick={() => setIsDetailsClassB(true)}
-      >
-        <p className="text-3xl font-bold">60 Units</p>Class B
+      <div onClick={() => setIsDetailsClassB(true)}>
+        <p className="text-3xl font-bold">60 Units</p> Class{" "}
+        <span className="font-bold text-xl">B</span>
       </div>
     </>
   );
