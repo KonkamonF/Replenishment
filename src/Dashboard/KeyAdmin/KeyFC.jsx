@@ -329,7 +329,7 @@ export default function KeyFC() {
         {/* --- Filter Bar --- */}
         <div className="">
           {/* ปรับเป็น grid-cols-5 สำหรับจอใหญ่ */}
-          <div className="grid grid-cols-1 md:grid-cols-6 gap-4 mb-8 w-fit items-end p-4 bg-pink-50 rounded-lg border border-pink-200">
+          <div className="grid grid-cols-1 md:grid-cols-6 gap-4 mb-8 items-end p-4 bg-pink-50 rounded-lg border border-pink-200">
             {/* 1. ค้นหาสินค้า (Code/Desc) - Real-time filtering */}
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1">
@@ -478,9 +478,7 @@ export default function KeyFC() {
                 </th>
                 {/* Description Header */}
                 {!isColumnHidden("Description") && (
-                  <th className="p-3 text-left  font-normal">
-                    Description
-                  </th>
+                  <th className="p-3 text-left  font-normal">Description</th>
                 )}
                 {/* Type Header */}
                 {!isColumnHidden("Type") && (
@@ -488,14 +486,10 @@ export default function KeyFC() {
                 )}
                 {/* Class Header */}
                 {!isColumnHidden("Class") && (
-                  <th className="p-3 text-center] ">
-                    Class
-                  </th>
+                  <th className="p-3 text-center] ">Class</th>
                 )}
                 {/* Total FC Header (Non-Editable) */}
-                <th className="p-3 text-right font-extrabold ">
-                  Total FC
-                </th>
+                <th className="p-3 text-right font-extrabold ">Total FC</th>
                 {/* Total AC Header (Mock) */}
                 <th className="p-3 text-right  font-extrabold">
                   Total AC (Mock)
