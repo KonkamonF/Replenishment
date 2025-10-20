@@ -456,7 +456,7 @@ export default function InventoryTradeMonitorWithFilters() {
             placeholder="ค้นหา..."
             value={filters.search}
             onChange={(e) => handleFilterChange("search", e.target.value)}
-            className="w-full p-2 pl-9 pr-8 border border-gray-300 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
+            className="w-full p-1.5 pl-9 pr-8 border border-gray-300 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
         />
         {/* Search Icon (Absolute position inside the relative container) */}
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />

@@ -182,25 +182,24 @@ const ColumnToggleDropdown = ({
   );
 };
 
-// --- Summary Metrics Component ---
 const SummaryMetrics = ({ grandTotals, filteredDataLength, dataLength }) => {
   const totalAC = (grandTotals.Total * 0.9).toFixed(0).toLocaleString();
 
   return (
     <div className="mb-6 p-4 bg-[#640037] rounded-xl shadow-2xl text-white">
-      <h2 className="text-xl font-bold mb-3 border-b border-pink-400 pb-2">
+      <h2 className="text-xl font-bold mb-3 border-b border-pink-300 pb-2">
         SUMMARY FC / AC
       </h2>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="p-3 bg-pink-700/50 rounded-lg">
           <p className="text-sm font-medium">Total FC (All Channels)</p>
-          <p className="text-2xl font-extrabold text-red-300">
+          <p className="text-2xl font-extrabold text-red-100">
             {grandTotals.Total.toLocaleString()}
           </p>
         </div>
         <div className="p-3 bg-pink-700/50 rounded-lg">
           <p className="text-sm font-medium">Total AC (Mock)</p>
-          <p className="text-2xl font-extrabold text-red-300">{totalAC}</p>
+          <p className="text-2xl font-extrabold text-red-100">{totalAC}</p>
         </div>
         <div className="p-3 bg-pink-700/50 rounded-lg">
           <p className="text-sm font-medium">Items Displayed</p>
@@ -357,7 +356,7 @@ export default function KeyFC() {
         {/* --- Header with Title and Info --- */}
         <header className="mb-6 border-b pb-4">
           <h1 className="text-3xl font-extrabold text-[#640037] mb-2">
-            Key Product Forecast (FC) Editor
+            Key Product Forecast (FC)
           </h1>
           <p className="text-gray-500">
             ปรับปรุงยอดพยากรณ์การขายแยกตามช่องทางจำหน่าย (Channels) และแก้ไข
@@ -374,8 +373,8 @@ export default function KeyFC() {
         {/* --- END GRAND TOTAL SUMMARY --- */}
 
         {/* --- Filter Bar --- */}
-        <div className="p-4 bg-pink-50 rounded-lg shadow-inner mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
+        <div className="p-4 bg-pink-50 rounded-lg shadow-inner mb-6 border border-pink-200">
+          <div className="grid grid-cols-1 md:grid-cols-6 gap-4 items-end ">
             {/* 1. ค้นหาสินค้า (Code/Desc) - Real-time filtering */}
             <div className="md:col-span-2">
               <label className="block text-sm font-bold text-gray-700 mb-1">
@@ -388,7 +387,7 @@ export default function KeyFC() {
                   placeholder="ค้นหา..."
                   value={filters.search}
                   onChange={(e) => handleFilterChange("search", e.target.value)}
-                  className="p-2 pl-9 pr-8 border border-gray-300 rounded-lg shadow-sm focus:ring-pink-500 focus:border-pink-500 bg-white w-full"
+                  className="p-1.5 pl-9 pr-8 border border-gray-300 rounded-lg shadow-sm focus:ring-pink-500 focus:border-pink-500 bg-white w-full"
                   // ^^^^^^ เพิ่ม w-full ที่นี่
                 />
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
@@ -491,7 +490,7 @@ export default function KeyFC() {
         {/* --- End Filter Bar --- */}
 
         {/* --- Column Toggle Bar & Save Button --- */}
-        <div className="flex justify-between items-center mb-4 flex-wrap gap-4">
+        <div className="flex justify-end items-end  mb-4  gap-4">
           <div className="flex gap-4">
             <ColumnToggleDropdown
               hiddenColumnsList={hiddenColumnsList}
@@ -636,8 +635,6 @@ export default function KeyFC() {
                 </tr>
               ))}
             </tbody>
-
-            {/* --- Table Footer for Totals (ลบออกแล้ว) --- */}
           </table>
 
           {/* แสดงเมื่อไม่มีข้อมูล */}
