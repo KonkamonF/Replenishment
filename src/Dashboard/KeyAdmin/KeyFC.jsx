@@ -313,7 +313,7 @@ export default function KeyFC() {
 
   return (
     <>
-      <div className="p-8 bg-white shadow-2xl rounded-xl">
+      <div className="p-8 bg-white shadow-2xl rounded-xl ">
         {/* --- Header with Title and Info --- */}
         <header className="mb-6 border-b pb-4">
           <h1 className="text-3xl font-extrabold text-[#640037] mb-2">
@@ -327,15 +327,15 @@ export default function KeyFC() {
         </header>
 
         {/* --- Filter Bar --- */}
-        <div className="p-4 bg-pink-50 rounded-lg shadow-inner mb-6">
+        <div className="">
           {/* ปรับเป็น grid-cols-5 สำหรับจอใหญ่ */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-6 gap-4 mb-8 w-fit items-end p-4 bg-pink-50 rounded-lg border border-pink-200">
             {/* 1. ค้นหาสินค้า (Code/Desc) - Real-time filtering */}
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1">
                 ค้นหาสินค้า (Code/Desc)
               </label>
-              <div className="relative w-full">
+              <div className="relative">
                 <input
                   type="text"
                   placeholder="ค้นหา..."
@@ -383,7 +383,7 @@ export default function KeyFC() {
               <label className="block text-sm font-bold text-gray-700 mb-1">
                 Type
               </label>
-              <div className="relative w-full">
+              <div className="relative">
                 <select
                   value={filters.type}
                   onChange={(e) => handleFilterChange("type", e.target.value)}
@@ -403,7 +403,7 @@ export default function KeyFC() {
               <label className="block text-sm font-bold text-gray-700 mb-1">
                 Class
               </label>
-              <div className="relative w-full">
+              <div className="relative ">
                 <select
                   value={filters.class} // ผูกกับ filters.class
                   onChange={(e) => handleFilterChange("class", e.target.value)} // กรองทันที
@@ -426,7 +426,7 @@ export default function KeyFC() {
               <label className="block text-sm font-bold text-gray-700 mb-1">
                 YN Best 2025 (Mock)
               </label>
-              <div className="relative w-full">
+              <div className="relative ">
                 <select
                   value={filters.ynBest}
                   onChange={(e) => handleFilterChange("ynBest", e.target.value)}
@@ -468,9 +468,9 @@ export default function KeyFC() {
         </div>
 
         {/* --- Data Table --- */}
-        <div className="relative overflow-x-auto overflow-y-auto max-h-[60vh] border-2 border-gray-300 rounded-lg shadow-xl">
-          <table className="min-w-full table-auto border-collapse">
-            <thead className="bg-[#640037] text-white sticky top-0">
+        <div className="overflow-x-auto overflow-y-auto border-2 border-gray-300 rounded-lg shadow-xl">
+          <table className="table-auto border-collapse">
+            <thead className="bg-[#640037] text-white ">
               <tr>
                 {/* Code Header (Sticky Corner) */}
                 <th className="p-3 text-left w-[120px] sticky left-0 bg-[#640037] z-30 shadow-md">
@@ -478,26 +478,26 @@ export default function KeyFC() {
                 </th>
                 {/* Description Header */}
                 {!isColumnHidden("Description") && (
-                  <th className="p-3 text-left w-[300px] font-normal">
+                  <th className="p-3 text-left  font-normal">
                     Description
                   </th>
                 )}
                 {/* Type Header */}
                 {!isColumnHidden("Type") && (
-                  <th className="p-3 text-center w-[80px] font-normal">Type</th>
+                  <th className="p-3 text-center font-normal">Type</th>
                 )}
                 {/* Class Header */}
                 {!isColumnHidden("Class") && (
-                  <th className="p-3 text-center w-[100px] border-l border-pink-700">
+                  <th className="p-3 text-center] ">
                     Class
                   </th>
                 )}
                 {/* Total FC Header (Non-Editable) */}
-                <th className="p-3 text-right w-[120px] font-extrabold border-l border-pink-700">
+                <th className="p-3 text-right font-extrabold ">
                   Total FC
                 </th>
                 {/* Total AC Header (Mock) */}
-                <th className="p-3 text-right w-[120px] font-extrabold border-l border-pink-700">
+                <th className="p-3 text-right  font-extrabold">
                   Total AC (Mock)
                 </th>
                 {/* Editable Channel Headers */}
@@ -505,7 +505,7 @@ export default function KeyFC() {
                   !isColumnHidden(channel) ? (
                     <th
                       key={channel}
-                      className="p-3 text-right w-[100px] text-sm font-normal border-l border-pink-700 whitespace-nowrap"
+                      className="p-3 text-right text-sm font-normal "
                     >
                       {channel}
                     </th>
@@ -568,7 +568,7 @@ export default function KeyFC() {
                     !isColumnHidden(channel) ? (
                       <td
                         key={channel}
-                        className="p-1 text-center border-l border-gray-200 w-[100px]"
+                        className="p-1 text-center border-l border-gray-200 "
                       >
                         <input
                           type="number"
@@ -592,13 +592,13 @@ export default function KeyFC() {
             </tbody>
 
             {/* --- Table Footer for Totals (คำนวณจาก filteredData) --- */}
-            <tfoot className="bg-pink-100 border-t-4 border-[#640037] sticky bottom-0 shadow-lg">
+            <tfoot className="bg-pink-50 border-t-4 border-[#640037] sticky bottom-0 shadow-lg">
               <tr>
                 {/* Grand Total Label (Sticky Left) */}
                 <th
                   // ใช้ totalColsForGrandTotalLabel เพื่อรวม Code, Description, Type, Class
                   colSpan={totalColsForGrandTotalLabel}
-                  className="p-3 text-right font-extrabold text-lg text-[#640037] sticky left-0 bg-pink-100 z-20 whitespace-nowrap"
+                  className="p-3 text-right font-extrabold text-lg text-[#640037] sticky left-0 bg-pink-50 z-20"
                 >
                   GRAND TOTAL:
                 </th>
@@ -614,7 +614,7 @@ export default function KeyFC() {
                   !isColumnHidden(channel) ? (
                     <th
                       key={`total-${channel}`}
-                      className="p-3 text-right font-bold text-base text-gray-800 border-l border-[#640037] whitespace-nowrap"
+                      className="p-3 text-right font-bold text-base text-gray-800 border-l border-[#640037]"
                     >
                       {grandTotals[channel].toLocaleString()}
                     </th>
