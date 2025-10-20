@@ -226,7 +226,10 @@ export default function KeyFC() {
   const isColumnHidden = (columnKey) => !!hiddenColumns[columnKey];
 
   // คอลัมน์ที่ถูกซ่อนอยู่
-  const hiddenColumnsList = hideableColumns.filter(isColumnHidden);
+  const hiddenColumnsList = hideableColumns
+    .filter(isColumnHidden)
+    .map((c) => c.split("(")[0].trim()) // ตัดส่วนในวงเล็บออกเพื่อความกระชับ
+    .join(", ");
 
   // --- Component สำหรับ Dropdown Toggle Column (คงเดิม) ---
   const ColumnToggleDropdown = () => {
@@ -247,26 +250,26 @@ export default function KeyFC() {
             document.getElementById("column-menu").classList.toggle("hidden")
           }
           className={`inline-flex justify-center items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition duration-150 shadow-md 
-              ${
-                hasHiddenColumns
-                  ? "bg-red-500 text-white border-red-600 hover:bg-red-600"
-                  : "bg-gray-200 text-gray-600 border-gray-300 hover:bg-gray-300"
-              }`}
+             ${
+               hasHiddenColumns
+                 ? "bg-red-500 text-white border-red-600 hover:bg-red-600"
+                 : "bg-gray-200 text-gray-600 border-gray-300 hover:bg-gray-300"
+             }`}
         >
           {hasHiddenColumns ? (
             <EyeOff className="w-4 h-4" />
           ) : (
             <Eye className="w-4 h-4" />
           )}
-          {hasHiddenColumns
-            ? `Show/Hide Columns (${hiddenColumnsList}) (${hiddenColumnsList.length})`
-            : `Hide/Show Columns`}
+          {`Show/Hide Columns ${
+            hasHiddenColumns ? `(${hiddenColumnsList.split(", ").length})` : ""
+          }`}
           <ChevronDown className="w-4 h-4 ml-1" />
         </button>
 
         <div
           id="column-menu"
-          className="hidden origin-top-right absolute right-0 mt-2 w-56 rounded-lg shadow-2xl bg-white ring-1 ring-pink-800 ring-opacity-20 focus:outline-none z-50"
+          className="hidden origin-top-right absolute right-0 mt-2 w-72 rounded-lg shadow-2xl bg-white ring-1 ring-pink-800 ring-opacity-20 focus:outline-none z-50"
           role="menu"
           aria-orientation="vertical"
           aria-labelledby="menu-button"
@@ -298,48 +301,55 @@ export default function KeyFC() {
     setFilters((prev) => ({ ...prev, [name]: value }));
   };
 
+  // คำนวณจำนวนคอลัมน์ที่ไม่ใช่ Total/AC/Editable Channels ที่แสดงอยู่
+  const nonEditableVisibleCols =
+    1 + // Code
+    (isColumnHidden("Description") ? 0 : 1) +
+    (isColumnHidden("Type") ? 0 : 1) +
+    (isColumnHidden("Class") ? 0 : 1);
+
+  // คำนวณจำนวนคอลัมน์ที่จะรวมใน Grand Total (นับถึง Class)
+  const totalColsForGrandTotalLabel = nonEditableVisibleCols;
+
   return (
-    // ใช้ max-w-full และ h-full เพื่อให้ยืดหยุ่นในหน้าจอขนาดใหญ่/เล็ก
     <>
       <div className="p-8 bg-white shadow-2xl rounded-xl">
         {/* --- Header with Title and Info --- */}
         <header className="mb-6 border-b pb-4">
           <h1 className="text-3xl font-extrabold text-[#640037] mb-2">
-                     Key Product Forecast (FC) Editor        {" "}
+            Key Product Forecast (FC) Editor
           </h1>
           <p className="text-gray-500">
-                      ปรับปรุงยอดพยากรณ์การขายแยกตามช่องทางจำหน่าย (Channels)
-            และแก้ไข Class สินค้า ใช้ช่อง **Filter Bar**
-            ด้านบนเพื่อกรองข้อมูลเฉพาะเจาะจง และใช้ปุ่ม **Show/Hide Columns**
-            ในการจัดการการแสดงคอลัมน์ในตาราง        {" "}
+            ปรับปรุงยอดพยากรณ์การขายแยกตามช่องทางจำหน่าย (Channels) และแก้ไข
+            Class สินค้า ใช้ช่อง **Filter Bar** ด้านบนเพื่อกรองข้อมูลเฉพาะเจาะจง
+            และใช้ปุ่ม **Show/Hide Columns** ในการจัดการการแสดงคอลัมน์ในตาราง
           </p>
         </header>
 
         {/* --- Filter Bar --- */}
         <div className="p-4 bg-pink-50 rounded-lg shadow-inner mb-6">
+          {/* ปรับเป็น grid-cols-5 สำหรับจอใหญ่ */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
             {/* 1. ค้นหาสินค้า (Code/Desc) - Real-time filtering */}
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1">
                 ค้นหาสินค้า (Code/Desc)
               </label>
-              <div className="relative flex-grow">
+              <div className="relative w-full">
                 <input
                   type="text"
                   placeholder="ค้นหา..."
                   value={filters.search} // ผูกกับ filters.search
                   onChange={(e) => handleFilterChange("search", e.target.value)} // กรองทันที
-                  className="w-full p-2 pl-9 border border-gray-300 rounded-lg shadow-sm focus:ring-pink-500 focus:border-pink-500 bg-white"
+                  className="p-2 pl-9 pr-8 border border-gray-300 rounded-lg shadow-sm focus:ring-pink-500 focus:border-pink-500 bg-white w-full"
                 />
-                {/* Search Icon */}
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-                {/* ปุ่มล้างการค้นหา (X icon) */}
                 {filters.search && (
                   <button
                     onClick={() => {
                       handleFilterChange("search", ""); // Clear filter state immediately
                     }}
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-red-500 p-1 z-10"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-lg text-gray-500 hover:text-red-500 font-bold p-1 leading-none"
                     title="ล้างการค้นหา"
                   >
                     &times;
@@ -353,11 +363,11 @@ export default function KeyFC() {
               <label className="block text-sm font-bold text-gray-700 mb-1">
                 Brand
               </label>
-              <div className="relative">
+              <div className="relative w-full">
                 <select
                   value={filters.brand} // ผูกกับ filters.brand
                   onChange={(e) => handleFilterChange("brand", e.target.value)} // กรองทันที
-                  className="w-full p-2 pr-10 text-gray-900 border border-gray-300 rounded-md focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm appearance-none"
+                  className="p-2 pr-10 text-gray-900 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm appearance-none w-full"
                 >
                   <option value="All">All</option>
                   <option value="TNP">TNP</option>
@@ -373,11 +383,11 @@ export default function KeyFC() {
               <label className="block text-sm font-bold text-gray-700 mb-1">
                 Type
               </label>
-              <div className="relative">
+              <div className="relative w-full">
                 <select
                   value={filters.type}
                   onChange={(e) => handleFilterChange("type", e.target.value)}
-                  className="w-full p-2 pr-10 text-gray-900 border border-gray-300 rounded-md focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm appearance-none"
+                  className="p-2 pr-10 text-gray-900 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm appearance-none w-full"
                 >
                   <option value="All">All</option>
                   <option value="ACC">ACC</option>
@@ -393,11 +403,11 @@ export default function KeyFC() {
               <label className="block text-sm font-bold text-gray-700 mb-1">
                 Class
               </label>
-              <div className="relative">
+              <div className="relative w-full">
                 <select
                   value={filters.class} // ผูกกับ filters.class
                   onChange={(e) => handleFilterChange("class", e.target.value)} // กรองทันที
-                  className="w-full p-2 pr-10 text-gray-900 border border-gray-300 rounded-md focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm appearance-none"
+                  className="p-2 pr-10 text-gray-900 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm appearance-none w-full"
                 >
                   <option value="All">All</option>
                   {availableClasses.map((c) => (
@@ -416,11 +426,11 @@ export default function KeyFC() {
               <label className="block text-sm font-bold text-gray-700 mb-1">
                 YN Best 2025 (Mock)
               </label>
-              <div className="relative">
+              <div className="relative w-full">
                 <select
                   value={filters.ynBest}
                   onChange={(e) => handleFilterChange("ynBest", e.target.value)}
-                  className="w-full p-2 pr-10 text-gray-900 border border-gray-300 rounded-md focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm appearance-none"
+                  className="p-2 pr-10 text-gray-900 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm appearance-none w-full"
                 >
                   <option value="All">All</option>
                   <option value="Y">Yes</option>
@@ -445,7 +455,7 @@ export default function KeyFC() {
             <button
               onClick={handleSubmit}
               disabled={!isDataChanged}
-              className={`px-4 py-2  rounded-lg font-semibold shadow-lg text-sm
+              className={`px-4 py-2 rounded-lg font-semibold shadow-lg text-sm transition duration-200
                 ${
                   isDataChanged
                     ? "bg-green-600 text-white hover:bg-green-700 transform hover:scale-105"
@@ -468,7 +478,7 @@ export default function KeyFC() {
                 </th>
                 {/* Description Header */}
                 {!isColumnHidden("Description") && (
-                  <th className="p-3 text-left w-[250px] font-normal">
+                  <th className="p-3 text-left w-[300px] font-normal">
                     Description
                   </th>
                 )}
@@ -512,24 +522,24 @@ export default function KeyFC() {
                   className="border-b border-gray-200 odd:bg-white even:bg-gray-50 hover:bg-pink-100 transition duration-150"
                 >
                   {/* Code (Sticky) */}
-                  <td className="p-3 text-left font-mono text-sm sticky left-0 bg-white odd:bg-white even:bg-gray-50 hover:bg-pink-100 border-r border-gray-200 z-10 font-bold text-gray-800">
+                  <td className="p-3 text-left font-mono text-sm sticky left-0 bg-white odd:bg-white even:bg-gray-50 hover:bg-pink-100 border-r border-gray-200 z-10 font-bold text-gray-800 w-[120px]">
                     {item.Code}
                   </td>
                   {/* Description */}
                   {!isColumnHidden("Description") && (
-                    <td className="p-3 text-left font-medium text-gray-700">
+                    <td className="p-3 text-left font-medium text-gray-700 w-[300px]">
                       {item.Description}
                     </td>
                   )}
                   {/* Type */}
                   {!isColumnHidden("Type") && (
-                    <td className="p-3 text-center text-xs text-gray-500">
+                    <td className="p-3 text-center text-xs text-gray-500 w-[80px]">
                       {item.Type}
                     </td>
                   )}
                   {/* Class Selector */}
                   {!isColumnHidden("Class") && (
-                    <td className="p-1 text-center border-l border-gray-200">
+                    <td className="p-1 text-center border-l border-gray-200 w-[100px]">
                       <select
                         value={item.Class}
                         onChange={(e) =>
@@ -546,11 +556,11 @@ export default function KeyFC() {
                     </td>
                   )}
                   {/* Total FC */}
-                  <td className="p-3 text-right font-extrabold text-lg text-red-600 border-l border-gray-200">
+                  <td className="p-3 text-right font-extrabold text-lg text-red-600 border-l border-gray-200 w-[120px]">
                     {item.Total.toLocaleString()}
                   </td>
                   {/* Total AC (Mock) */}
-                  <td className="p-3 text-right font-normal text-gray-600 border-l border-gray-200">
+                  <td className="p-3 text-right font-normal text-gray-600 border-l border-gray-200 w-[120px]">
                     {(item.Total * 0.9).toFixed(0).toLocaleString()}
                   </td>
                   {/* Editable Channel Inputs */}
@@ -558,7 +568,7 @@ export default function KeyFC() {
                     !isColumnHidden(channel) ? (
                       <td
                         key={channel}
-                        className="p-1 text-center border-l border-gray-200"
+                        className="p-1 text-center border-l border-gray-200 w-[100px]"
                       >
                         <input
                           type="number"
@@ -586,13 +596,9 @@ export default function KeyFC() {
               <tr>
                 {/* Grand Total Label (Sticky Left) */}
                 <th
-                  colSpan={
-                    1 + // Code
-                    (isColumnHidden("Description") ? 0 : 1) +
-                    (isColumnHidden("Type") ? 0 : 1) +
-                    (isColumnHidden("Class") ? 0 : 1)
-                  }
-                  className="p-3 text-right font-extrabold text-lg text-[#640037] sticky left-0 bg-pink-100 z-20"
+                  // ใช้ totalColsForGrandTotalLabel เพื่อรวม Code, Description, Type, Class
+                  colSpan={totalColsForGrandTotalLabel}
+                  className="p-3 text-right font-extrabold text-lg text-[#640037] sticky left-0 bg-pink-100 z-20 whitespace-nowrap"
                 >
                   GRAND TOTAL:
                 </th>
