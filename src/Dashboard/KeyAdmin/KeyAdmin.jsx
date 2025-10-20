@@ -398,7 +398,7 @@ export default function InventoryTradeMonitorWithFilters() {
       {/* --- Header & Summary --- */}
       <header className="mb-6 border-b pb-4">
         <h1 className="text-3xl font-extrabold text-[#640037] mb-2">
-          Inventory & Trade Monitor
+          Key Account (Sale) Monitor
         </h1>
         <p className="text-gray-500">
           ข้อมูลคงคลัง (Stock) และยอดขาย (Sale Out) พร้อมระบบค้นหาและกรองข้อมูล
@@ -452,20 +452,20 @@ export default function InventoryTradeMonitorWithFilters() {
             placeholder="ค้นหา..."
             value={filters.search}
             onChange={(e) => handleFilterChange("search", e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-pink-500 focus:border-pink-500"
+            className="w-full p-2 border border-gray-300 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
           />
         </div>
 
         {/* Brand Filter */}
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1">
+          <label className="block text-sm font-semibold text-gray-700 mb-1 ">
             Brand
           </label>
           <div className="relative">
             <select
               value={filters.brand}
               onChange={(e) => handleFilterChange("brand", e.target.value)}
-              className="w-full p-2 pr-10 border border-gray-300 rounded-lg shadow-sm appearance-none"
+              className="w-full p-2 pr-10 border border-gray-300 rounded-lg shadow-sm appearance-none bg-white"
             >
               {uniqueBrands.map((brand) => (
                 <option key={brand} value={brand}>
@@ -486,7 +486,7 @@ export default function InventoryTradeMonitorWithFilters() {
             <select
               value={filters.class}
               onChange={(e) => handleFilterChange("class", e.target.value)}
-              className="w-full p-2 pr-10 border border-gray-300 rounded-lg shadow-sm appearance-none"
+              className="w-full p-2 pr-10 border border-gray-300 rounded-lg shadow-sm appearance-none bg-white"
             >
               {uniqueClasses.map((cls) => (
                 <option key={cls} value={cls}>
@@ -507,7 +507,7 @@ export default function InventoryTradeMonitorWithFilters() {
             <select
               value={filters.best2025}
               onChange={(e) => handleFilterChange("best2025", e.target.value)}
-              className="w-full p-2 pr-10 border border-gray-300 rounded-lg shadow-sm appearance-none"
+              className="w-full p-2 pr-10 border border-gray-300 rounded-lg shadow-sm appearance-none bg-white"
             >
               {uniqueBest2025.map((opt) => (
                 <option key={opt} value={opt}>
@@ -528,7 +528,7 @@ export default function InventoryTradeMonitorWithFilters() {
             <select
               value={filters.tradeStatus}
               onChange={(e) => handleFilterChange("tradeStatus", e.target.value)}
-              className="w-full p-2 pr-10 border border-gray-300 rounded-lg shadow-sm appearance-none"
+              className="w-full p-2 pr-10 border border-gray-300 rounded-lg shadow-sm appearance-none bg-white"
             >
               {uniqueTradeStatus.map((status) => (
                 <option key={status} value={status}>

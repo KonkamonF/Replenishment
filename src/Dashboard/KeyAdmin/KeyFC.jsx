@@ -111,6 +111,115 @@ const calculateTotal = (item) => {
   );
 };
 
+// --- Component สำหรับ Dropdown Toggle Column (คงเดิม) ---
+const ColumnToggleDropdown = ({
+  hiddenColumnsList,
+  isColumnHidden,
+  toggleColumnVisibility,
+  editableChannels,
+  hideableColumns,
+}) => {
+  const allColumns = [
+    { key: "Description", name: "Description" },
+    { key: "Type", name: "Type" },
+    { key: "Class", name: "Class" },
+    ...editableChannels.map((c) => ({ key: c, name: c })),
+  ];
+
+  const hasHiddenColumns = allColumns.some((col) => isColumnHidden(col.key));
+
+  return (
+    <div className="relative inline-block text-left">
+      <button
+        type="button"
+        onClick={() =>
+          document.getElementById("column-menu").classList.toggle("hidden")
+        }
+        className={`inline-flex justify-center items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition duration-150 shadow-md 
+           ${
+             hasHiddenColumns
+               ? "bg-red-500 text-white border-red-600 hover:bg-red-600"
+               : "bg-gray-200 text-gray-600 border-gray-300 hover:bg-gray-300"
+           }`}
+      >
+        {hasHiddenColumns ? (
+          <EyeOff className="w-4 h-4" />
+        ) : (
+          <Eye className="w-4 h-4" />
+        )}
+        {`Show/Hide Columns ${
+          hasHiddenColumns ? `(${hiddenColumnsList.split(", ").length})` : ""
+        }`}
+        <ChevronDown className="w-4 h-4 ml-1" />
+      </button>
+
+      <div
+        id="column-menu"
+        className="hidden origin-top-right absolute right-0 mt-2 w-72 rounded-lg shadow-2xl bg-white ring-1 ring-pink-800 ring-opacity-20 focus:outline-none z-50"
+        role="menu"
+        aria-orientation="vertical"
+        aria-labelledby="menu-button"
+      >
+        <div className="py-1 max-h-60 overflow-y-auto">
+          {allColumns.map((col) => (
+            <div
+              key={col.key}
+              onClick={() => toggleColumnVisibility(col.key)}
+              className="flex items-center justify-between px-4 py-2 text-sm text-gray-600 hover:bg-pink-100 cursor-pointer transition duration-100"
+              role="menuitem"
+            >
+              <span className="font-medium">{col.name}</span>
+              {isColumnHidden(col.key) ? (
+                <EyeOff className="w-4 h-4 text-red-500" />
+              ) : (
+                <Eye className="w-4 h-4 text-green-500" />
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// --- Summary Metrics Component ---
+const SummaryMetrics = ({ grandTotals, filteredDataLength, dataLength }) => {
+  const totalAC = (grandTotals.Total * 0.9).toFixed(0).toLocaleString();
+
+  return (
+    <div className="mb-6 p-4 bg-[#640037] rounded-xl shadow-2xl text-white">
+      <h2 className="text-xl font-bold mb-3 border-b border-pink-400 pb-2">
+        SUMMARY FC / AC
+      </h2>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="p-3 bg-pink-700/50 rounded-lg">
+          <p className="text-sm font-medium">Total FC (All Channels)</p>
+          <p className="text-2xl font-extrabold text-red-300">
+            {grandTotals.Total.toLocaleString()}
+          </p>
+        </div>
+        <div className="p-3 bg-pink-700/50 rounded-lg">
+          <p className="text-sm font-medium">Total AC (Mock)</p>
+          <p className="text-2xl font-extrabold text-red-300">{totalAC}</p>
+        </div>
+        <div className="p-3 bg-pink-700/50 rounded-lg">
+          <p className="text-sm font-medium">Items Displayed</p>
+          <p className="text-2xl font-extrabold">
+            {filteredDataLength.toLocaleString()}
+          </p>
+        </div>
+        <div className="p-3 bg-pink-700/50 rounded-lg">
+          <p className="text-sm font-medium">Total Items in Data</p>
+          <p className="text-2xl font-extrabold">
+            {dataLength.toLocaleString()}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// --- Main Component ---
 export default function KeyFC() {
   const [data, setData] = useState(initialKeyFCData);
   const [isDataChanged, setIsDataChanged] = useState(false);
@@ -123,7 +232,7 @@ export default function KeyFC() {
   });
   const [hiddenColumns, setHiddenColumns] = useState({});
 
-  // --- UPDATED: Filtered Data (ใช้ useMemo เพื่อกรองหลายเงื่อนไข) ---
+  // --- Filtered Data (ใช้ useMemo เพื่อกรองหลายเงื่อนไข) ---
   const filteredData = useMemo(() => {
     let currentData = data;
     const lowerCaseSearch = filters.search.toLowerCase();
@@ -146,9 +255,6 @@ export default function KeyFC() {
     if (filters.type !== "All") {
       currentData = currentData.filter((item) => item.Type === filters.type);
     }
-
-    // Note: Brand, YN Best filters are mocked in the UI and ready for full implementation here.
-    // if (filters.brand !== "All") { /* ... filter logic ... */ }
 
     return currentData;
   }, [data, filters]);
@@ -201,7 +307,6 @@ export default function KeyFC() {
   // Function สำหรับการยืนยันการเปลี่ยนแปลง (Submit) (พร้อม Mock Logic)
   const handleSubmit = () => {
     if (!isDataChanged) {
-      // ใช้วิธีแสดง Modal หรือ Message box แทน alert()
       console.log("ไม่พบการเปลี่ยนแปลงข้อมูล กรุณาแก้ไขข้อมูลก่อนบันทึก.");
       return;
     }
@@ -231,71 +336,6 @@ export default function KeyFC() {
     .map((c) => c.split("(")[0].trim()) // ตัดส่วนในวงเล็บออกเพื่อความกระชับ
     .join(", ");
 
-  // --- Component สำหรับ Dropdown Toggle Column (คงเดิม) ---
-  const ColumnToggleDropdown = () => {
-    const allColumns = [
-      { key: "Description", name: "Description" },
-      { key: "Type", name: "Type" },
-      { key: "Class", name: "Class" },
-      ...editableChannels.map((c) => ({ key: c, name: c })),
-    ];
-
-    const hasHiddenColumns = allColumns.some((col) => isColumnHidden(col.key));
-
-    return (
-      <div className="relative inline-block text-left">
-        <button
-          type="button"
-          onClick={() =>
-            document.getElementById("column-menu").classList.toggle("hidden")
-          }
-          className={`inline-flex justify-center items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition duration-150 shadow-md 
-             ${
-               hasHiddenColumns
-                 ? "bg-red-500 text-white border-red-600 hover:bg-red-600"
-                 : "bg-gray-200 text-gray-600 border-gray-300 hover:bg-gray-300"
-             }`}
-        >
-          {hasHiddenColumns ? (
-            <EyeOff className="w-4 h-4" />
-          ) : (
-            <Eye className="w-4 h-4" />
-          )}
-          {`Show/Hide Columns ${
-            hasHiddenColumns ? `(${hiddenColumnsList.split(", ").length})` : ""
-          }`}
-          <ChevronDown className="w-4 h-4 ml-1" />
-        </button>
-
-        <div
-          id="column-menu"
-          className="hidden origin-top-right absolute right-0 mt-2 w-72 rounded-lg shadow-2xl bg-white ring-1 ring-pink-800 ring-opacity-20 focus:outline-none z-50"
-          role="menu"
-          aria-orientation="vertical"
-          aria-labelledby="menu-button"
-        >
-          <div className="py-1 max-h-60 overflow-y-auto">
-            {allColumns.map((col) => (
-              <div
-                key={col.key}
-                onClick={() => toggleColumnVisibility(col.key)}
-                className="flex items-center justify-between px-4 py-2 text-sm text-gray-600 hover:bg-pink-100 cursor-pointer transition duration-100"
-                role="menuitem"
-              >
-                <span className="font-medium">{col.name}</span>
-                {isColumnHidden(col.key) ? (
-                  <EyeOff className="w-4 h-4 text-red-500" />
-                ) : (
-                  <Eye className="w-4 h-4 text-green-500" />
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   // --- UPDATED: Unified Filter Handler ---
   const handleFilterChange = (name, value) => {
     setFilters((prev) => ({ ...prev, [name]: value }));
@@ -321,33 +361,41 @@ export default function KeyFC() {
           </h1>
           <p className="text-gray-500">
             ปรับปรุงยอดพยากรณ์การขายแยกตามช่องทางจำหน่าย (Channels) และแก้ไข
-            Class สินค้า ใช้ช่อง **Filter Bar** ด้านบนเพื่อกรองข้อมูลเฉพาะเจาะจง
-            และใช้ปุ่ม **Show/Hide Columns** ในการจัดการการแสดงคอลัมน์ในตาราง
+            Class สินค้า
           </p>
         </header>
 
+        {/* --- 1. GRAND TOTAL SUMMARY (ย้ายมาอยู่บนสุด) --- */}
+        <SummaryMetrics
+          grandTotals={grandTotals}
+          filteredDataLength={filteredData.length}
+          dataLength={data.length}
+        />
+        {/* --- END GRAND TOTAL SUMMARY --- */}
+
         {/* --- Filter Bar --- */}
-        <div className="">
-          {/* ปรับเป็น grid-cols-5 สำหรับจอใหญ่ */}
-          <div className="grid grid-cols-1 md:grid-cols-6 gap-4 mb-8 items-end p-4 bg-pink-50 rounded-lg border border-pink-200">
+        <div className="p-4 bg-pink-50 rounded-lg shadow-inner mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
             {/* 1. ค้นหาสินค้า (Code/Desc) - Real-time filtering */}
-            <div>
+            <div className="md:col-span-2">
               <label className="block text-sm font-bold text-gray-700 mb-1">
                 ค้นหาสินค้า (Code/Desc)
               </label>
+
               <div className="relative">
                 <input
                   type="text"
                   placeholder="ค้นหา..."
-                  value={filters.search} // ผูกกับ filters.search
-                  onChange={(e) => handleFilterChange("search", e.target.value)} // กรองทันที
+                  value={filters.search}
+                  onChange={(e) => handleFilterChange("search", e.target.value)}
                   className="p-2 pl-9 pr-8 border border-gray-300 rounded-lg shadow-sm focus:ring-pink-500 focus:border-pink-500 bg-white w-full"
+                  // ^^^^^^ เพิ่ม w-full ที่นี่
                 />
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                 {filters.search && (
                   <button
                     onClick={() => {
-                      handleFilterChange("search", ""); // Clear filter state immediately
+                      handleFilterChange("search", "");
                     }}
                     className="absolute right-2 top-1/2 transform -translate-y-1/2 text-lg text-gray-500 hover:text-red-500 font-bold p-1 leading-none"
                     title="ล้างการค้นหา"
@@ -367,14 +415,14 @@ export default function KeyFC() {
                 <select
                   value={filters.brand} // ผูกกับ filters.brand
                   onChange={(e) => handleFilterChange("brand", e.target.value)} // กรองทันที
-                  className="p-2 pr-10 text-gray-900 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm appearance-none w-full"
+                  // *** เพิ่ม w-full ที่นี่ ***
+                  className="p-2 pr-10 text-gray-900 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm w-full"
                 >
                   <option value="All">All</option>
                   <option value="TNP">TNP</option>
                   <option value="TNS">TNS</option>
                 </select>
                 {/* เพิ่มไอคอนลูกศร */}
-                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
               </div>
             </div>
 
@@ -387,14 +435,14 @@ export default function KeyFC() {
                 <select
                   value={filters.type}
                   onChange={(e) => handleFilterChange("type", e.target.value)}
-                  className="p-2 pr-10 text-gray-900 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm appearance-none w-full"
+                  // *** เพิ่ม w-full ที่นี่ ***
+                  className="p-2 pr-10 text-gray-900 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm w-full"
                 >
                   <option value="All">All</option>
                   <option value="ACC">ACC</option>
                   <option value="Sink">Sink</option>
                   <option value="Hood">Hood</option>
                 </select>
-                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
               </div>
             </div>
 
@@ -407,7 +455,8 @@ export default function KeyFC() {
                 <select
                   value={filters.class} // ผูกกับ filters.class
                   onChange={(e) => handleFilterChange("class", e.target.value)} // กรองทันที
-                  className="p-2 pr-10 text-gray-900 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm appearance-none w-full"
+                  // *** เพิ่ม w-full ที่นี่ ***
+                  className="p-2 pr-10 text-gray-900 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm w-full"
                 >
                   <option value="All">All</option>
                   {availableClasses.map((c) => (
@@ -416,8 +465,6 @@ export default function KeyFC() {
                     </option>
                   ))}
                 </select>
-                {/* เพิ่มไอคอนลูกศร */}
-                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
               </div>
             </div>
 
@@ -430,14 +477,13 @@ export default function KeyFC() {
                 <select
                   value={filters.ynBest}
                   onChange={(e) => handleFilterChange("ynBest", e.target.value)}
-                  className="p-2 pr-10 text-gray-900 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm appearance-none w-full"
+                  // *** เพิ่ม w-full ที่นี่ ***
+                  className="p-2 pr-10 text-gray-900 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm w-full"
                 >
                   <option value="All">All</option>
                   <option value="Y">Yes</option>
                   <option value="N">No</option>
                 </select>
-                {/* เพิ่มไอคอนลูกศร */}
-                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-600 pointer-events-none" />
               </div>
             </div>
           </div>
@@ -446,12 +492,14 @@ export default function KeyFC() {
 
         {/* --- Column Toggle Bar & Save Button --- */}
         <div className="flex justify-between items-center mb-4 flex-wrap gap-4">
-          <div className="text-gray-600">
-            รายการที่แสดง: **{filteredData.length}** จาก **{data.length}**
-            รายการ
-          </div>
           <div className="flex gap-4">
-            <ColumnToggleDropdown />
+            <ColumnToggleDropdown
+              hiddenColumnsList={hiddenColumnsList}
+              isColumnHidden={isColumnHidden}
+              toggleColumnVisibility={toggleColumnVisibility}
+              editableChannels={editableChannels}
+              hideableColumns={hideableColumns}
+            />
             <button
               onClick={handleSubmit}
               disabled={!isDataChanged}
@@ -468,12 +516,12 @@ export default function KeyFC() {
         </div>
 
         {/* --- Data Table --- */}
-        <div className="overflow-x-auto overflow-y-auto border-2 border-gray-300 rounded-lg shadow-xl">
-          <table className="table-auto border-collapse">
-            <thead className="bg-[#640037] text-white ">
+        <div className="relative overflow-x-auto overflow-y-auto border-2 border-gray-300 rounded-lg shadow-xl max-h-[60vh]">
+          <table className="table-auto border-collapse ">
+            <thead className="bg-[#640037] text-white sticky top-0">
               <tr>
                 {/* Code Header (Sticky Corner) */}
-                <th className="p-3 text-left w-[120px] sticky left-0 bg-[#640037] z-30 shadow-md">
+                <th className="p-3 text-left  sticky left-0 bg-[#640037] z-30 shadow-md">
                   Code
                 </th>
                 {/* Description Header */}
@@ -482,16 +530,20 @@ export default function KeyFC() {
                 )}
                 {/* Type Header */}
                 {!isColumnHidden("Type") && (
-                  <th className="p-3 text-center font-normal">Type</th>
+                  <th className="p-3 text-center  font-normal">Type</th>
                 )}
                 {/* Class Header */}
                 {!isColumnHidden("Class") && (
-                  <th className="p-3 text-center] ">Class</th>
+                  <th className="p-3 text-center  border-l border-pink-700">
+                    Class
+                  </th>
                 )}
                 {/* Total FC Header (Non-Editable) */}
-                <th className="p-3 text-right font-extrabold ">Total FC</th>
+                <th className="p-3 text-right font-extrabold border-l border-pink-700">
+                  Total FC
+                </th>
                 {/* Total AC Header (Mock) */}
-                <th className="p-3 text-right  font-extrabold">
+                <th className="p-3 text-right  font-extrabold border-l border-pink-700">
                   Total AC (Mock)
                 </th>
                 {/* Editable Channel Headers */}
@@ -499,7 +551,7 @@ export default function KeyFC() {
                   !isColumnHidden(channel) ? (
                     <th
                       key={channel}
-                      className="p-3 text-right text-sm font-normal "
+                      className="p-3 text-right  text-sm font-normal border-l border-pink-700"
                     >
                       {channel}
                     </th>
@@ -516,30 +568,30 @@ export default function KeyFC() {
                   className="border-b border-gray-200 odd:bg-white even:bg-gray-50 hover:bg-pink-100 transition duration-150"
                 >
                   {/* Code (Sticky) */}
-                  <td className="p-3 text-left font-mono text-sm sticky left-0 bg-white odd:bg-white even:bg-gray-50 hover:bg-pink-100 border-r border-gray-200 z-10 font-bold text-gray-800 w-[120px]">
+                  <td className="p-3 text-left font-mono text-sm sticky left-0 bg-white odd:bg-white even:bg-gray-50 hover:bg-pink-100 border-r border-gray-200 z-10 font-bold text-gray-800 ">
                     {item.Code}
                   </td>
                   {/* Description */}
                   {!isColumnHidden("Description") && (
-                    <td className="p-3 text-left font-medium text-gray-700 w-[300px]">
+                    <td className="p-3 text-left font-medium text-gray-700">
                       {item.Description}
                     </td>
                   )}
                   {/* Type */}
                   {!isColumnHidden("Type") && (
-                    <td className="p-3 text-center text-xs text-gray-500 w-[80px]">
+                    <td className="p-3 text-center text-xs text-gray-500 ">
                       {item.Type}
                     </td>
                   )}
                   {/* Class Selector */}
                   {!isColumnHidden("Class") && (
-                    <td className="p-1 text-center border-l border-gray-200 w-[100px]">
+                    <td className="p-1 text-center border-l border-gray-200 ">
                       <select
                         value={item.Class}
                         onChange={(e) =>
                           handleClassChange(item.Code, e.target.value)
                         }
-                        className="p-1 w-full text-center bg-transparent border border-gray-300 rounded focus:ring-pink-500 focus:border-pink-500 text-sm font-bold"
+                        className="p-1  text-center bg-transparent border border-gray-300 rounded focus:ring-pink-500 focus:border-pink-500 text-sm font-bold"
                       >
                         {availableClasses.map((c) => (
                           <option key={c} value={c}>
@@ -550,11 +602,11 @@ export default function KeyFC() {
                     </td>
                   )}
                   {/* Total FC */}
-                  <td className="p-3 text-right font-extrabold text-lg text-red-600 border-l border-gray-200 w-[120px]">
+                  <td className="p-3 text-right font-extrabold text-lg text-red-600 border-l border-gray-200">
                     {item.Total.toLocaleString()}
                   </td>
                   {/* Total AC (Mock) */}
-                  <td className="p-3 text-right font-normal text-gray-600 border-l border-gray-200 w-[120px]">
+                  <td className="p-3 text-right font-normal text-gray-600 border-l border-gray-200 ">
                     {(item.Total * 0.9).toFixed(0).toLocaleString()}
                   </td>
                   {/* Editable Channel Inputs */}
@@ -585,37 +637,7 @@ export default function KeyFC() {
               ))}
             </tbody>
 
-            {/* --- Table Footer for Totals (คำนวณจาก filteredData) --- */}
-            <tfoot className="bg-pink-50 border-t-4 border-[#640037] sticky bottom-0 shadow-lg">
-              <tr>
-                {/* Grand Total Label (Sticky Left) */}
-                <th
-                  // ใช้ totalColsForGrandTotalLabel เพื่อรวม Code, Description, Type, Class
-                  colSpan={totalColsForGrandTotalLabel}
-                  className="p-3 text-right font-extrabold text-lg text-[#640037] sticky left-0 bg-pink-50 z-20"
-                >
-                  GRAND TOTAL:
-                </th>
-                {/* Grand Total FC & AC (AC is Mock) */}
-                <th className="p-3 text-right font-extrabold text-xl text-red-800 border-l border-[#640037]">
-                  {grandTotals.Total.toLocaleString()}
-                </th>
-                <th className="p-3 text-right font-extrabold text-xl text-red-800 border-l border-[#640037]">
-                  {(grandTotals.Total * 0.9).toFixed(0).toLocaleString()}
-                </th>
-                {/* Grand Totals by Channel */}
-                {editableChannels.map((channel) =>
-                  !isColumnHidden(channel) ? (
-                    <th
-                      key={`total-${channel}`}
-                      className="p-3 text-right font-bold text-base text-gray-800 border-l border-[#640037]"
-                    >
-                      {grandTotals[channel].toLocaleString()}
-                    </th>
-                  ) : null
-                )}
-              </tr>
-            </tfoot>
+            {/* --- Table Footer for Totals (ลบออกแล้ว) --- */}
           </table>
 
           {/* แสดงเมื่อไม่มีข้อมูล */}
