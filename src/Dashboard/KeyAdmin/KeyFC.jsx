@@ -515,43 +515,28 @@ export default function KeyFC() {
         </div>
 
         {/* --- Data Table --- */}
-        <div className="relative overflow-x-auto overflow-y-auto border-2 border-gray-300 rounded-lg shadow-xl max-h-[60vh]">
-          <table className="table-auto border-collapse ">
-            <thead className="bg-[#640037] text-white sticky top-0">
+        <div className="relative overflow-x-auto border-2 border-gray-300 rounded-lg shadow-xl ">
+          <table className="table-auto text-sm ">
+            <thead className="bg-[#640037] text-white">
               <tr>
                 {/* Code Header (Sticky Corner) */}
-                <th className="p-3 text-left  sticky left-0 bg-[#640037] z-30 shadow-md">
-                  Code
-                </th>
+                <th className="p-3 bg-[#640037] shadow-md">Code</th>
                 {/* Description Header */}
                 {!isColumnHidden("Description") && (
-                  <th className="p-3 text-left  font-normal">Description</th>
+                  <th className="p-3  ">Description</th>
                 )}
                 {/* Type Header */}
-                {!isColumnHidden("Type") && (
-                  <th className="p-3 text-center  font-normal">Type</th>
-                )}
+                {!isColumnHidden("Type") && <th className="p-3 ">Type</th>}
                 {/* Class Header */}
-                {!isColumnHidden("Class") && (
-                  <th className="p-3 text-center  border-l border-pink-700">
-                    Class
-                  </th>
-                )}
+                {!isColumnHidden("Class") && <th className="p-3  ">Class</th>}
                 {/* Total FC Header (Non-Editable) */}
-                <th className="p-3 text-right font-extrabold border-l border-pink-700">
-                  Total FC
-                </th>
+                <th className="p-3  ">Total FC</th>
                 {/* Total AC Header (Mock) */}
-                <th className="p-3 text-right  font-extrabold border-l border-pink-700">
-                  Total AC (Mock)
-                </th>
+                <th className="p-3  ">Total AC</th>
                 {/* Editable Channel Headers */}
                 {editableChannels.map((channel) =>
                   !isColumnHidden(channel) ? (
-                    <th
-                      key={channel}
-                      className="p-3 text-right  text-sm font-normal border-l border-pink-700"
-                    >
+                    <th key={channel} className="p-3 ">
                       {channel}
                     </th>
                   ) : null
@@ -564,33 +549,35 @@ export default function KeyFC() {
               {filteredData.map((item, index) => (
                 <tr
                   key={item.Code + index} // ใช้ key ที่ Unique มากขึ้น
-                  className="border-b border-gray-200 odd:bg-white even:bg-gray-50 hover:bg-pink-100 transition duration-150"
+                  className="border-b border-gray-200 text-center hover:bg-pink-50 "
                 >
-                  {/* Code (Sticky) */}
-                  <td className="p-3 text-left font-mono text-sm sticky left-0 bg-white odd:bg-white even:bg-gray-50 hover:bg-pink-100 border-r border-gray-200 z-10 font-bold text-gray-800 ">
-                    {item.Code}
+                  <td className="p-3 w-36 font-mono text-sm border-r text-center border-gray-200">
+                    <span className="font-bold text-[#640037]">
+                      {item.Code}
+                    </span>
+                    <br />
+                    <span className="text-xs text-gray-500">{item.Type}</span>
                   </td>
+
                   {/* Description */}
                   {!isColumnHidden("Description") && (
-                    <td className="p-3 text-left font-medium text-gray-700">
+                    <td className="p-3  font-medium text-gray-700 border-r text-center border-gray-200 ">
                       {item.Description}
                     </td>
                   )}
                   {/* Type */}
                   {!isColumnHidden("Type") && (
-                    <td className="p-3 text-center text-xs text-gray-500 ">
-                      {item.Type}
-                    </td>
+                    <td className="p-3  text-xs text-gray-700 ">{item.Type}</td>
                   )}
                   {/* Class Selector */}
                   {!isColumnHidden("Class") && (
-                    <td className="p-1 text-center border-l border-gray-200 ">
+                    <td className="p-1  border-l text-center border-gray-200 ">
                       <select
                         value={item.Class}
                         onChange={(e) =>
                           handleClassChange(item.Code, e.target.value)
                         }
-                        className="p-1  text-center bg-transparent border border-gray-300 rounded focus:ring-pink-500 focus:border-pink-500 text-sm font-bold"
+                        className="p-1 text-center bg-transparent border border-gray-300 rounded focus:ring-pink-500 focus:border-pink-500 text-sm font-bold"
                       >
                         {availableClasses.map((c) => (
                           <option key={c} value={c}>
@@ -601,11 +588,11 @@ export default function KeyFC() {
                     </td>
                   )}
                   {/* Total FC */}
-                  <td className="p-3 text-right font-extrabold text-lg text-red-600 border-l border-gray-200">
+                  <td className="p-3  font-extrabold text-lg text-red-600 border-l border-gray-200">
                     {item.Total.toLocaleString()}
                   </td>
                   {/* Total AC (Mock) */}
-                  <td className="p-3 text-right font-normal text-gray-600 border-l border-gray-200 ">
+                  <td className="p-3  font-normal text-gray-600 border-l border-gray-200 ">
                     {(item.Total * 0.9).toFixed(0).toLocaleString()}
                   </td>
                   {/* Editable Channel Inputs */}
@@ -613,7 +600,7 @@ export default function KeyFC() {
                     !isColumnHidden(channel) ? (
                       <td
                         key={channel}
-                        className="p-1 text-center border-l border-gray-200 "
+                        className="p-1 border-l  border-gray-200 "
                       >
                         <input
                           type="number"
@@ -626,7 +613,7 @@ export default function KeyFC() {
                               e.target.value
                             )
                           }
-                          className="w-full p-1 text-right border-b-2 border-pink-300 focus:border-pink-600 focus:ring-0 text-sm font-medium transition duration-100 bg-transparent"
+                          className="w-full p-1 text-center border-b-2 border-pink-300  text-sm font-medium bg-transparent focus:outline-none focus:ring-2 focus:ring-pink-900 focus:border-pink-800 focus:rounded-lg"
                           style={{ backgroundColor: "transparent" }}
                         />
                       </td>
