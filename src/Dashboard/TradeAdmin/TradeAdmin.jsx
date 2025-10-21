@@ -323,7 +323,7 @@ const TradeCommunicationModal = ({
               className="px-4 py-2 text-sm font-medium cursor-pointer text-white bg-pink-600 rounded-lg hover:bg-pink-700 transition duration-150 disabled:bg-pink-300"
               disabled={!currentData.comment.trim()}
             >
-              Submit Action & Save Remark
+              Save
             </button>
           </div>
         </div>
