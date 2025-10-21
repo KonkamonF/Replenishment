@@ -39,16 +39,16 @@ export default function SuperAdmin() {
         <h1 className="text-3xl font-extrabold text-[#640037]">
           Super Admin Dashboard
         </h1>
-        <div className="space-x-4">
+        <div className="space-x-4 ">
           <button
             onClick={handleImport}
-            className="px-4 py-2 bg-[#640037] text-white font-semibold rounded-lg shadow-md hover:shadow-xl hover:bg-pink-600"
+            className="px-4 py-2 bg-[#640037] cursor-pointer text-white font-semibold rounded-lg shadow-md hover:shadow-xl hover:bg-pink-600"
           >
             Import Excel
           </button>
           <button
             onClick={handleExport}
-            className="px-4 py-2 bg-pink-800 text-white font-semibold rounded-lg shadow-md hover:shadow-xl hover:bg-pink-600 "
+            className="px-4 py-2 bg-pink-800 cursor-pointer text-white font-semibold rounded-lg shadow-md hover:shadow-xl hover:bg-pink-600 "
           >
             Export Excel
           </button>
@@ -94,7 +94,7 @@ export default function SuperAdmin() {
             Analysis & Forecast (Interactive Charts)
           </h2>
 
-          <div className="bg-white p-6 rounded-xl shadow-2xl border-4 border-[#640037]">
+          <div className="bg-white p-6 rounded-xl shadow-2xl border-4  border-[#640037]">
             {/* The chart component itself */}
             <AcAndFc />
             <Charts />
@@ -103,7 +103,7 @@ export default function SuperAdmin() {
             <div className="mt-4 flex justify-end">
               <button
                 onClick={handleViewChartData}
-                className="mt-6 flex items-center space-x-1 px-3 py-1 text-sm text-[#640037] border border-pink-300 rounded-md hover:bg-pink-50 transition duration-150"
+                className="mt-6 flex items-center cursor-pointer space-x-1 px-3 py-1 text-sm text-[#640037] border border-pink-300 rounded-md hover:bg-pink-50 transition duration-150"
                 aria-label="View underlying chart data"
               >
                 <svg

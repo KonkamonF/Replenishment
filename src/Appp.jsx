@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, Outlet } from "react-router-dom";
 import Side from "./SideBar/Side";
+import sbo from "../src/assets/sbo.png";
 
 export default function Appp() {
   // 1. State เพื่อจัดการสถานะการเปิด-ปิด/ยุบ-ขยาย Sidebar
@@ -24,7 +25,7 @@ export default function Appp() {
           {/* Sidebar Toggle Button (แสดงตลอดเวลาใน Header) */}
           <button
             onClick={toggleSidebar}
-            className="text-[#640037] p-2 rounded-md hover:bg-pink-100 mr-4 transition-colors"
+            className="text-[#640037] p-2 rounded-md hover:bg-pink-100 mr-4 transition-colors cursor-pointer"
             title={isSidebarOpen ? "Collapse Sidebar" : "Expand Sidebar"}
           >
             {/* ใช้ Icon ตามสถานะ: เปิดใช้ลูกศรซ้าย, ปิดใช้เมนู */}
@@ -64,22 +65,8 @@ export default function Appp() {
           </button>
 
           {/* Logo / System Title */}
-          <Link to="/" className="flex items-center space-x-2 cursor-pointer">
-            <svg
-              className="w-8 h-8 text-[#640037]"
-              /* ... (SVG Path เดิม) ... */
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0l2.583 3m-2.583-3h11.834m-7.667 0h-4M10 17h4"
-              ></path>
-            </svg>
+          <Link to="/" className="flex items-center space-x-4 cursor-pointer">
+            <img src={sbo} alt="" className="w-16"/>
             <span className="text-xl font-bold text-[#640037]">
               Replenishment System
             </span>
@@ -88,7 +75,7 @@ export default function Appp() {
           {/* User Profile / Notifications */}
           <div className="flex items-center space-x-4 ml-auto">
             <div className="text-sm text-gray-500 ">Welcome, Admin User</div>
-            <div className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center text-[#640037] font-semibold cursor-pointer border-2 border-pink-300">
+            <div className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center text-[#640037] font-semibold cursor-pointer border-2 border-pink-900">
               AD
             </div>
           </div>
@@ -103,7 +90,6 @@ export default function Appp() {
             style={{
               width: isSidebarOpen ? sidebarWidth : "0", // ควบคุมความกว้าง
               minHeight: "calc(100vh - 64px)", // ความสูงเต็มหน้าจอ ลบความสูง Header
-        
             }}
           >
             {/* Side Component ถูกห่อด้วย div เพื่อป้องกันการย่อขนาด */}
