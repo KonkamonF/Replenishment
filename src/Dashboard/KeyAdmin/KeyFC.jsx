@@ -577,7 +577,7 @@ export default function KeyFC() {
                         onChange={(e) =>
                           handleClassChange(item.Code, e.target.value)
                         }
-                        className="p-1 text-center bg-transparent border border-gray-300 rounded focus:ring-pink-500 focus:border-pink-500 text-sm font-bold"
+                        className="p-1 text-center  border border-gray-300 rounded focus:ring-pink-800 focus:border-pink-800 text-sm font-bold"
                       >
                         {availableClasses.map((c) => (
                           <option key={c} value={c}>
@@ -613,7 +613,7 @@ export default function KeyFC() {
                               e.target.value
                             )
                           }
-                          className="w-full p-1 text-center border-b-2 border-pink-300  text-sm font-medium bg-transparent focus:outline-none focus:ring-2 focus:ring-pink-900 focus:border-pink-800 focus:rounded-lg"
+                          className="w-full p-1 text-center border-b-2  border-pink-300  text-sm font-medium bg-transparent focus:outline-none focus:ring-2 focus:ring-pink-900 focus:border-pink-800 focus:rounded-lg"
                           style={{ backgroundColor: "transparent" }}
                         />
                       </td>
