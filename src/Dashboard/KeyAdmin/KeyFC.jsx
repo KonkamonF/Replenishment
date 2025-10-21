@@ -15,6 +15,7 @@ const initialKeyFCData = [
     "HP Beer": 1500,
     "HP Online P Ann": 0,
     "HP P Ann": 0,
+    AC: 2589,
     BTV: 5,
     Dealer: 22,
     Dohome: 450,
@@ -34,6 +35,7 @@ const initialKeyFCData = [
     "HP Beer": 150,
     "HP Online P Ann": 2,
     "HP P Ann": 350,
+    AC: 1400,
     BTV: 20,
     Dealer: 28,
     Dohome: 100,
@@ -53,6 +55,7 @@ const initialKeyFCData = [
     "HP Beer": 0,
     "HP Online P Ann": 0,
     "HP P Ann": 0,
+    AC: 2809,
     BTV: 50,
     Dealer: 41,
     Dohome: 120,
@@ -72,6 +75,7 @@ const initialKeyFCData = [
     "HP Beer": 1000,
     "HP Online P Ann": 500,
     "HP P Ann": 500,
+    AC: 2909,
     BTV: 100,
     Dealer: 500,
     Dohome: 500,
@@ -187,62 +191,57 @@ import { Pie } from "react-chartjs-2";
 
 ChartJS.register(ArcElement, Tooltip, Legend, Title);
 
-export function SummaryMetrics({
-  grandTotals,
-  filteredDataLength,
-  dataLength,
-}) {
-  const totalAC = (grandTotals.Total * 0.9).toFixed(0);
+export function SummaryMetrics({ grandTotals, dataAC }) {
+  const totalAC = Array.isArray(dataAC)
+    ? dataAC.reduce((sum, item) => sum + (Number(item.AC) || 0), 0)
+    : 0;
 
+  const totalFC = grandTotals?.Total || 0;
+
+  // เตรียมข้อมูลสำหรับ Pie Chart
   const chartData = {
-    labels: ["Total FC", "Total AC (Mock)"],
+    labels: ["Total FC", "Total AC"],
     datasets: [
       {
-        label: "Summary Data",
-        data: [grandTotals.Total, totalAC, filteredDataLength, dataLength],
+        data: [totalFC, totalAC],
         backgroundColor: [
-          "rgba(74, 222, 128, 0.6)", // green
-
-          "rgba(125, 211, 252, 0.6)", // sky
+          "rgba(255, 99, 132, 0.6)", // สีชมพูสำหรับ FC
+          "rgba(54, 162, 235, 0.6)", // สีฟ้าสำหรับ AC
         ],
-        borderColor: [
-          "rgba(74, 222, 128, 0.6)", // green
-
-          "rgba(125, 211, 252, 0.6)", // sky
-        ],
+        borderColor: ["rgba(255, 99, 132, 1)", "rgba(54, 162, 235, 1)"],
         borderWidth: 1,
       },
     ],
   };
 
   const options = {
-    responsive: true,
     plugins: {
       legend: {
-        position: "bottom",
-        labels: {
-          color: "#640037",
-          font: { size: 12, weight: "bold" },
-        },
-      },
-      title: {
-        display: true,
-        text: "SUMMARY FC / AC",
-        color: "#640037",
-        font: { size: 18, weight: "bold" },
-      },
-      tooltip: {
-        callbacks: {
-          label: (ctx) => `${ctx.label}: ${ctx.parsed.toLocaleString("en-US")}`,
-        },
+        position: "right",
       },
     },
   };
 
   return (
-    <div className="mb-6 p-4 w-84 text-[#640037]">
-      <div className="w-64 mx-auto">
-        <Pie data={chartData} options={options} />
+    <div className="bg-pink-50 border border-pink-200 rounded-lg p-4 mb-6 shadow-inner w-96">
+      <div className="mt-4">
+        <div className="w-69 h-69">
+          <Pie options={options} data={chartData} />
+        </div>
+      </div>
+      <div className="flex items-center gap-6 md:ml-8 mt-4">
+        <div className="text-center">
+          <p className="text-gray-700 text-sm">ยอดรวม Total AC</p>
+          <p className="text-2xl font-bold text-blue-600">
+            {totalAC.toLocaleString()}
+          </p>
+        </div>
+        <div className="text-center">
+          <p className="text-gray-700 text-sm">ยอดรวม Total FC</p>
+          <p className="text-2xl font-bold text-pink-700">
+            {totalFC.toLocaleString()}
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -395,11 +394,8 @@ export default function KeyFC() {
         </header>
 
         {/* --- 1. GRAND TOTAL SUMMARY (ย้ายมาอยู่บนสุด) --- */}
-        <SummaryMetrics
-          grandTotals={grandTotals}
-          filteredDataLength={filteredData.length}
-          dataLength={data.length}
-        />
+        <SummaryMetrics grandTotals={grandTotals} dataAC={filteredData} />
+
         {/* --- END GRAND TOTAL SUMMARY --- */}
 
         {/* --- Filter Bar --- */}
@@ -623,7 +619,7 @@ export default function KeyFC() {
                   </td>
                   {/* Total AC (Mock) */}
                   <td className="p-3  font-normal text-gray-600 border-l border-gray-200 ">
-                    {(item.Total * 0.9).toFixed(0).toLocaleString()}
+                    {item.AC.toLocaleString()}
                   </td>
                   {/* Editable Channel Inputs */}
                   {editableChannels.map((channel) =>
