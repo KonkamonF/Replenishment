@@ -226,7 +226,7 @@ const TradeCommunicationModal = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-2xl w-full max-w-lg p-6  overflow-y-scroll max-h-[80vh]">
+      <div className="bg-white rounded-lg shadow-2xl w-full max-w-4xl p-6  overflow-y-scroll max-h-full">
         <div className="flex justify-between items-start mb-4 border-b pb-2 ">
           <h2 className="text-xl font-bold text-[#640037]">
             Action & Communication: {item.Code}
@@ -669,9 +669,9 @@ export default function InventoryTradeMonitor() {
       </p>
 
       {/* --- Data Table Container --- */}
-      <div className="overflow-x-auto shadow-xl h-[420px] rounded-xl">
-        <table className="min-w-full table-auto border-collapse bg-white">
-          <thead className="bg-[#640037] text-white sticky top-0 text-sm">
+      <div className="overflow-x-auto shadow-xl rounded-xl">
+        <table className="w-full table-auto border-collapse bg-white text-center">
+          <thead className="bg-[#640037] text-white sticky top-0 text-sm ">
             <tr>
               <th className="p-3">Code/Brand</th>
               <th className="p-3">Description/Type</th>
@@ -681,7 +681,6 @@ export default function InventoryTradeMonitor() {
               <th className="p-3">Sale Out (เฉลี่ย/วัน)</th>
               <th className="p-3">DOH (วัน)</th>
               <th className="p-3">สถานะ Trade</th>
-              <th className="p-3">Remark Trade (ล่าสุด)</th>
               <th className="p-3">Action</th>
             </tr>
           </thead>
@@ -690,10 +689,10 @@ export default function InventoryTradeMonitor() {
               filteredData.map((item) => (
                 <tr
                   key={item.Code}
-                  className="border-b border-gray-200 hover:bg-pink-50 transition duration-150 "
+                  className="border-b border-gray-200  hover:bg-pink-50 transition duration-150 "
                 >
                   {/* Code/Brand */}
-                  <td className="p-3 text-left font-mono text-sm border-r border-gray-200">
+                  <td className="p-3 font-mono text-sm border-r border-gray-200">
                     <span className="font-bold text-[#640037]">
                       {item.Code}
                     </span>
@@ -702,45 +701,44 @@ export default function InventoryTradeMonitor() {
                   </td>
 
                   {/* Description/Type */}
-                  <td className="p-3 text-left font-semibold text-gray-700 ">
+                  <td className="p-3 font-semibold text-gray-700">
                     {item.Description}
-                    <br />
                     <span
-                      className={`ml-2 text-xs font-normal text-white px-2 py-0.5 rounded-full ${
+                      className={`ml-2 text-xs font-normal text-white px-2 py-0.5 rounded-full ${
                         item.Class === "A" ? "bg-orange-500" : "bg-pink-500"
                       }`}
                     >
                       Class {item.Class}
                     </span>
                     <br />
-                    <span className="text-xs text-gray-400 ">
+                    <span className="text-xs text-gray-400">
                       {item.Type} ({item.SubType})
                     </span>
                   </td>
 
                   {/* Price (ล่าสุด) */}
-                  <td className="p-3 text-right font-medium border-l border-gray-200">
+                  <td className="p-3  font-medium border-l border-gray-200">
                     {formatCurrency(item.ราคา_โปรล่าสุด)}
                   </td>
 
                   {/* Stock */}
-                  <td className="p-3 text-right font-bold text-lg  border-l border-gray-200">
+                  <td className="p-3  font-bold text-lg  border-l border-gray-200">
                     {item.Stock_จบเหลือจริง.toLocaleString()}
                   </td>
 
                   {/* Target Sale */}
-                  <td className="p-3 text-right text-gray-600 border-l border-gray-200">
+                  <td className="p-3  text-gray-600 border-l border-gray-200">
                     {(item.TargetSaleUnit_1 || 0).toLocaleString()}
                   </td>
 
                   {/* Sale Out (เฉลี่ย/วัน) */}
-                  <td className="p-3 text-right text-sm border-l border-gray-200">
+                  <td className="p-3  text-sm border-l border-gray-200">
                     {(item.SaleOutเฉลี่ยวัน || 0).toFixed(2)}
                   </td>
 
                   {/* DOH (วัน) */}
                   <td
-                    className={`p-3 text-right font-extrabold text-lg border-l border-gray-200 ${getDOHStyle(
+                    className={`p-3  font-extrabold text-lg border-l border-gray-200 ${getDOHStyle(
                       item.DayOnHand_DOH_Stock2
                     )}`}
                   >
@@ -750,7 +748,7 @@ export default function InventoryTradeMonitor() {
                   </td>
 
                   {/* สถานะ Trade */}
-                  <td className="p-3 text-center border-l border-gray-200">
+                  <td className="p-3  border-l border-gray-200">
                     <span
                       className={`px-3 py-1 text-xs font-semibold rounded-full border ${getStatusStyle(
                         item.สถานะTrade
@@ -771,16 +769,15 @@ export default function InventoryTradeMonitor() {
                     )}
                   </td>
 
-                  {/* Remark Trade (ล่าสุด) */}
-                  <td className="p-3 text-left text-sm max-w-xs whitespace-normal text-gray-600 border-l border-gray-200">
-                    {item.RemarkTrade || "-"}
-                  </td>
-
                   {/* Action Column */}
-                  <td className="p-3 text-center border-l border-gray-200">
+                  <td className="p-3  border-l border-gray-200">
+                    <p className="text-xs mb-1 italic truncate text-gray-600">
+                      {item.RemarkTrade || "-"}
+                    </p>
+
                     <button
                       onClick={() => handleOpenModal(item)}
-                      className="bg-blue-600 cursor-pointer text-white hover:bg-blue-700 text-xs px-3 py-1 rounded-2xl transition duration-150 shadow-md"
+                      className="bg-blue-600 cursor-pointer text-white w-36 hover:bg-blue-700 text-xs px-3 py-1 rounded-lg transition duration-150 shadow-md"
                     >
                       บันทึก/ดูการสื่อสาร (
                       {item.KeyRemarks ? item.KeyRemarks.length : 0})
@@ -792,7 +789,7 @@ export default function InventoryTradeMonitor() {
               <tr>
                 <td
                   colSpan="10"
-                  className="p-6 text-center text-lg text-gray-500"
+                  className="p-6 text-lg text-gray-500"
                 >
                   ไม่พบข้อมูลสินค้าที่ตรงกับเงื่อนไขการกรอง
                 </td>

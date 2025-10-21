@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { Search, Eye, EyeOff, ChevronDown } from "lucide-react"; // ใช้ ChevronDown
+import Uploadimg from "../../SideBar/Uploadimg";
 
 // --- Mock Data (ชุดข้อมูล Inventory/Trade ที่คุณต้องการ) ---
 const mockInventoryData = [
@@ -200,7 +201,7 @@ function TradeRemarkModal({ product, onClose, onAddRemark }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl w-full max-w-xl p-6 shadow-2xl">
+      <div className="bg-white rounded-xl w-full max-w-4xl p-6 shadow-2xl overflow-y-scroll max-h-full">
         <div className="flex justify-between items-center border-b pb-3 mb-4">
           <h2 className="text-xl font-bold text-[#640037]">
             บันทึกการสื่อสาร/ติดตาม: {product.Code}
@@ -216,7 +217,7 @@ function TradeRemarkModal({ product, onClose, onAddRemark }) {
         <p className="text-gray-700 mb-4 font-medium">{product.Description}</p>
 
         {/* Remark History */}
-        <div className="h-64 overflow-y-auto mb-4 space-y-3 p-2 border rounded-lg bg-gray-50">
+        <div className="h-64 overflow-y-auto mb-4 space-y-3 p-2 border rounded-lg bg-gray-50 ">
           {product.KeyRemarks && product.KeyRemarks.length > 0 ? (
             product.KeyRemarks.map((remark, index) => (
               <div
@@ -251,6 +252,7 @@ function TradeRemarkModal({ product, onClose, onAddRemark }) {
             value={remarkText}
             onChange={(e) => setRemarkText(e.target.value)}
           ></textarea>
+          <Uploadimg />
           <button
             onClick={handleAddRemark}
             className="mt-2 w-full px-4 py-2 bg-pink-600 cursor-pointer text-white font-semibold rounded-lg hover:bg-pink-700 transition shadow-md"
@@ -445,36 +447,36 @@ export default function InventoryTradeMonitorWithFilters() {
       {/* --- Filters & Search Bar --- */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-4 mb-8 items-end p-4 bg-pink-50 rounded-lg border border-pink-200">
         {/* Search Bar */}
-       <div className="col-span-1 md:col-span-2">
-    <label className="block text-sm font-bold text-gray-700 mb-1">
-        ค้นหาสินค้า (Code/Desc/Remark)
-    </label>
-    {/* Corrected: This div is now the relative container */}
-    <div className="relative w-full">
-        <input
-            type="text"
-            placeholder="ค้นหา..."
-            value={filters.search}
-            onChange={(e) => handleFilterChange("search", e.target.value)}
-            className="w-full p-1.5 pl-9 pr-8 border border-gray-300 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
-        />
-        {/* Search Icon (Absolute position inside the relative container) */}
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-        
-        {/* Clear Button (Absolute position inside the relative container) */}
-        {filters.search && (
-            <button
+        <div className="col-span-1 md:col-span-2">
+          <label className="block text-sm font-bold text-gray-700 mb-1">
+            ค้นหาสินค้า (Code/Desc/Remark)
+          </label>
+          {/* Corrected: This div is now the relative container */}
+          <div className="relative w-full">
+            <input
+              type="text"
+              placeholder="ค้นหา..."
+              value={filters.search}
+              onChange={(e) => handleFilterChange("search", e.target.value)}
+              className="w-full p-1.5 pl-9 pr-8 border border-gray-300 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
+            />
+            {/* Search Icon (Absolute position inside the relative container) */}
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+
+            {/* Clear Button (Absolute position inside the relative container) */}
+            {filters.search && (
+              <button
                 onClick={() => {
-                    handleFilterChange("search", "");
+                  handleFilterChange("search", "");
                 }}
                 className="absolute right-2 top-1/2 transform -translate-y-1/2 text-lg text-gray-500 hover:text-red-500 font-bold p-1 leading-none"
                 title="ล้างการค้นหา"
-            >
+              >
                 &times;
-            </button>
-        )}
-    </div>
-</div>
+              </button>
+            )}
+          </div>
+        </div>
 
         {/* Brand Filter */}
         <div>
@@ -565,21 +567,17 @@ export default function InventoryTradeMonitorWithFilters() {
       </p>
 
       {/* --- Data Table Container --- */}
-      <div className="overflow-x-auto shadow-xl h-[370px] rounded-xl">
-        <table className="min-w-full table-auto border-collapse bg-white ">
-          <thead className="bg-[#640037] text-white sticky top-0">
+      <div className="overflow-x-auto shadow-xl rounded-xl">
+        <table className="min-w-full table-auto border-collapse bg-white text-center">
+          <thead className="bg-[#640037] text-white sticky top-0 text-sm">
             <tr>
-              <th className="p-3 text-left w-[100px]">Code/Brand</th>
-              <th className="p-3 text-left w-[250px] min-w-[250px]">
-                Description/Type
-              </th>
-              <th className="p-3 text-right w-[100px]">Stock (เหลือจริง)</th>
-              <th className="p-3 text-right w-[100px]">ยอด Forecast</th>
-              <th className="p-3 text-right w-[100px] font-extrabold">
-                DOH (วัน)
-              </th>
-              <th className="p-3 text-center w-[120px]">สถานะ Trade</th>
-              <th className="p-3 text-left w-[200px]">Remark Trade / Action</th>
+              <th className="p-3 ">Code/Brand</th>
+              <th className="p-3 ">Description/Type</th>
+              <th className="p-3 ">Stock (เหลือจริง)</th>
+              <th className="p-3 ">ยอด Forecast</th>
+              <th className="p-3 ">DOH (วัน)</th>
+              <th className="p-3 ">สถานะ Trade</th>
+              <th className="p-3 ">Remark Trade / Action</th>
             </tr>
           </thead>
           <tbody>
@@ -590,7 +588,7 @@ export default function InventoryTradeMonitorWithFilters() {
                   className="border-b border-gray-200 hover:bg-pink-50 transition duration-150"
                 >
                   {/* Code/Brand */}
-                  <td className="p-3 text-left font-mono text-sm">
+                  <td className="p-3 font-mono text-sm">
                     <span className="font-bold text-[#640037]">
                       {item.Code}
                     </span>
@@ -599,7 +597,7 @@ export default function InventoryTradeMonitorWithFilters() {
                   </td>
 
                   {/* Description/Type */}
-                  <td className="p-3 text-left font-semibold text-gray-700">
+                  <td className="p-3 font-semibold text-gray-700">
                     {item.Description}
                     <span
                       className={`ml-2 text-xs font-normal text-white px-2 py-0.5 rounded-full ${
@@ -615,16 +613,16 @@ export default function InventoryTradeMonitorWithFilters() {
                   </td>
 
                   {/* Stock */}
-                  <td className="p-3 text-right font-bold text-lg">
+                  <td className="p-3  font-bold text-lg">
                     {item.Stock_จบเหลือจริง.toLocaleString()}
                   </td>
-                  <td className="p-3 text-right font-bold text-lg">
+                  <td className="p-3  font-bold text-lg">
                     {(item.Stock_จบเหลือจริง - 25).toLocaleString()}
                   </td>
 
                   {/* DOH (วัน) */}
                   <td
-                    className={`p-3 text-right font-extrabold text-lg ${getDOHStyle(
+                    className={`p-3  font-extrabold text-lg ${getDOHStyle(
                       item.DayOnHand_DOH_Stock2
                     )}`}
                   >
@@ -634,7 +632,7 @@ export default function InventoryTradeMonitorWithFilters() {
                   </td>
 
                   {/* สถานะ Trade */}
-                  <td className="p-3 text-center">
+                  <td className="p-3 ">
                     <span
                       className={`px-3 py-1 text-xs font-semibold rounded-full border ${getStatusStyle(
                         item.สถานะTrade
@@ -656,7 +654,7 @@ export default function InventoryTradeMonitorWithFilters() {
                   </td>
 
                   {/* Remark Trade / Action (UPDATED) */}
-                  <td className="p-3 text-left text-sm max-w-xs whitespace-normal text-gray-600">
+                  <td className="p-3 text-sm max-w-xs whitespace-normal text-gray-600">
                     <p className="text-xs mb-1 italic truncate">
                       {item.RemarkTrade || "-"}
                     </p>
