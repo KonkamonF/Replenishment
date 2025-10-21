@@ -689,7 +689,7 @@ export default function InventoryTradeMonitor() {
               filteredData.map((item) => (
                 <tr
                   key={item.Code}
-                  className="border-b border-gray-200  hover:bg-pink-50 transition duration-150 "
+                  className="border-b  border-r border-gray-200  hover:bg-pink-50 transition duration-150 "
                 >
                   {/* Code/Brand */}
                   <td className="p-3 font-mono text-sm border-r border-gray-200">
@@ -701,7 +701,7 @@ export default function InventoryTradeMonitor() {
                   </td>
 
                   {/* Description/Type */}
-                  <td className="p-3 font-semibold text-gray-700">
+                  <td className="p-3 font-semibold text-gray-700 border-r border-gray-200">
                     {item.Description}
                     <span
                       className={`ml-2 text-xs font-normal text-white px-2 py-0.5 rounded-full ${
@@ -717,28 +717,28 @@ export default function InventoryTradeMonitor() {
                   </td>
 
                   {/* Price (ล่าสุด) */}
-                  <td className="p-3  font-medium border-l border-gray-200">
+                  <td className="p-3  font-medium border-r border-gray-200">
                     {formatCurrency(item.ราคา_โปรล่าสุด)}
                   </td>
 
                   {/* Stock */}
-                  <td className="p-3  font-bold text-lg  border-l border-gray-200">
+                  <td className="p-3  font-bold text-lg ">
                     {item.Stock_จบเหลือจริง.toLocaleString()}
                   </td>
 
                   {/* Target Sale */}
-                  <td className="p-3  text-gray-600 border-l border-gray-200">
+                  <td className="p-3  text-gray-600 border-r border-l border-gray-200">
                     {(item.TargetSaleUnit_1 || 0).toLocaleString()}
                   </td>
 
                   {/* Sale Out (เฉลี่ย/วัน) */}
-                  <td className="p-3  text-sm border-l border-gray-200">
+                  <td className="p-3  text-sm border-r border-gray-200">
                     {(item.SaleOutเฉลี่ยวัน || 0).toFixed(2)}
                   </td>
 
                   {/* DOH (วัน) */}
                   <td
-                    className={`p-3  font-extrabold text-lg border-l border-gray-200 ${getDOHStyle(
+                    className={`p-3  font-extrabold text-lg border-r border-gray-200 ${getDOHStyle(
                       item.DayOnHand_DOH_Stock2
                     )}`}
                   >
@@ -748,7 +748,7 @@ export default function InventoryTradeMonitor() {
                   </td>
 
                   {/* สถานะ Trade */}
-                  <td className="p-3  border-l border-gray-200">
+                  <td className="p-3  border-r border-gray-200">
                     <span
                       className={`px-3 py-1 text-xs font-semibold rounded-full border ${getStatusStyle(
                         item.สถานะTrade
@@ -770,7 +770,7 @@ export default function InventoryTradeMonitor() {
                   </td>
 
                   {/* Action Column */}
-                  <td className="p-3  border-l border-gray-200">
+                  <td className="p-3  border-r border-gray-200">
                     <p className="text-xs mb-1 italic truncate text-gray-600">
                       {item.RemarkTrade || "-"}
                     </p>
@@ -789,7 +789,7 @@ export default function InventoryTradeMonitor() {
               <tr>
                 <td
                   colSpan="10"
-                  className="p-6 text-lg text-gray-500"
+                  className="p-6 text-lg text-gray-500 border-r border-gray-200"
                 >
                   ไม่พบข้อมูลสินค้าที่ตรงกับเงื่อนไขการกรอง
                 </td>
