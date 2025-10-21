@@ -207,7 +207,7 @@ function TradeRemarkModal({ product, onClose, onAddRemark }) {
           </h2>
           <button
             onClick={onClose}
-            className="text-3xl text-gray-500 hover:text-red-500"
+            className="text-3xl text-gray-500 cursor-pointer hover:text-red-500"
           >
             &times;
           </button>
@@ -253,7 +253,7 @@ function TradeRemarkModal({ product, onClose, onAddRemark }) {
           ></textarea>
           <button
             onClick={handleAddRemark}
-            className="mt-2 w-full px-4 py-2 bg-pink-600 text-white font-semibold rounded-lg hover:bg-pink-700 transition shadow-md"
+            className="mt-2 w-full px-4 py-2 bg-pink-600 cursor-pointer text-white font-semibold rounded-lg hover:bg-pink-700 transition shadow-md"
             disabled={!remarkText.trim()}
           >
             บันทึกการสื่อสาร
@@ -662,7 +662,7 @@ export default function InventoryTradeMonitorWithFilters() {
                     </p>
                     <button
                       onClick={() => handleOpenRemarkModal(item)}
-                      className={`px-3 py-1 text-xs rounded-lg shadow-md transition font-medium
+                      className={`px-3 py-1 text-xs rounded-lg cursor-pointer shadow-md transition font-medium
                   ${
                     item.KeyRemarks && item.KeyRemarks.length > 0
                       ? "bg-blue-600 text-white hover:bg-blue-700"

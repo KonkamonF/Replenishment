@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { Search, ChevronDown } from "lucide-react";
+import Uploadimg from "../../SideBar/Uploadimg";
 
 // --- Mock Data (ข้อมูลใหม่ พร้อม KeyRemarks) ---
 const initialInventoryData = [
@@ -225,14 +226,14 @@ const TradeCommunicationModal = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-2xl w-full max-w-lg p-6">
-        <div className="flex justify-between items-start mb-4 border-b pb-2">
+      <div className="bg-white rounded-lg shadow-2xl w-full max-w-lg p-6  overflow-y-scroll max-h-[80vh]">
+        <div className="flex justify-between items-start mb-4 border-b pb-2 ">
           <h2 className="text-xl font-bold text-[#640037]">
             Action & Communication: {item.Code}
           </h2>
           <button
             onClick={onClose}
-            className="text-2xl text-gray-500 hover:text-red-500 font-light"
+            className="text-2xl text-gray-500 cursor-pointer hover:text-red-500 font-light"
           >
             &times;
           </button>
@@ -240,11 +241,11 @@ const TradeCommunicationModal = ({
         <p className="text-sm text-gray-600 mb-4">{item.Description}</p>
 
         {/* --- Remark History Section --- */}
-        <div className="mb-4">
+        <div className="mb-4 ">
           <h3 className="text-md font-semibold text-gray-700 mb-2">
             ประวัติการสื่อสาร ({sortedRemarks.length})
           </h3>
-          <div className="h-48 overflow-y-auto p-3 border rounded-lg bg-gray-50 space-y-3">
+          <div className="h-48  p-3 border rounded-lg bg-gray-50 space-y-3  overflow-y-scroll">
             {sortedRemarks.length > 0 ? (
               sortedRemarks.map((remark, index) => (
                 <div
@@ -305,19 +306,21 @@ const TradeCommunicationModal = ({
               placeholder="พิมพ์บันทึกการสื่อสารหรืออัพเดทสถานะการจัดการ..."
               className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-pink-500 focus:border-pink-500 resize-none"
             ></textarea>
+            <div>
+              <Uploadimg />
+            </div>
           </div>
-
           {/* Action Buttons */}
           <div className="flex justify-end space-x-3">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-150"
+              className="px-4 py-2 text-sm font-medium cursor-pointer text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-150"
             >
               Cancel
             </button>
             <button
               onClick={onSubmit}
-              className="px-4 py-2 text-sm font-medium text-white bg-pink-600 rounded-lg hover:bg-pink-700 transition duration-150 disabled:bg-pink-300"
+              className="px-4 py-2 text-sm font-medium cursor-pointer text-white bg-pink-600 rounded-lg hover:bg-pink-700 transition duration-150 disabled:bg-pink-300"
               disabled={!currentData.comment.trim()}
             >
               Submit Action & Save Remark
@@ -703,7 +706,7 @@ export default function InventoryTradeMonitor() {
                     {item.Description}
                     <br />
                     <span
-                      className={`ml-2 text-xs font-normal text-white px-2 py-0.5 rounded-full  ${
+                      className={`ml-2 text-xs font-normal text-white px-2 py-0.5 rounded-full ${
                         item.Class === "A" ? "bg-orange-500" : "bg-pink-500"
                       }`}
                     >
@@ -777,7 +780,7 @@ export default function InventoryTradeMonitor() {
                   <td className="p-3 text-center border-l border-gray-200">
                     <button
                       onClick={() => handleOpenModal(item)}
-                      className="bg-blue-600 text-white hover:bg-blue-700 text-xs px-3 py-1 rounded-2xl transition duration-150 shadow-md"
+                      className="bg-blue-600 cursor-pointer text-white hover:bg-blue-700 text-xs px-3 py-1 rounded-2xl transition duration-150 shadow-md"
                     >
                       บันทึก/ดูการสื่อสาร (
                       {item.KeyRemarks ? item.KeyRemarks.length : 0})
