@@ -224,12 +224,13 @@ export function SummaryMetrics({ grandTotals, dataAC }) {
 
   return (
     <div className="bg-pink-50 border border-pink-200 rounded-lg p-4 mb-6 shadow-inner w-96">
-      <div className="mt-4">
+      <p className="text-center text-xl font-bold text-pink-900">แสดงผลเทียบยอด <br/>Actual Forecast</p>
+      <div className=" flex justify-center">
         <div className="w-69 h-69">
           <Pie options={options} data={chartData} />
         </div>
       </div>
-      <div className="flex items-center gap-6 md:ml-8 mt-4">
+      <div className="flex gap-6 justify-center">
         <div className="text-center">
           <p className="text-gray-700 text-sm">ยอดรวม Total AC</p>
           <p className="text-2xl font-bold text-blue-600">
