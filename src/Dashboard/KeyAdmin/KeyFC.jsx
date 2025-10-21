@@ -182,41 +182,71 @@ const ColumnToggleDropdown = ({
   );
 };
 
-const SummaryMetrics = ({ grandTotals, filteredDataLength, dataLength }) => {
-  const totalAC = (grandTotals.Total * 0.9).toFixed(0).toLocaleString();
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, Title } from "chart.js";
+import { Pie } from "react-chartjs-2";
+
+ChartJS.register(ArcElement, Tooltip, Legend, Title);
+
+export function SummaryMetrics({
+  grandTotals,
+  filteredDataLength,
+  dataLength,
+}) {
+  const totalAC = (grandTotals.Total * 0.9).toFixed(0);
+
+  const chartData = {
+    labels: ["Total FC", "Total AC (Mock)"],
+    datasets: [
+      {
+        label: "Summary Data",
+        data: [grandTotals.Total, totalAC, filteredDataLength, dataLength],
+        backgroundColor: [
+          "rgba(74, 222, 128, 0.6)", // green
+
+          "rgba(125, 211, 252, 0.6)", // sky
+        ],
+        borderColor: [
+          "rgba(74, 222, 128, 0.6)", // green
+
+          "rgba(125, 211, 252, 0.6)", // sky
+        ],
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "bottom",
+        labels: {
+          color: "#640037",
+          font: { size: 12, weight: "bold" },
+        },
+      },
+      title: {
+        display: true,
+        text: "SUMMARY FC / AC",
+        color: "#640037",
+        font: { size: 18, weight: "bold" },
+      },
+      tooltip: {
+        callbacks: {
+          label: (ctx) => `${ctx.label}: ${ctx.parsed.toLocaleString("en-US")}`,
+        },
+      },
+    },
+  };
 
   return (
-    <div className="mb-6 p-4 bg-[#640037] rounded-xl shadow-2xl text-white">
-      <h2 className="text-xl font-bold mb-3 border-b border-pink-300 pb-2">
-        SUMMARY FC / AC
-      </h2>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="p-3 bg-pink-700/50 rounded-lg">
-          <p className="text-sm font-medium">Total FC (All Channels)</p>
-          <p className="text-2xl font-extrabold text-red-100">
-            {grandTotals.Total.toLocaleString()}
-          </p>
-        </div>
-        <div className="p-3 bg-pink-700/50 rounded-lg">
-          <p className="text-sm font-medium">Total AC (Mock)</p>
-          <p className="text-2xl font-extrabold text-red-100">{totalAC}</p>
-        </div>
-        <div className="p-3 bg-pink-700/50 rounded-lg">
-          <p className="text-sm font-medium">Items Displayed</p>
-          <p className="text-2xl font-extrabold">
-            {filteredDataLength.toLocaleString()}
-          </p>
-        </div>
-        <div className="p-3 bg-pink-700/50 rounded-lg">
-          <p className="text-sm font-medium">Total Items in Data</p>
-          <p className="text-2xl font-extrabold">
-            {dataLength.toLocaleString()}
-          </p>
-        </div>
+    <div className="mb-6 p-4 w-84 text-[#640037]">
+      <div className="w-64 mx-auto">
+        <Pie data={chartData} options={options} />
       </div>
     </div>
   );
-};
+}
 
 // --- Main Component ---
 export default function KeyFC() {

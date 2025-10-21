@@ -568,7 +568,7 @@ export default function InventoryTradeMonitorWithFilters() {
 
       {/* --- Data Table Container --- */}
       <div className="overflow-x-auto shadow-xl rounded-xl">
-        <table className="min-w-full table-auto border-collapse bg-white text-center">
+        <table className="min-w-full table-auto bg-white text-center">
           <thead className="bg-[#640037] text-white sticky top-0 text-sm">
             <tr>
               <th className="p-3 ">Code/Brand</th>
