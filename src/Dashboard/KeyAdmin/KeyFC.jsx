@@ -382,7 +382,7 @@ export default function KeyFC() {
 
   return (
     <>
-      <div className="p-8 bg-white shadow-2xl rounded-xl ">
+      <div className="p-8 bg-white shadow-2xl rounded-xl">
         {/* --- Header with Title and Info --- */}
         <header className="mb-6 border-b pb-4">
           <h1 className="text-3xl font-extrabold text-[#640037] mb-2">
