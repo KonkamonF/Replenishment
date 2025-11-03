@@ -542,7 +542,7 @@ export default function KeyFC() {
         </div>
 
         {/* --- Data Table --- */}
-        <div className="relative overflow-x-auto border-2 border-gray-300 rounded-lg shadow-xl ">
+        <div className="relative overflow-x-scroll border-2 border-gray-300 rounded-lg shadow-xl ">
           <table className="table-auto text-sm ">
             <thead className="bg-[#640037] text-white">
               <tr>
