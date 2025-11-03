@@ -104,7 +104,7 @@ export default function Appp() {
           </div>
 
           {/* Main Content Area (ขยายเต็มพื้นที่ที่เหลือ) */}
-          <main className="p-6 flex-1 max-w-full">
+          <main className="p-6 flex-1 max-w-full overflow-scroll">
             <Outlet />
           </main>
         </div>
