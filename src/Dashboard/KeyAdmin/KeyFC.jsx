@@ -395,7 +395,11 @@ export default function KeyFC() {
         </header>
 
         {/* --- 1. GRAND TOTAL SUMMARY (ย้ายมาอยู่บนสุด) --- */}
+        <div className="flex flex-wrap gap-4">
         <SummaryMetrics grandTotals={grandTotals} dataAC={filteredData} />
+        <SummaryMetrics grandTotals={grandTotals} dataAC={filteredData} />
+        <SummaryMetrics grandTotals={grandTotals} dataAC={filteredData} />
+        </div>
 
         {/* --- END GRAND TOTAL SUMMARY --- */}
 
