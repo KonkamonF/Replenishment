@@ -63,7 +63,7 @@ export default function SuperAdmin() {
             Summary Metrics
           </h2>
 
-          <div className="grid grid-cols-6 gap-6 text-white">
+          <div className="grid gap-6 text-white sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
             {/* Class Cards */}
             <div className="text-center cursor-pointer p-6 bg-gradient-to-t from-[#ffd9c3] to-yellow-100 text-[#e25e00] rounded-xl shadow-md hover:shadow-xl">
               <ClassA />
