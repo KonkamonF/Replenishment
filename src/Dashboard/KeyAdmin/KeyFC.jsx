@@ -223,10 +223,10 @@ export function SummaryMetrics({ grandTotals, dataAC }) {
   };
 
   return (
-    <div className="bg-pink-50 border border-pink-200 rounded-lg p-4 mb-6 shadow-inner w-96">
+    <div className="bg-pink-50 border border-pink-200 rounded-lg p-4 mb-6 shadow-inner w-80">
       <p className="text-center text-xl font-bold text-pink-900">แสดงผลเทียบยอด <br/>Actual Forecast</p>
       <div className=" flex justify-center">
-        <div className="w-69 h-69">
+        <div className="w-69 h-52">
           <Pie options={options} data={chartData} />
         </div>
       </div>
