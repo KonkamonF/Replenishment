@@ -81,6 +81,7 @@ export function useProductByClass({
   //  debounce ค้นหา / เปลี่ยนหน้า
   useEffect(() => {
     clearTimeout(debounceTimer.current);
+
     debounceTimer.current = setTimeout(() => {
       // ถ้ามีการพิมพ์ค้นหา → กลับไปหน้าแรก
       if (searchTerm.trim()) setPage(1);
