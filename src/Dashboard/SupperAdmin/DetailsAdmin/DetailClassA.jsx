@@ -120,7 +120,7 @@ export default function DetailClassA({ setIsDetailsClassA }) {
                     <td className="p-3">{p.description?.trim() || "-"}</td>
                     <td className="p-3">{p.brand?.trim() || "-"}</td>
                     <td className="p-3">{p.manualClass?.trim() || "-"}</td>
-                    <td className="p-3">{p.manualClass?.trim() || "-"}</td>
+                    <td className="p-3">{p.autoClass?.trim() || "-"}</td>
                     <td className="p-3 text-right text-[#640037] font-bold">
                       {formatNumber(p.pricePerUnit)}
                     </td>
