@@ -23,7 +23,13 @@ export default function DetailClassA({ setIsDetailsClassA }) {
     initialPageSize: 50,
   });
 
-  const totalPages = Math.ceil(total / offset);
+  const filteredProducts = products.filter(
+    (p) =>
+      p.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.itemCode?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.brand?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const formatNumber = (num) =>
     num ? num.toLocaleString("en-US", { maximumFractionDigits: 0 }) : "-";
 
@@ -34,7 +40,9 @@ export default function DetailClassA({ setIsDetailsClassA }) {
         <div className="flex justify-between items-start mb-6 border-b pb-4">
           <h1 className="text-3xl font-extrabold text-[#640037]">
             สินค้า Class A
-            <p className="text-base text-gray-500 mt-1">หน้าปัจจุบัน: {page}</p>
+            <p className="text-base text-gray-600 mt-1">
+              หน้าปัจจุบัน : {page}
+            </p>
           </h1>
           <button
             onClick={() => setIsDetailsClassA(false)}
@@ -57,12 +65,17 @@ export default function DetailClassA({ setIsDetailsClassA }) {
 
         {/* Action Buttons */}
         <div className="flex justify-end gap-2 mb-4">
-          <button className="border-2 px-4 py-2 rounded-lg cursor-pointer hover:bg-amber-100">
-            Set
-          </button>
-          <button className="border-2 px-4 py-2 rounded-lg cursor-pointer hover:bg-amber-100">
-            แยกSet
-          </button>
+          <select
+            defaultValue="select"
+            className="p-2 pr-10 border border-gray-300  focus:border-pink-700 focus:ring-pink-700  shadow-sm 
+                hover:bg-amber-50 cursor-pointer rounded-lg" // <--- เพิ่มคลาสที่นี่
+          >
+            <option className="text-gray-500" value="select">
+              Select...
+            </option>
+            <option value="set">Set</option>
+            <option value="nonSet">แยกSet</option>
+          </select>
         </div>
 
         {/* Table */}
@@ -78,27 +91,33 @@ export default function DetailClassA({ setIsDetailsClassA }) {
           <p className="text-center text-gray-500 py-10">ไม่พบสินค้า</p>
         ) : (
           <>
-            <table className="min-w-full border-collapse border border-gray-200">
+            <table className="min-w-full border-collapse border-2 border-gray-200">
               <thead className="bg-[#640037] text-white">
                 <tr>
-                  <th className="p-3 text-left border-r border-pink-700">No.</th>
-                  <th className="p-3 text-left border-r border-pink-700">รหัสสินค้า</th>
-                  <th className="p-3 text-left border-r border-pink-700">รายละเอียดสินค้า</th>
-                  <th className="p-3 text-left border-r border-pink-700">ยี่ห้อ</th>
-                  <th className="p-3 text-left border-r border-pink-700">ManualClass</th>
-                  <th className="p-3 text-left border-r border-pink-700">AutoClass</th>
-                  <th className="p-3 text-right border-r border-pink-700">ราคาขาย</th>
-                  <th className="p-3 text-right border-r border-pink-700">ราคาขั้นต่ำ</th>
-                  <th className="p-3 text-right border-r border-pink-700">สต็อก</th>
-                  <th className="p-3 text-right">Lead Time (วัน)</th>
+                  <th className="p-3 ">No.</th>
+                  <th className="p-3 ">รหัสสินค้า</th>
+                  <th className="p-3 ">รายละเอียดสินค้า</th>
+                  <th className="p-3 ">Section</th>
+                  <th className="p-3 ">ประเภทสินค้า</th>
+                  <th className="p-3 ">ยี่ห้อ</th>
+                  <th className="p-3 ">ManuelClass</th>
+                  <th className="p-3 ">AutoClass</th>
+                  <th className="p-3 ">ราคากลาง/หน่วย</th>
+                  <th className="p-3 ">ราคาต่ำสุด/หน่วย</th>
+                  <th className="p-3 ">สต็อก</th>
+                  <th className="p-3 ">Lead Time (วัน)</th>
                 </tr>
               </thead>
               <tbody>
-                {products.map((p, i) => (
-                  <tr key={i} className="border-b hover:bg-pink-50 transition">
+                {filteredProducts.map((p, i) => (
+                  <tr key={i} className="border-b hover:bg-amber-50 transition">
                     <td className="p-3">{(page - 1) * offset + i + 1}</td>
                     <td className="p-3">{p.itemCode?.trim() || "-"}</td>
-                    <td className="p-3">{p.description?.trim() || "-"}</td>
+                    <td className="p-3 text-left">
+                      {p.description?.trim() || "-"}
+                    </td>
+                    <td className="p-3">{p.section?.trim() || "-"}</td>
+                    <td className="p-3">{p.type?.trim() || "-"}</td>
                     <td className="p-3">{p.brand?.trim() || "-"}</td>
                     <td className="p-3">{p.manualClass?.trim() || "-"}</td>
                     <td className="p-3">{p.autoClass?.trim() || "-"}</td>
