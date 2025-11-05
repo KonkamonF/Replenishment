@@ -7,7 +7,7 @@ export function useProductByClass({
   token,
 }) {
   const [data, setData] = useState([]);
-  const [allData, setAllData] = useState([]); // ✅ เก็บข้อมูลทั้งหมด
+  const [allData, setAllData] = useState([]); // เก็บข้อมูลทั้งหมด
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(initialPageSize);
   const [total, setTotal] = useState(0);
@@ -17,7 +17,7 @@ export function useProductByClass({
 
   const debounceTimer = useRef(null);
 
-  // ✅ โหลดข้อมูลทุกหน้าแค่ครั้งเดียว (cache)
+  // โหลดข้อมูลทุกหน้าแค่ครั้งเดียว (cache)
   const fetchAllOnce = async () => {
     setLoading(true);
     setError(null);
@@ -53,7 +53,7 @@ export function useProductByClass({
     }
   };
 
-  // ✅ filter + paginate ฝั่ง React
+  // filter + paginate ฝั่ง React
   const applyFilter = () => {
     let filtered = allData;
     if (searchTerm.trim()) {
@@ -73,12 +73,12 @@ export function useProductByClass({
     setTotal(filtered.length);
   };
 
-  // ✅ โหลดข้อมูลทุกหน้า (ครั้งแรกเท่านั้น)
+  // โหลดข้อมูลทุกหน้า (ครั้งแรกเท่านั้น)
   useEffect(() => {
     fetchAllOnce();
   }, [classType, className]);
 
-  // ✅ debounce ค้นหา / เปลี่ยนหน้า
+  // debounce ค้นหา / เปลี่ยนหน้า
   useEffect(() => {
     clearTimeout(debounceTimer.current);
     debounceTimer.current = setTimeout(() => {

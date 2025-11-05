@@ -106,7 +106,7 @@ export default function DetailClassA({ setIsDetailsClassA }) {
                   <th className="p-3 ">AutoClass</th>
                   <th className="p-3 ">ราคากลาง/หน่วย</th>
                   <th className="p-3 ">ราคาต่ำสุด/หน่วย</th>
-                  <th className="p-3 ">สต็อก</th>
+                  <th className="p-3 ">Stock</th>
                   <th className="p-3 ">Lead Time (วัน)</th>
                 </tr>
               </thead>
