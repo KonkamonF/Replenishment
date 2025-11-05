@@ -1,49 +1,27 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
+import { useProductByClass } from "../hooks/useProductByClass";
 
 export default function DetailClassA({ setIsDetailsClassA }) {
-  const [products, setProducts] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [page, setPage] = useState(1); // ✅ หน้าปัจจุบัน
-  const [total, setTotal] = useState(0); // ✅ จำนวนสินค้าทั้งหมด
-  const offset = 50; // ✅ จำนวนต่อหน้า
-
   const token =
     "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NjQ3MjUwNDgsImlkIjoidXJtdF8xYzRkMTZmYyIsInJvbGUiOiJyXzA4OGQ4YjdmIn0.AfjeGVTx_usWu3HVaNJ-vZoIHz80bF7Vwj_4v_PVXKfT7xuxSRKFsOMWubo4KTixlEtlID0n3lE1vFIcVeToT5bU_oCyuyMLGpVae_S9kA1JqFbS04wgoKOCyoF12YBM2az0_vRrr93NXFZYxkMVolTWO8zXwWWTx50T-6XgtadV7ahoBp3Ei5ysSCRNhhLI3t2J7Ne2mKCOcBWNpTjCdZbeDb3MUsP4c8ZPboCxg6sTKieov_CjgVC-4M_KCR_fQWA_rzqZ57UcklaV_BaEy3nn747BU0ljKvx4cTadu2aiyGUxsggc3Qdc1YAWm7FfWHHDoioBePDkztYWopENcA";
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-
-        const response = await fetch(
-          `/api/product/search?page=${page}&offset=${offset}&columns=manualClass|A`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-        const data = await response.json();
-
-        setProducts(data?.result?.data || []);
-        setTotal(data?.result?.pagination?.total || 0); // ถ้า API มี field total
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, [page]); // ✅ โหลดใหม่เมื่อ page เปลี่ยน
+  // ใช้ hook กลาง (production-grade)
+  const {
+    data: products,
+    loading: isLoading,
+    error,
+    searchTerm,
+    setSearchTerm,
+    page,
+    setPage,
+    pageSize: offset,
+    total,
+  } = useProductByClass({
+    classType: "manual",
+    className: "A",
+    token,
+    initialPageSize: 50,
+  });
 
   const filteredProducts = products.filter(
     (p) =>
@@ -84,6 +62,8 @@ export default function DetailClassA({ setIsDetailsClassA }) {
             className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-300 focus:border-pink-500 transition"
           />
         </div>
+
+        {/* Action Buttons */}
         <div className="flex justify-end gap-2 mb-4">
           <select
             defaultValue="select"
@@ -97,16 +77,17 @@ export default function DetailClassA({ setIsDetailsClassA }) {
             <option value="nonSet">แยกSet</option>
           </select>
         </div>
+
         {/* Table */}
         {isLoading ? (
           <p className="text-center text-gray-500 py-10 animate-pulse">
-            ⏳ กำลังโหลดข้อมูลหน้า {page}...
+             กำลังโหลดข้อมูลหน้า {page}...
           </p>
         ) : error ? (
           <p className="text-center text-red-500 py-10">
-            ❌ โหลดข้อมูลไม่สำเร็จ: {error}
+             โหลดข้อมูลไม่สำเร็จ: {error}
           </p>
-        ) : filteredProducts.length === 0 ? (
+        ) : products.length === 0 ? (
           <p className="text-center text-gray-500 py-10">ไม่พบสินค้า</p>
         ) : (
           <>
@@ -157,7 +138,7 @@ export default function DetailClassA({ setIsDetailsClassA }) {
               </tbody>
             </table>
 
-            {/* ✅ ปุ่มเปลี่ยนหน้า */}
+            {/* Pagination */}
             <div className="flex justify-center mt-6 space-x-4">
               <button
                 disabled={page <= 1}
@@ -166,6 +147,9 @@ export default function DetailClassA({ setIsDetailsClassA }) {
               >
                 ← หน้าก่อนหน้า
               </button>
+              <span className="text-gray-600 mt-1">
+                หน้า {page} จาก {totalPages || 1}
+              </span>
               <button
                 disabled={products.length < offset}
                 onClick={() => setPage(page + 1)}
