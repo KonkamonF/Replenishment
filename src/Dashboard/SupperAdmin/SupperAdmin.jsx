@@ -85,12 +85,6 @@ export default function SuperAdmin() {
             <div className="text-center cursor-pointer p-6 bg-gradient-to-b from-[#dcb8ff] to-[#ffccfc] text-[#640D5F] rounded-xl shadow-md hover:shadow-xl">
               <NonMove />
             </div>
-            <div className="text-center cursor-pointer p-6 bg-gradient-to-b from-[#dcb8ff] to-[#ffccfc] text-[#640D5F] rounded-xl shadow-md hover:shadow-xl">
-              <NonMove />
-            </div>
-            <div className="text-center cursor-pointer p-6 bg-gradient-to-b from-[#dcb8ff] to-[#ffccfc] text-[#640D5F] rounded-xl shadow-md hover:shadow-xl">
-              <NonMove />
-            </div>
           </div>
         </div>
         <hr />
