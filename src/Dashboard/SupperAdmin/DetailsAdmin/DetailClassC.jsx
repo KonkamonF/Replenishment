@@ -3,99 +3,164 @@ import React, { useState } from "react";
 export default function DetailClassC({ setIsDetailsClassC }) {
   // Mock data สำหรับสินค้า Class C (Low Value / High Volume หรือ Low Value / Low Volume)
   const mockClassCProducts = [
-    { id: "C301", name: "คลิปหนีบกระดาษขนาดเล็ก (แพ็ค 100)", code: "ST01", volumeShare: 55.0, valueShare: 3.5, inventoryDays: 180, lastSale: 95 },
-    { id: "C302", name: "น้ำยาล้างจานสูตรเก่า", code: "H105", volumeShare: 15.0, valueShare: 2.1, inventoryDays: 120, lastSale: 40 },
-    { id: "C303", name: "แปรงสีฟันสำหรับเด็ก (สีเขียว)", code: "D203", volumeShare: 5.0, valueShare: 1.5, inventoryDays: 200, lastSale: 150 },
-    { id: "C304", name: "สายชาร์จโทรศัพท์รุ่นเก่า", code: "E990", volumeShare: 1.5, valueShare: 0.8, inventoryDays: 360, lastSale: 25 },
-    { id: "C305", name: "ถุงพลาสติกบรรจุภัณฑ์ (เล็ก)", code: "PK50", volumeShare: 10.0, valueShare: 1.2, inventoryDays: 90, lastSale: 60 },
+    {
+      id: "C301",
+      name: "คลิปหนีบกระดาษขนาดเล็ก (แพ็ค 100)",
+      code: "ST01",
+      volumeShare: 55.0,
+      valueShare: 3.5,
+      inventoryDays: 180,
+      lastSale: 95,
+    },
+    {
+      id: "C302",
+      name: "น้ำยาล้างจานสูตรเก่า",
+      code: "H105",
+      volumeShare: 15.0,
+      valueShare: 2.1,
+      inventoryDays: 120,
+      lastSale: 40,
+    },
+    {
+      id: "C303",
+      name: "แปรงสีฟันสำหรับเด็ก (สีเขียว)",
+      code: "D203",
+      volumeShare: 5.0,
+      valueShare: 1.5,
+      inventoryDays: 200,
+      lastSale: 150,
+    },
+    {
+      id: "C304",
+      name: "สายชาร์จโทรศัพท์รุ่นเก่า",
+      code: "E990",
+      volumeShare: 1.5,
+      valueShare: 0.8,
+      inventoryDays: 360,
+      lastSale: 25,
+    },
+    {
+      id: "C305",
+      name: "ถุงพลาสติกบรรจุภัณฑ์ (เล็ก)",
+      code: "PK50",
+      volumeShare: 10.0,
+      valueShare: 1.2,
+      inventoryDays: 90,
+      lastSale: 60,
+    },
   ];
 
   // State สำหรับเก็บข้อความค้นหา
   const [searchTerm, setSearchTerm] = useState("");
 
   // Function กรองข้อมูลตามคำค้นหา (ค้นหาจากชื่อหรือรหัส)
-  const filteredProducts = mockClassCProducts.filter(product =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.code.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredProducts = mockClassCProducts.filter(
+    (product) =>
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.code.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Function จัดรูปแบบตัวเลข (สำหรับเปอร์เซ็นต์, วัน, และจำนวน)
   const formatNumber = (num, isPercent = false) => {
-    const formatted = num.toLocaleString('en-US', {
+    const formatted = num.toLocaleString("en-US", {
       minimumFractionDigits: isPercent ? 1 : 0,
-      maximumFractionDigits: isPercent ? 1 : 0
+      maximumFractionDigits: isPercent ? 1 : 0,
     });
-    return formatted + (isPercent ? '%' : '');
+    return formatted + (isPercent ? "%" : "");
   };
 
   return (
     // Backdrop/Overlay
     <div className="fixed inset-0 bg-black bg-opacity-50 z-40 flex justify-end">
-      
       {/* Modal / Side Panel */}
-      <div className="bg-white w-full  h-full p-6 shadow-2xl z-50 ">
-        
-        {/* Header และ ปุ่มปิด */}
+      <div className="bg-white w-full h-full p-6 shadow-2xl z-50 overflow-y-auto">
+        {/* Header และ ปุ่มปิด (ปรับตาม Class A) */}
         <div className="flex justify-between items-start mb-6 border-b pb-4">
-            <h1 className="text-3xl font-extrabold text-[#640037]">
-                สินค้า Class C
-                <p className="text-base font-normal text-gray-500 mt-1">สินค้าที่มีสัดส่วนมูลค่าขายต่ำ แต่มีจำนวนมากหรือสต็อกยาวนาน</p>
-            </h1>
-            <button
-                onClick={() => setIsDetailsClassC(false)}
-                className="text-4xl text-gray-500 hover:text-[#640037] transition duration-200 p-1 leading-none"
-                aria-label="Close"
+          <h1 className="text-3xl font-extrabold text-[#640037]">
+            สินค้า Class C
+            <p className="text-base font-normal text-gray-600 mt-1">
+              สินค้าที่มีสัดส่วนมูลค่าขายต่ำ แต่มีจำนวนมากหรือสต็อกยาวนาน
+            </p>
+          </h1>
+          <button
+            onClick={() => setIsDetailsClassC(false)}
+            className="text-4xl text-gray-500 hover:text-[#640037] transition p-1 leading-none"
+            aria-label="Close"
+          >
+            &times;
+          </button>
+        </div>
+
+        {/* Input สำหรับค้นหา (ปรับตาม Class A) */}
+        <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <input
+            type="text"
+            placeholder="ค้นหาด้วยชื่อสินค้า หรือรหัสสินค้า..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-screen p-2 border border-gray-300 hover:bg-amber-50 shadow-sm rounded-lg focus:ring focus:border-pink-700 focus:ring-pink-700 transition"
+          />
+          <div className="flex justify-end gap-2">
+            <select
+              defaultValue="select"
+              className="p-2.5 pr-24 border border-gray-300  focus:border-pink-700 focus:ring-pink-700  shadow-sm 
+                hover:bg-amber-50 cursor-pointer rounded-lg" // <--- เพิ่มคลาสที่นี่
             >
-                &times;
-            </button>
+              <option className="text-gray-500" value="select">
+                Select...
+              </option>
+              <option value="set">Set</option>
+              <option value="nonSet">แยกSet</option>
+            </select>
+          </div>
         </div>
 
-        {/* Input สำหรับค้นหา */}
-        <div className="mb-6">
-            <input
-                type="text"
-                placeholder="ค้นหาด้วยชื่อสินค้า หรือรหัสสินค้า..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-300 focus:border-pink-500 transition duration-150"
-            />
-        </div>
-
-        {/* ตารางข้อมูล */}
+        {/* ตารางข้อมูล (ปรับตาม Class A) */}
         <div className="overflow-x-auto">
-          <table className="min-w-full table-auto border-collapse border border-gray-200">
+          <table className="min-w-full table-auto border-collapse border-2 border-gray-200">
+            {/* Header (ปรับตาม Class A) */}
             <thead className="bg-[#640037] text-white">
               <tr>
-                <th className="p-3 text-left border-r border-pink-700 w-[100px]">รหัสสินค้า</th>
-                <th className="p-3 text-left border-r border-pink-700">ชื่อสินค้า</th>
-                <th className="p-3 text-right border-r border-pink-700 w-[120px]">สัดส่วนมูลค่าขาย</th>
-                <th className="p-3 text-right border-r border-pink-700 w-[100px]">คงคลัง (วัน)</th>
-                <th className="p-3 text-right w-[100px]">วันขายล่าสุด (วัน)</th>
+                <th className="p-3 text-left">รหัสสินค้า</th>
+                <th className="p-3 text-left">ชื่อสินค้า</th>
+                <th className="p-3 text-right">สัดส่วนปริมาณขาย</th>
+                <th className="p-3 text-right">สัดส่วนมูลค่าขาย</th>
+                <th className="p-3 text-right">คงคลัง (วัน)</th>
+                <th className="p-3 text-right">วันขายล่าสุด (วัน)</th>
               </tr>
             </thead>
             <tbody>
               {filteredProducts.length > 0 ? (
                 filteredProducts.map((product) => (
-                  <tr 
-                    key={product.id} 
-                    className="border-b border-gray-200 hover:bg-pink-50 transition duration-150"
+                  <tr
+                    key={product.id}
+                    className="border-b hover:bg-amber-50 transition" // ปรับ hover
                   >
-                    <td className="p-3 text-left font-medium">{product.code}</td>
+                    <td className="p-3 text-left font-medium">
+                      {product.code}
+                    </td>
                     <td className="p-3 text-left">{product.name}</td>
-                    <td className="p-3 text-right font-semibold text-gray-600">
-                        {formatNumber(product.valueShare, true)}
+                    {/* สัดส่วนปริมาณขาย: อาจใช้สีหลักเพื่อเน้นว่าเป็นสินค้าที่มี Volume สูง */}
+                    <td className="p-3 text-right font-bold text-[#640037]">
+                      {formatNumber(product.volumeShare, true)}
                     </td>
+                    {/* สัดส่วนมูลค่าขาย: ใช้สีเทา/ชมพูอ่อน เพื่อแสดงว่ามีมูลค่าต่ำ */}
+                    <td className="p-3 text-right font-semibold text-pink-700">
+                      {formatNumber(product.valueShare, true)}
+                    </td>
+                    {/* คงคลัง (วัน): ใช้สีที่เน้นความสำคัญ (Red/Orange) เนื่องจาก Class C มักมีสต็อกยาวนาน */}
                     <td className="p-3 text-right font-bold text-red-600">
-                        {formatNumber(product.inventoryDays)}
+                      {formatNumber(product.inventoryDays)}
                     </td>
-                    <td className="p-3 text-right text-orange-500">
-                        {formatNumber(product.lastSale)}
+                    {/* วันขายล่าสุด (วัน): ใช้สีเทาเหมือน Lead Time ใน Class A */}
+                    <td className="p-3 text-right text-gray-600">
+                      {formatNumber(product.lastSale)}
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="5" className="p-4 text-center text-gray-500">
+                  <td colSpan="6" className="p-4 text-center text-gray-500">
                     ไม่พบข้อมูลสินค้า Class C ที่ตรงกับคำค้นหา "{searchTerm}"
                   </td>
                 </tr>
@@ -104,7 +169,7 @@ export default function DetailClassC({ setIsDetailsClassC }) {
           </table>
         </div>
 
-        {/* Footer */}
+        {/* Footer (เพื่อเว้นที่ว่างด้านล่าง) */}
         <div className="h-12"></div>
       </div>
     </div>

@@ -53,21 +53,19 @@ export default function DetailClassA({ setIsDetailsClassA }) {
         </div>
 
         {/* Search */}
-        <div className="mb-6">
+        <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <input
             type="text"
             placeholder="ค้นหาชื่อสินค้า, รหัสสินค้า, หรือยี่ห้อ..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-300 focus:border-pink-500 transition"
+            className="w-screen p-2 border border-gray-300 hover:bg-amber-50 shadow-sm rounded-lg focus:ring focus:border-pink-700 focus:ring-pink-700 transition"
           />
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex justify-end gap-2 mb-4">
+                  {/* Action Buttons */}
+        <div className="flex justify-end gap-2">
           <select
             defaultValue="select"
-            className="p-2 pr-10 border border-gray-300  focus:border-pink-700 focus:ring-pink-700  shadow-sm 
+            className="p-2.5 pr-24 border border-gray-300  focus:border-pink-700 focus:ring-pink-700  shadow-sm 
                 hover:bg-amber-50 cursor-pointer rounded-lg" // <--- เพิ่มคลาสที่นี่
           >
             <option className="text-gray-500" value="select">
@@ -77,6 +75,9 @@ export default function DetailClassA({ setIsDetailsClassA }) {
             <option value="nonSet">แยกSet</option>
           </select>
         </div>
+
+        </div>
+
 
         {/* Table */}
         {isLoading ? (
@@ -148,7 +149,7 @@ export default function DetailClassA({ setIsDetailsClassA }) {
                 ← หน้าก่อนหน้า
               </button>
               <span className="text-gray-600 mt-1">
-                หน้า {page} จาก {totalPages || 1}
+                หน้า {page}
               </span>
               <button
                 disabled={products.length < offset}

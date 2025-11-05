@@ -3,106 +3,170 @@ import React, { useState } from "react";
 export default function DetailNonMove({ setIsDetailsNonMove }) {
   // Mock data สำหรับสินค้าไม่เคลื่อนไหว (Non-Moving Items)
   const mockNonMoveProducts = [
-    { id: "NM501", name: "เครื่องเล่น DVD รุ่นเก่า", code: "E101X", inventoryQty: 120, inventoryValue: 120000, lastSaleDays: 450, isObsolete: true },
-    { id: "NM502", name: "ชุดเครื่องเขียนลายเทศกาลปีที่แล้ว", code: "ST88A", inventoryQty: 500, inventoryValue: 50000, lastSaleDays: 300, isObsolete: false },
-    { id: "NM503", name: "รองเท้าแตะเบอร์ 35 (สีม่วง)", code: "SH35P", inventoryQty: 80, inventoryValue: 16000, lastSaleDays: 600, isObsolete: true },
-    { id: "NM504", name: "สารเคมีบรรจุภัณฑ์เสียหาย (รอทำลาย)", code: "CH02Z", inventoryQty: 5, inventoryValue: 500000, lastSaleDays: 720, isObsolete: true },
-    { id: "NM505", name: "กระติกน้ำร้อนไฟฟ้า (รุ่นที่เลิกผลิต)", code: "H510", inventoryQty: 250, inventoryValue: 87500, lastSaleDays: 185, isObsolete: true },
+    {
+      id: "NM501",
+      name: "เครื่องเล่น DVD รุ่นเก่า",
+      code: "E101X",
+      inventoryQty: 120,
+      inventoryValue: 120000,
+      lastSaleDays: 450,
+      isObsolete: true,
+    },
+    {
+      id: "NM502",
+      name: "ชุดเครื่องเขียนลายเทศกาลปีที่แล้ว",
+      code: "ST88A",
+      inventoryQty: 500,
+      inventoryValue: 50000,
+      lastSaleDays: 300,
+      isObsolete: false,
+    },
+    {
+      id: "NM503",
+      name: "รองเท้าแตะเบอร์ 35 (สีม่วง)",
+      code: "SH35P",
+      inventoryQty: 80,
+      inventoryValue: 16000,
+      lastSaleDays: 600,
+      isObsolete: true,
+    },
+    {
+      id: "NM504",
+      name: "สารเคมีบรรจุภัณฑ์เสียหาย (รอทำลาย)",
+      code: "CH02Z",
+      inventoryQty: 5,
+      inventoryValue: 500000,
+      lastSaleDays: 720,
+      isObsolete: true,
+    },
+    {
+      id: "NM505",
+      name: "กระติกน้ำร้อนไฟฟ้า (รุ่นที่เลิกผลิต)",
+      code: "H510",
+      inventoryQty: 250,
+      inventoryValue: 87500,
+      lastSaleDays: 185,
+      isObsolete: true,
+    },
   ];
 
   // State สำหรับเก็บข้อความค้นหา
   const [searchTerm, setSearchTerm] = useState("");
 
   // Function กรองข้อมูลตามคำค้นหา (ค้นหาจากชื่อหรือรหัส)
-  const filteredProducts = mockNonMoveProducts.filter(product =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.code.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredProducts = mockNonMoveProducts.filter(
+    (product) =>
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.code.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Function จัดรูปแบบตัวเลขให้มีคอมม่า
   const formatNumber = (num) => {
-    return num.toLocaleString('en-US');
+    return num.toLocaleString("en-US", { maximumFractionDigits: 0 }); // จำกัดทศนิยมเป็น 0
   };
 
   return (
     // Backdrop/Overlay
     <div className="fixed inset-0 bg-black bg-opacity-50 z-40 flex justify-end">
-      
       {/* Modal / Side Panel */}
-      <div className="bg-white w-full h-full p-6 shadow-2xl z-50 ">
-        
-        {/* Header และ ปุ่มปิด */}
+      <div className="bg-white w-full h-full p-6 shadow-2xl z-50 overflow-y-auto">
+        {/* Header และ ปุ่มปิด (ปรับตาม Class A) */}
         <div className="flex justify-between items-start mb-6 border-b pb-4">
-            <h1 className="text-3xl font-extrabold text-[#640037]">
-                สินค้าไม่เคลื่อนไหว (Non-Move)
-                <p className="text-base font-normal text-gray-500 mt-1">รายการสินค้าที่ไม่มีการขาย/ตัดจ่ายเกินกว่า 1 ปี</p>
-            </h1>
-            <button
-                onClick={() => setIsDetailsNonMove(false)}
-                className="text-4xl text-gray-500 hover:text-[#640037] transition duration-200 p-1 leading-none"
-                aria-label="Close"
+          <h1 className="text-3xl font-extrabold text-[#640037]">
+            สินค้าไม่เคลื่อนไหว (Non-Move)
+            <p className="text-base font-normal text-gray-600 mt-1">
+              รายการสินค้าที่ไม่มีการขาย/ตัดจ่ายเกินกว่า 1 ปี
+            </p>
+          </h1>
+          <button
+            onClick={() => setIsDetailsNonMove(false)}
+            className="text-4xl text-gray-500 hover:text-[#640037] transition p-1 leading-none"
+            aria-label="Close"
+          >
+            &times;
+          </button>
+        </div>
+
+        {/* Input สำหรับค้นหา (ปรับตาม Class A) */}
+        <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <input
+            type="text"
+            placeholder="ค้นหาด้วยชื่อสินค้า หรือรหัสสินค้า..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-screen p-2 border border-gray-300 hover:bg-amber-50 shadow-sm rounded-lg focus:ring focus:border-pink-700 focus:ring-pink-700 transition"
+          />
+          <div className="flex justify-end gap-2">
+            <select
+              defaultValue="select"
+              className="p-2.5 pr-24 border border-gray-300  focus:border-pink-700 focus:ring-pink-700  shadow-sm 
+                hover:bg-amber-50 cursor-pointer rounded-lg" // <--- เพิ่มคลาสที่นี่
             >
-                &times;
-            </button>
+              <option className="text-gray-500" value="select">
+                Select...
+              </option>
+              <option value="set">Set</option>
+              <option value="nonSet">แยกSet</option>
+            </select>
+          </div>
         </div>
 
-        {/* Input สำหรับค้นหา */}
-        <div className="mb-6">
-            <input
-                type="text"
-                placeholder="ค้นหาด้วยชื่อสินค้า หรือรหัสสินค้า..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-300 focus:border-pink-500 transition duration-150"
-            />
-        </div>
-
-        {/* ตารางข้อมูล */}
+        {/* ตารางข้อมูล (ปรับตาม Class A) */}
         <div className="overflow-x-auto">
-          <table className="min-w-full table-auto border-collapse border border-gray-200">
+          <table className="min-w-full table-auto border-collapse border-2 border-gray-200">
+            {/* Header (ปรับตาม Class A) */}
             <thead className="bg-[#640037] text-white">
               <tr>
-                <th className="p-3 text-left border-r border-pink-700 w-[100px]">รหัสสินค้า</th>
-                <th className="p-3 text-left border-r border-pink-700">ชื่อสินค้า</th>
-                <th className="p-3 text-right border-r border-pink-700 w-[100px]">ปริมาณคงคลัง</th>
-                <th className="p-3 text-right border-r border-pink-700 w-[130px]">มูลค่าคงคลัง (บาท)</th>
-                <th className="p-3 text-right w-[100px]">ไม่ได้ขาย (วัน)</th>
-                <th className="p-3 text-center w-[100px]">สถานะ</th>
+                <th className="p-3 text-left">รหัสสินค้า</th>
+                <th className="p-3 text-left">ชื่อสินค้า</th>
+                <th className="p-3 text-right">ปริมาณคงคลัง</th>
+                <th className="p-3 text-right">มูลค่าคงคลัง (บาท)</th>
+                <th className="p-3 text-right">ไม่ได้ขาย (วัน)</th>
+                <th className="p-3 text-center">สถานะ</th>
               </tr>
             </thead>
             <tbody>
               {filteredProducts.length > 0 ? (
                 filteredProducts.map((product) => (
-                  <tr 
-                    key={product.id} 
-                    className="border-b border-gray-200 hover:bg-pink-50 transition duration-150"
+                  <tr
+                    key={product.id}
+                    className="border-b hover:bg-amber-50 transition" // ปรับ hover
                   >
-                    <td className="p-3 text-left font-medium">{product.code}</td>
+                    <td className="p-3 text-left font-medium">
+                      {product.code}
+                    </td>
                     <td className="p-3 text-left">{product.name}</td>
-                    <td className="p-3 text-right text-red-600 font-semibold">
-                        {formatNumber(product.inventoryQty)}
+                    {/* ปริมาณคงคลัง: เน้นด้วยสีแดง (ภาระ) */}
+                    <td className="p-3 text-right text-red-700 font-semibold">
+                      {formatNumber(product.inventoryQty)}
                     </td>
+                    {/* มูลค่าคงคลัง: เน้นด้วยสีหลัก (มูลค่าที่ติดอยู่) */}
                     <td className="p-3 text-right font-bold text-[#640037]">
-                        ฿{formatNumber(product.inventoryValue)}
+                      ฿{formatNumber(product.inventoryValue)}
                     </td>
+                    {/* ไม่ได้ขาย (วัน): เน้นด้วยสีแดงเข้ม (ความเสี่ยง) */}
                     <td className="p-3 text-right font-bold text-red-700">
-                        {formatNumber(product.lastSaleDays)}
+                      {formatNumber(product.lastSaleDays)}
                     </td>
+                    {/* สถานะ: ใช้สีพื้นหลังแบบ Badge */}
                     <td className="p-3 text-center">
-                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                            product.isObsolete 
-                                ? 'bg-red-100 text-red-800' 
-                                : 'bg-orange-100 text-orange-800'
-                        }`}>
-                            {product.isObsolete ? 'ล้าสมัย' : 'เฝ้าระวัง'}
-                        </span>
+                      <span
+                        className={`px-2 py-1 text-xs font-medium rounded-full ${
+                          product.isObsolete
+                            ? "bg-pink-100 text-red-800 border border-red-800" // ใช้สีชมพู/แดง เพื่อเน้น 'ล้าสมัย'
+                            : "bg-amber-100 text-orange-800 border border-orange-800" // ใช้สีส้ม/เหลือง เพื่อเน้น 'เฝ้าระวัง'
+                        }`}
+                      >
+                        {product.isObsolete ? "ล้าสมัย" : "เฝ้าระวัง"}
+                      </span>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
                   <td colSpan="6" className="p-4 text-center text-gray-500">
-                    ไม่พบข้อมูลสินค้าไม่เคลื่อนไหวที่ตรงกับคำค้นหา "{searchTerm}"
+                    ไม่พบข้อมูลสินค้าไม่เคลื่อนไหวที่ตรงกับคำค้นหา "{searchTerm}
+                    "
                   </td>
                 </tr>
               )}
@@ -110,7 +174,7 @@ export default function DetailNonMove({ setIsDetailsNonMove }) {
           </table>
         </div>
 
-        {/* Footer */}
+        {/* Footer (เพื่อเว้นที่ว่างด้านล่าง) */}
         <div className="h-12"></div>
       </div>
     </div>
