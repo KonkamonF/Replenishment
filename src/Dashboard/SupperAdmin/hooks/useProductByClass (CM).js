@@ -7,7 +7,7 @@ export function useProductByClass({
   token,
 }) {
   const [data, setData] = useState([]);
-  const [allData, setAllData] = useState([]); //  เก็บข้อมูลทั้งหมด
+  const [allData, setAllData] = useState([]); // เก็บข้อมูลทั้งหมด
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(initialPageSize);
   const [total, setTotal] = useState(0);
@@ -73,24 +73,19 @@ export function useProductByClass({
     setTotal(filtered.length);
   };
 
-  //  โหลดข้อมูลทุกหน้า (ครั้งแรกเท่านั้น)
+  // โหลดข้อมูลทุกหน้า (ครั้งแรกเท่านั้น)
   useEffect(() => {
     fetchAllOnce();
   }, [classType, className]);
 
-  //  debounce ค้นหา / เปลี่ยนหน้า
+  // debounce ค้นหา / เปลี่ยนหน้า
   useEffect(() => {
     clearTimeout(debounceTimer.current);
-
     debounceTimer.current = setTimeout(() => {
-      // ถ้ามีการพิมพ์ค้นหา → กลับไปหน้าแรก
-      if (searchTerm.trim()) setPage(1);
       applyFilter();
     }, 300);
-
     return () => clearTimeout(debounceTimer.current);
   }, [searchTerm, page, pageSize, allData]);
-
 
   return {
     data,
