@@ -1,5 +1,6 @@
 import React from "react";
 import { useProductByClass } from "../hooks/useProductByClass";
+import { NativeAnimationWrapper } from "motion";
 
 export default function DetailClassA({ setIsDetailsClassA }) {
   const token =
