@@ -200,7 +200,16 @@ export function SummaryMetrics({ grandTotals, dataAC }) {
 
   // เตรียมข้อมูลสำหรับ Pie Chart
   const chartData = {
-    labels: ["Total FC", "Total AC"],
+    labels: [
+      `Total FC ${totalFC.toLocaleString("en-US", {
+        style: "currency",
+        currency: "THB",
+      })}`,
+      `Total AC ${totalAC.toLocaleString("en-US", {
+        style: "currency",
+        currency: "THB",
+      })}`,
+    ],
     datasets: [
       {
         data: [totalFC, totalAC],
@@ -214,34 +223,47 @@ export function SummaryMetrics({ grandTotals, dataAC }) {
     ],
   };
 
+  const centerTextPlugin = {
+    id: "centerTotalText", // Unique ID for the plugin
+    beforeDraw(chart) {
+      // Only run this for Doughnut or Pie charts
+      if (chart.config.type !== "doughnut" && chart.config.type !== "pie") {
+        return;
+      }
+
+      // Get the canvas context
+      const { ctx, chartArea } = chart;
+      ctx.save(); // Save the current canvas state
+
+      // **Calculate the center coordinates**
+      const centerY = (chartArea.top + chartArea.bottom) / 2;
+      const centerX = (chartArea.left + chartArea.right) / 2;
+
+      ctx.restore(); // Restore the canvas state
+    },
+  };
+
   const options = {
     plugins: {
       legend: {
-        position: "right",
+        position: "bottom",
       },
     },
   };
 
   return (
-    <div className="bg-pink-50 border border-pink-200 rounded-lg p-4 mb-6 shadow-inner w-96">
-      <p className="text-center text-xl font-bold text-pink-900">แสดงผลเทียบยอด <br/>Actual Forecast</p>
+    <div className="bg-pink-50 border border-pink-200 rounded-lg p-4 mb-6 shadow-inner w-80">
+      <p className="text-center text-lg font-bold text-pink-900 mb-4">
+        แสดงผลเทียบยอด <br />
+        Actual Forecast
+      </p>
       <div className=" flex justify-center">
-        <div className="w-69 h-69">
-          <Pie options={options} data={chartData} />
-        </div>
-      </div>
-      <div className="flex gap-6 justify-center">
-        <div className="text-center">
-          <p className="text-gray-700 text-sm">ยอดรวม Total AC</p>
-          <p className="text-2xl font-bold text-blue-600">
-            {totalAC.toLocaleString()}
-          </p>
-        </div>
-        <div className="text-center">
-          <p className="text-gray-700 text-sm">ยอดรวม Total FC</p>
-          <p className="text-2xl font-bold text-pink-700">
-            {totalFC.toLocaleString()}
-          </p>
+        <div className="w-69 h-52 gap-2 flex flex-col items-center">
+          <Pie
+            options={options}
+            data={chartData}
+            plugins={[centerTextPlugin]}
+          />
         </div>
       </div>
     </div>
@@ -395,7 +417,11 @@ export default function KeyFC() {
         </header>
 
         {/* --- 1. GRAND TOTAL SUMMARY (ย้ายมาอยู่บนสุด) --- */}
-        <SummaryMetrics grandTotals={grandTotals} dataAC={filteredData} />
+        <div className="flex flex-wrap gap-4">
+          <SummaryMetrics grandTotals={grandTotals} dataAC={filteredData} />
+          <SummaryMetrics grandTotals={grandTotals} dataAC={filteredData} />
+          <SummaryMetrics grandTotals={grandTotals} dataAC={filteredData} />
+        </div>
 
         {/* --- END GRAND TOTAL SUMMARY --- */}
 
