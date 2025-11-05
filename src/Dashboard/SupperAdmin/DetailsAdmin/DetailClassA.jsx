@@ -149,7 +149,7 @@ export default function DetailClassA({ setIsDetailsClassA }) {
                 ← หน้าก่อนหน้า
               </button>
               <span className="text-gray-600 mt-1">
-                หน้า {page} จาก {totalPages || 1}
+                หน้า {page}
               </span>
               <button
                 disabled={products.length < offset}
