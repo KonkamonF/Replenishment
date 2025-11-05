@@ -85,12 +85,17 @@ export default function DetailClassA({ setIsDetailsClassA }) {
           />
         </div>
         <div className="flex justify-end gap-2 mb-4">
-          <button className="inline-flex justify-center items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition duration-150 shadow-md hover:bg-amber-50">
-            Set
-          </button>
-          <button className="inline-flex justify-center items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition duration-150 shadow-md">
-            แยกSet
-          </button>
+          <select
+            defaultValue="select"
+            className="p-2 pr-10 border border-gray-300  focus:border-pink-700 focus:ring-pink-700  shadow-sm 
+                hover:bg-amber-50 cursor-pointer rounded-lg" // <--- เพิ่มคลาสที่นี่
+          >
+            <option className="text-gray-500" value="select">
+              Select...
+            </option>
+            <option value="set">Set</option>
+            <option value="nonSet">แยกSet</option>
+          </select>
         </div>
         {/* Table */}
         {isLoading ? (
@@ -110,20 +115,14 @@ export default function DetailClassA({ setIsDetailsClassA }) {
                 <tr>
                   <th className="p-3 ">No.</th>
                   <th className="p-3 ">รหัสสินค้า</th>
-                  <th className="p-3 ">
-                    รายละเอียดสินค้า
-                  </th>
+                  <th className="p-3 ">รายละเอียดสินค้า</th>
                   <th className="p-3 ">Section</th>
                   <th className="p-3 ">ประเภทสินค้า</th>
                   <th className="p-3 ">ยี่ห้อ</th>
                   <th className="p-3 ">ManuelClass</th>
                   <th className="p-3 ">AutoClass</th>
-                  <th className="p-3 ">
-                    ราคากลาง/หน่วย
-                  </th>
-                  <th className="p-3 ">
-                    ราคาต่ำสุด/หน่วย
-                  </th>
+                  <th className="p-3 ">ราคากลาง/หน่วย</th>
+                  <th className="p-3 ">ราคาต่ำสุด/หน่วย</th>
                   <th className="p-3 ">สต็อก</th>
                   <th className="p-3 ">Lead Time (วัน)</th>
                 </tr>
