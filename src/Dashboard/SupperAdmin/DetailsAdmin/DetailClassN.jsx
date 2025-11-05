@@ -21,7 +21,7 @@ export default function DetailClassN({ setIsDetailsClassN }) {
     },
     {
       id: "N403",
-      name: "ขนมขบเคี้ยวรสชาติแปลกใหม่",
+      name: "ขนมขบเคี้ยวรสชาติแปลก",
       code: "SN99",
       launchDate: "2025-09-20",
       weeksSinceLaunch: 2,
