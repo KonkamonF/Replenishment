@@ -105,7 +105,8 @@ export default function DetailClassA({ setIsDetailsClassA }) {
                   <th className="p-3 text-left border-r border-pink-700">รหัสสินค้า</th>
                   <th className="p-3 text-left border-r border-pink-700">รายละเอียดสินค้า</th>
                   <th className="p-3 text-left border-r border-pink-700">ยี่ห้อ</th>
-                  <th className="p-3 text-left border-r border-pink-700">Class</th>
+                  <th className="p-3 text-left border-r border-pink-700">ManuelClass</th>
+                  <th className="p-3 text-left border-r border-pink-700">AutoClass</th>
                   <th className="p-3 text-right border-r border-pink-700">ราคาขาย</th>
                   <th className="p-3 text-right border-r border-pink-700">ราคาขั้นต่ำ</th>
                   <th className="p-3 text-right border-r border-pink-700">สต็อก</th>
@@ -118,6 +119,7 @@ export default function DetailClassA({ setIsDetailsClassA }) {
                     <td className="p-3">{p.itemCode?.trim() || "-"}</td>
                     <td className="p-3">{p.description?.trim() || "-"}</td>
                     <td className="p-3">{p.brand?.trim() || "-"}</td>
+                    <td className="p-3">{p.manualClass?.trim() || "-"}</td>
                     <td className="p-3">{p.manualClass?.trim() || "-"}</td>
                     <td className="p-3 text-right text-[#640037] font-bold">
                       {formatNumber(p.pricePerUnit)}

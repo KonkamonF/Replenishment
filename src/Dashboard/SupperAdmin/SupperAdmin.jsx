@@ -63,7 +63,7 @@ export default function SuperAdmin() {
             Summary Metrics
           </h2>
 
-          <div className="grid gap-6 text-white sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
+          <div className="grid gap-6 text-white sm:grid-cols-2 md:grid-cols-6 lg:grid-cols-6 ">
             {/* Class Cards */}
             <div className="text-center cursor-pointer p-6 bg-gradient-to-t from-[#ffd9c3] to-yellow-100 text-[#e25e00] rounded-xl shadow-md hover:shadow-xl">
               <ClassA />
@@ -81,6 +81,12 @@ export default function SuperAdmin() {
             {/* Other Cards */}
             <div className="text-center cursor-pointer p-6 bg-gradient-to-t from-[#fff8d3] to-[#ffd4b9] text-[#d15000] rounded-xl shadow-md hover:shadow-xl">
               <Best />
+            </div>
+            <div className="text-center cursor-pointer p-6 bg-gradient-to-b from-[#dcb8ff] to-[#ffccfc] text-[#640D5F] rounded-xl shadow-md hover:shadow-xl">
+              <NonMove />
+            </div>
+            <div className="text-center cursor-pointer p-6 bg-gradient-to-b from-[#dcb8ff] to-[#ffccfc] text-[#640D5F] rounded-xl shadow-md hover:shadow-xl">
+              <NonMove />
             </div>
             <div className="text-center cursor-pointer p-6 bg-gradient-to-b from-[#dcb8ff] to-[#ffccfc] text-[#640D5F] rounded-xl shadow-md hover:shadow-xl">
               <NonMove />
