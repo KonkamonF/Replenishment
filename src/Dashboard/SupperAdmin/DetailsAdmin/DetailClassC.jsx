@@ -1,176 +1,164 @@
-import React, { useState } from "react";
+import React from "react";
+import { useProductByClass } from "../hooks/useProductByClass";
+import { NativeAnimationWrapper } from "motion";
 
-export default function DetailClassC({ setIsDetailsClassC }) {
-  // Mock data สำหรับสินค้า Class C (Low Value / High Volume หรือ Low Value / Low Volume)
-  const mockClassCProducts = [
-    {
-      id: "C301",
-      name: "คลิปหนีบกระดาษขนาดเล็ก (แพ็ค 100)",
-      code: "ST01",
-      volumeShare: 55.0,
-      valueShare: 3.5,
-      inventoryDays: 180,
-      lastSale: 95,
-    },
-    {
-      id: "C302",
-      name: "น้ำยาล้างจานสูตรเก่า",
-      code: "H105",
-      volumeShare: 15.0,
-      valueShare: 2.1,
-      inventoryDays: 120,
-      lastSale: 40,
-    },
-    {
-      id: "C303",
-      name: "แปรงสีฟันสำหรับเด็ก (สีเขียว)",
-      code: "D203",
-      volumeShare: 5.0,
-      valueShare: 1.5,
-      inventoryDays: 200,
-      lastSale: 150,
-    },
-    {
-      id: "C304",
-      name: "สายชาร์จโทรศัพท์รุ่นเก่า",
-      code: "E990",
-      volumeShare: 1.5,
-      valueShare: 0.8,
-      inventoryDays: 360,
-      lastSale: 25,
-    },
-    {
-      id: "C305",
-      name: "ถุงพลาสติกบรรจุภัณฑ์ (เล็ก)",
-      code: "PK50",
-      volumeShare: 10.0,
-      valueShare: 1.2,
-      inventoryDays: 90,
-      lastSale: 60,
-    },
-  ];
+export default function DetailClassA({ setIsDetailsClassC }) {
+  const token = import.meta.env.VITE_API_TOKEN;
+  const {
+    data: products,
+    loading: isLoading,
+    error,
+    searchTerm,
+    setSearchTerm,
+    page,
+    setPage,
+    pageSize: offset,
+    total,
+  } = useProductByClass({
+    classType: "manual",
+    className: "C",
+    token,
+    initialPageSize: 50,
+  });
 
-  // State สำหรับเก็บข้อความค้นหา
-  const [searchTerm, setSearchTerm] = useState("");
-
-  // Function กรองข้อมูลตามคำค้นหา (ค้นหาจากชื่อหรือรหัส)
-  const filteredProducts = mockClassCProducts.filter(
-    (product) =>
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.code.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredProducts = products.filter(
+    (p) =>
+      p.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.itemCode?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.brand?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Function จัดรูปแบบตัวเลข (สำหรับเปอร์เซ็นต์, วัน, และจำนวน)
-  const formatNumber = (num, isPercent = false) => {
-    const formatted = num.toLocaleString("en-US", {
-      minimumFractionDigits: isPercent ? 1 : 0,
-      maximumFractionDigits: isPercent ? 1 : 0,
-    });
-    return formatted + (isPercent ? "%" : "");
-  };
+  const formatNumber = (num) =>
+    num ? num.toLocaleString("en-US", { maximumFractionDigits: 0 }) : "-";
 
   return (
-    // Backdrop/Overlay
     <div className="fixed inset-0 bg-black bg-opacity-50 z-40 flex justify-end">
-      {/* Modal / Side Panel */}
       <div className="bg-white w-full h-full p-6 shadow-2xl z-50 overflow-y-auto">
-        {/* Header และ ปุ่มปิด (ปรับตาม Class A) */}
+        {/* Header */}
         <div className="flex justify-between items-start mb-6 border-b pb-4">
           <h1 className="text-3xl font-extrabold text-[#640037]">
             สินค้า Class C
-            <p className="text-base font-normal text-gray-600 mt-1">
-              สินค้าที่มีสัดส่วนมูลค่าขายต่ำ แต่มีจำนวนมากหรือสต็อกยาวนาน
+            <p className="text-base text-gray-600 mt-1">
+              หน้าปัจจุบัน : {page}
             </p>
           </h1>
           <button
             onClick={() => setIsDetailsClassC(false)}
             className="text-4xl text-gray-500 hover:text-[#640037] transition p-1 leading-none"
-            aria-label="Close"
           >
             &times;
           </button>
         </div>
 
-        {/* Input สำหรับค้นหา (ปรับตาม Class A) */}
+        {/* Search */}
         <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <input
             type="text"
-            placeholder="ค้นหาด้วยชื่อสินค้า หรือรหัสสินค้า..."
+            placeholder="ค้นหาชื่อสินค้า, รหัสสินค้า, หรือยี่ห้อ..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-screen p-2 border border-gray-300 hover:bg-amber-50 shadow-sm rounded-lg focus:ring focus:border-pink-700 focus:ring-pink-700 transition"
           />
-          <div className="flex justify-end gap-2">
-            <select
-              defaultValue="select"
-              className="p-2.5 pr-24 border border-gray-300  focus:border-pink-700 focus:ring-pink-700  shadow-sm 
+                  {/* Action Buttons */}
+        <div className="flex justify-end gap-2">
+          <select
+            defaultValue="select"
+            className="p-2.5 pr-24 border border-gray-300  focus:border-pink-700 focus:ring-pink-700  shadow-sm 
                 hover:bg-amber-50 cursor-pointer rounded-lg" // <--- เพิ่มคลาสที่นี่
-            >
-              <option className="text-gray-500" value="select">
-                Select...
-              </option>
-              <option value="set">Set</option>
-              <option value="nonSet">แยกSet</option>
-            </select>
-          </div>
+          >
+            <option className="text-gray-500" value="select">
+              Select...
+            </option>
+            <option value="set">Set</option>
+            <option value="nonSet">แยกSet</option>
+          </select>
         </div>
 
-        {/* ตารางข้อมูล (ปรับตาม Class A) */}
-        <div className="overflow-x-auto">
-          <table className="min-w-full table-auto border-collapse border-2 border-gray-200">
-            {/* Header (ปรับตาม Class A) */}
-            <thead className="bg-[#640037] text-white">
-              <tr>
-                <th className="p-3 text-left">รหัสสินค้า</th>
-                <th className="p-3 text-left">ชื่อสินค้า</th>
-                <th className="p-3 text-right">สัดส่วนปริมาณขาย</th>
-                <th className="p-3 text-right">สัดส่วนมูลค่าขาย</th>
-                <th className="p-3 text-right">คงคลัง (วัน)</th>
-                <th className="p-3 text-right">วันขายล่าสุด (วัน)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredProducts.length > 0 ? (
-                filteredProducts.map((product) => (
-                  <tr
-                    key={product.id}
-                    className="border-b hover:bg-amber-50 transition" // ปรับ hover
-                  >
-                    <td className="p-3 text-left font-medium">
-                      {product.code}
+        </div>
+
+
+        {/* Table */}
+        {isLoading ? (
+          <p className="text-center text-gray-500 py-10 animate-pulse">
+             กำลังโหลดข้อมูลหน้า {page}...
+          </p>
+        ) : error ? (
+          <p className="text-center text-red-500 py-10">
+             โหลดข้อมูลไม่สำเร็จ: {error}
+          </p>
+        ) : products.length === 0 ? (
+          <p className="text-center text-gray-500 py-10">ไม่พบสินค้า</p>
+        ) : (
+          <>
+            <table className="min-w-full border-collapse border-2 border-gray-200">
+              <thead className="bg-[#640037] text-white">
+                <tr>
+                  <th className="p-3 ">No.</th>
+                  <th className="p-3 ">รหัสสินค้า</th>
+                  <th className="p-3 ">รายละเอียดสินค้า</th>
+                  <th className="p-3 ">Section</th>
+                  <th className="p-3 ">ประเภทสินค้า</th>
+                  <th className="p-3 ">ยี่ห้อ</th>
+                  <th className="p-3 ">ManuelClass</th>
+                  <th className="p-3 ">AutoClass</th>
+                  <th className="p-3 ">ราคากลาง/หน่วย</th>
+                  <th className="p-3 ">ราคาต่ำสุด/หน่วย</th>
+                  <th className="p-3 ">Stock</th>
+                  <th className="p-3 ">Lead Time (วัน)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredProducts.map((p, i) => (
+                  <tr key={i} className="border-b hover:bg-amber-50 transition">
+                    <td className="p-3">{(page - 1) * offset + i + 1}</td>
+                    <td className="p-3">{p.itemCode?.trim() || "-"}</td>
+                    <td className="p-3 text-left">
+                      {p.description?.trim() || "-"}
                     </td>
-                    <td className="p-3 text-left">{product.name}</td>
-                    {/* สัดส่วนปริมาณขาย: อาจใช้สีหลักเพื่อเน้นว่าเป็นสินค้าที่มี Volume สูง */}
-                    <td className="p-3 text-right font-bold text-[#640037]">
-                      {formatNumber(product.volumeShare, true)}
+                    <td className="p-3">{p.section?.trim() || "-"}</td>
+                    <td className="p-3">{p.type?.trim() || "-"}</td>
+                    <td className="p-3">{p.brand?.trim() || "-"}</td>
+                    <td className="p-3">{p.manualClass?.trim() || "-"}</td>
+                    <td className="p-3">{p.autoClass?.trim() || "-"}</td>
+                    <td className="p-3 text-right text-[#640037] font-bold">
+                      {formatNumber(p.pricePerUnit)}
                     </td>
-                    {/* สัดส่วนมูลค่าขาย: ใช้สีเทา/ชมพูอ่อน เพื่อแสดงว่ามีมูลค่าต่ำ */}
-                    <td className="p-3 text-right font-semibold text-pink-700">
-                      {formatNumber(product.valueShare, true)}
+                    <td className="p-3 text-right text-pink-700 font-semibold">
+                      {formatNumber(p.minPricePerUnit)}
                     </td>
-                    {/* คงคลัง (วัน): ใช้สีที่เน้นความสำคัญ (Red/Orange) เนื่องจาก Class C มักมีสต็อกยาวนาน */}
-                    <td className="p-3 text-right font-bold text-red-600">
-                      {formatNumber(product.inventoryDays)}
+                    <td className="p-3 text-right">
+                      {formatNumber(p.stockAllStore)}
                     </td>
-                    {/* วันขายล่าสุด (วัน): ใช้สีเทาเหมือน Lead Time ใน Class A */}
                     <td className="p-3 text-right text-gray-600">
-                      {formatNumber(product.lastSale)}
+                      {formatNumber(p.leadTime)}
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="6" className="p-4 text-center text-gray-500">
-                    ไม่พบข้อมูลสินค้า Class C ที่ตรงกับคำค้นหา "{searchTerm}"
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+                ))}
+              </tbody>
+            </table>
 
-        {/* Footer (เพื่อเว้นที่ว่างด้านล่าง) */}
-        <div className="h-12"></div>
+            {/* Pagination */}
+            <div className="flex justify-center mt-6 space-x-4">
+              <button
+                disabled={page <= 1}
+                onClick={() => setPage(page - 1)}
+                className="px-4 py-2 bg-gray-200 rounded hover:bg-pink-100 disabled:opacity-50"
+              >
+                ← หน้าก่อนหน้า
+              </button>
+              <span className="text-gray-600 mt-1">
+                หน้า {page} 
+              </span>
+              <button
+                disabled={products.length < offset}
+                onClick={() => setPage(page + 1)}
+                className="px-4 py-2 bg-[#640037] text-white rounded hover:bg-pink-700 disabled:opacity-50"
+              >
+                หน้าถัดไป →
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
