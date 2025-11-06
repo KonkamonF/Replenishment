@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { Search, Eye, EyeOff, ChevronDown } from "lucide-react"; // ใช้ ChevronDown
 import Uploadimg from "../../SideBar/Uploadimg";
+import { tr } from "motion/react-client";
 
 // --- Mock Data (ชุดข้อมูล Inventory/Trade ที่คุณต้องการ) ---
 const mockInventoryData = [
@@ -275,6 +276,7 @@ export default function InventoryTradeMonitorWithFilters() {
     class: "All",
     best2025: "All",
     tradeStatus: "All",
+    set: "All",
   });
   const [modalRemarkProduct, setModalRemarkProduct] = useState(null); // NEW State
 
@@ -290,6 +292,10 @@ export default function InventoryTradeMonitorWithFilters() {
   const uniqueBest2025 = useMemo(() => ["All", "Yes", "No"], []);
   const uniqueTradeStatus = useMemo(
     () => ["All", ...new Set(data.map((item) => item.สถานะTrade))],
+    [data]
+  );
+  const set = useMemo(
+    () => ["All", ...new Set(data.map((item) => item.set))],
     [data]
   );
 
@@ -322,12 +328,15 @@ export default function InventoryTradeMonitorWithFilters() {
         filters.tradeStatus === "All" ||
         item.สถานะTrade === filters.tradeStatus;
 
+      const matchesSet = filters.set === "All" || item.set === filters.set;
+
       return (
         matchesSearch &&
         matchesBrand &&
         matchesClass &&
         matchesBest2025 &&
-        matchesTradeStatus
+        matchesTradeStatus &&
+        matchesSet
       );
     });
   }, [filters, data]);
@@ -445,7 +454,7 @@ export default function InventoryTradeMonitorWithFilters() {
       {/* --- END NEW: Summary Card Component --- */}
 
       {/* --- Filters & Search Bar --- */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-4 mb-8 items-end p-4 bg-pink-50 rounded-lg border border-pink-200">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-7 gap-4 mb-8 items-end p-4 bg-pink-50 rounded-lg border border-pink-200">
         {/* Search Bar */}
         <div className="col-span-1 md:col-span-2">
           <label className="block text-sm font-bold text-gray-700 mb-1">
@@ -559,6 +568,24 @@ export default function InventoryTradeMonitorWithFilters() {
             </select>
           </div>
         </div>
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-1">
+            ชุด Set / แตก Set
+          </label>
+          <div className="relative">
+            <select
+              value={filters.set}
+              onChange={(e) => handleFilterChange("set", e.target.value)}
+              className="w-full p-2 pr-10 border border-gray-300 rounded-lg shadow-sm text-gray-500 bg-white"
+            >
+              {set.map((set) => (
+                <option key={set} value={set}>
+                  {set || "set"}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
       </div>
 
       <p className="mb-4 text-sm text-gray-600 font-medium">
@@ -571,22 +598,29 @@ export default function InventoryTradeMonitorWithFilters() {
         <table className="min-w-full table-auto bg-white text-center">
           <thead className="bg-[#640037] text-white sticky top-0 text-sm">
             <tr>
-              <th className="p-3 ">Code/Brand</th>
+              <th className="p-3 ">No.</th>
+              <th className="p-3 ">ItemCode</th>
               <th className="p-3 ">Description/Type</th>
-              <th className="p-3 ">Stock (เหลือจริง)</th>
+              <th className="p-3 ">Best/BestSet</th>
               <th className="p-3 ">ยอด Forecast</th>
+              <th className="p-3 ">ยอด Actual</th>
               <th className="p-3 ">DOH (วัน)</th>
+              <th className="p-3 ">ชุด Set / แยก Set</th>
+              <th className="p-3 ">Stock (กายภาพ)</th>
+              <th className="p-3 ">Stock (ตัวโชว์)</th>
               <th className="p-3 ">สถานะ Trade</th>
               <th className="p-3 ">Remark Trade / Action</th>
             </tr>
           </thead>
           <tbody>
             {filteredData.length > 0 ? (
-              filteredData.map((item) => (
+              filteredData.map((item, index) => (
                 <tr
                   key={item.Code}
                   className="border-b border-gray-200 hover:bg-pink-50 transition duration-150"
                 >
+                  <td>{index + 1}</td>
+
                   {/* Code/Brand */}
                   <td className="p-3 font-mono text-sm border-r border-gray-200">
                     <span className="font-bold text-[#640037]">
@@ -612,14 +646,13 @@ export default function InventoryTradeMonitorWithFilters() {
                     </span>
                   </td>
 
+                  <td>Best</td>
+
                   {/* Stock */}
                   <td className="p-3  font-bold text-lg border-r border-gray-200">
                     {item.Stock_จบเหลือจริง.toLocaleString()}
                   </td>
-                  <td className="p-3  font-bold text-lg border-r border-gray-200">
-                    {(item.Stock_จบเหลือจริง - 25).toLocaleString()}
-                  </td>
-
+                  <td>Actual</td>
                   {/* DOH (วัน) */}
                   <td
                     className={`p-3  font-extrabold text-lg border-r border-gray-200 ${getDOHStyle(
@@ -630,7 +663,11 @@ export default function InventoryTradeMonitorWithFilters() {
                       .toFixed(0)
                       .toLocaleString()}
                   </td>
-
+                  <td>set</td>
+                  <td className="p-3  font-bold text-lg border-r border-gray-200">
+                    {(item.Stock_จบเหลือจริง - 25).toLocaleString()}
+                  </td>
+                  <td>Stock ตัวโชว์</td>
                   {/* สถานะ Trade */}
                   <td className="p-3 border-r border-gray-200">
                     <span
