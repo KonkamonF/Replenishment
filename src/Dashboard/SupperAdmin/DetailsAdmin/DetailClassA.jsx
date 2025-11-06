@@ -3,8 +3,6 @@ import { useProductByClass } from "../hooks/useProductByClass";
 import { NativeAnimationWrapper } from "motion";
 
 export default function DetailClassA({ setIsDetailsClassA }) {
-  const token =
-    "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NjQ3MjUwNDgsImlkIjoidXJtdF8xYzRkMTZmYyIsInJvbGUiOiJyXzA4OGQ4YjdmIn0.AfjeGVTx_usWu3HVaNJ-vZoIHz80bF7Vwj_4v_PVXKfT7xuxSRKFsOMWubo4KTixlEtlID0n3lE1vFIcVeToT5bU_oCyuyMLGpVae_S9kA1JqFbS04wgoKOCyoF12YBM2az0_vRrr93NXFZYxkMVolTWO8zXwWWTx50T-6XgtadV7ahoBp3Ei5ysSCRNhhLI3t2J7Ne2mKCOcBWNpTjCdZbeDb3MUsP4c8ZPboCxg6sTKieov_CjgVC-4M_KCR_fQWA_rzqZ57UcklaV_BaEy3nn747BU0ljKvx4cTadu2aiyGUxsggc3Qdc1YAWm7FfWHHDoioBePDkztYWopENcA";
 
   // ใช้ hook กลาง (production-grade)
   const {
