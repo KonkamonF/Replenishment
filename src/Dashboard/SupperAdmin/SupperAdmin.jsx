@@ -9,6 +9,7 @@ import NonMove from "./AmountAdmin/NonMove";
 // Import Component กราฟ
 import AcAndFc from "./AmountAdmin/AcAndFc";
 import Charts from "./AmountAdmin/Charts";
+import Calendar from "./Calendar/Calendar";
 
 export default function SuperAdmin() {
   // Functions to handle button clicks (you'll implement the actual logic here)
@@ -39,6 +40,7 @@ export default function SuperAdmin() {
         <h1 className="text-3xl font-extrabold text-[#640037]">
           Super Admin Dashboard
         </h1>
+
         <div className="space-x-4 ">
           <button
             onClick={handleImport}
@@ -125,6 +127,7 @@ export default function SuperAdmin() {
             </div>
           </div>
         </div>
+        <Calendar/>
       </div>
     </div>
   );
