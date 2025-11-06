@@ -1,23 +1,22 @@
 import { useState, useEffect, useRef } from "react";
+import { API_TOKEN } from "../../../config/apiConfig";
 
 export function useProductByClass({
   classType = "manual",
   className = "A",
   initialPageSize = 50,
-  token,
+  token = API_TOKEN,
 }) {
   const [data, setData] = useState([]);
-  const [allData, setAllData] = useState([]); //  เก็บข้อมูลทั้งหมด
+  const [allData, setAllData] = useState([]);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(initialPageSize);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-
   const debounceTimer = useRef(null);
 
-  // โหลดข้อมูลทุกหน้าแค่ครั้งเดียว (cache)
   const fetchAllOnce = async () => {
     setLoading(true);
     setError(null);
@@ -33,6 +32,7 @@ export function useProductByClass({
             headers: {
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
+              Accept: "application/json",
             },
           }
         );
@@ -53,7 +53,6 @@ export function useProductByClass({
     }
   };
 
-  // filter + paginate ฝั่ง React
   const applyFilter = () => {
     let filtered = allData;
     if (searchTerm.trim()) {
@@ -67,30 +66,22 @@ export function useProductByClass({
     }
 
     const start = (page - 1) * pageSize;
-    const paginated = filtered.slice(start, start + pageSize);
-
-    setData(paginated);
+    setData(filtered.slice(start, start + pageSize));
     setTotal(filtered.length);
   };
 
-  //  โหลดข้อมูลทุกหน้า (ครั้งแรกเท่านั้น)
   useEffect(() => {
     fetchAllOnce();
   }, [classType, className]);
 
-  //  debounce ค้นหา / เปลี่ยนหน้า
   useEffect(() => {
     clearTimeout(debounceTimer.current);
-
     debounceTimer.current = setTimeout(() => {
-      // ถ้ามีการพิมพ์ค้นหา → กลับไปหน้าแรก
       if (searchTerm.trim()) setPage(1);
       applyFilter();
     }, 300);
-
     return () => clearTimeout(debounceTimer.current);
   }, [searchTerm, page, pageSize, allData]);
-
 
   return {
     data,

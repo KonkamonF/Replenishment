@@ -3,8 +3,7 @@ import { useProductByClass } from "../hooks/useProductByClass";
 import { NativeAnimationWrapper } from "motion";
 
 export default function DetailClassA({ setIsDetailsClassA }) {
-
-  // ใช้ hook กลาง (production-grade)
+  const token = import.meta.env.VITE_API_TOKEN;
   const {
     data: products,
     loading: isLoading,

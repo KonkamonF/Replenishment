@@ -1,17 +1,33 @@
 import React, { useState } from "react";
+import { useProductTotalByClass } from "../hooks/useProductTotalByClass";
 import DetailClassA from "../DetailsAdmin/DetailClassA";
 
 export default function ClassA() {
   const [isDetailsClassA, setIsDetailsClassA] = useState(false);
+
+  // ✅ ใช้ hook ใหม่ (แยกจากตัวแบ่งหน้า)
+  const { total, loading, error } = useProductTotalByClass({
+    classType: "manual",
+    className: "A",
+  });
+
   return (
     <>
       {isDetailsClassA && (
         <DetailClassA setIsDetailsClassA={setIsDetailsClassA} />
       )}
+
       <div
-        onClick={() => setIsDetailsClassA(true)}>
-        <p className="text-3xl font-bold">50 Units</p>
-        Class <span className="font-bold text-xl">A</span> 
+        onClick={() => setIsDetailsClassA(true)}
+      >
+        {loading && <p>Loading...</p>}
+        {error && <p>Error: {error}</p>}
+        {!loading && !error && (
+          <>
+            <p className="text-3xl font-bold">{total} Units</p>
+            Class <span className="font-bold text-xl">A</span>
+          </>
+        )}
       </div>
     </>
   );
