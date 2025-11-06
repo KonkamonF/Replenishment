@@ -70,11 +70,11 @@ export default function Calendar() {
 
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 font-['Inter']">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 font-['Inter']">
         <script src="https://cdn.tailwindcss.com"></script>
         
+             <h2 className='text-4xl'>กำหนดสินค้าเข้า</h2>
         <div className="w-full max-w-xl bg-white rounded-xl shadow-2xl p-6 border-t-4 border-pink-600">
-            
             {/* Calendar Header and Navigation */}
             <div className="flex justify-between items-center mb-6 pb-3 border-b">
                 <button 

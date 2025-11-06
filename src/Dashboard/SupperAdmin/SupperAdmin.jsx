@@ -127,7 +127,7 @@ export default function SuperAdmin() {
             </div>
           </div>
         </div>
-        <Calendar/>
+        <Calendar />
       </div>
     </div>
   );
