@@ -4,7 +4,7 @@ import React, { useState, useMemo, useRef, useEffect } from "react";
 import { Search, Eye, EyeOff, ChevronDown, Upload } from "lucide-react";
 
 // *** WARNING: ตรวจสอบ Path การ Import เหล่านี้ให้ถูกต้อง ***
-import StockShowModal from "../SupperAdmin/Stock/StockShow"; 
+import StockShowModal from "../SupperAdmin/StockModal/StockShow"; 
 // NOTE: เปลี่ยนการ import TradeCommunicationModal/CommunicateCard เป็น TradeRemarkModal ตามโค้ดล่าสุดของคุณ
 // import TradeCommunicationModal from "../SupperAdmin/Stock/CommunicateCard"; 
 // หาก TradeRemarkModal อยู่ในไฟล์เดียวกัน ไม่ต้อง Import แต่หากแยกไฟล์ ต้อง Import ที่นี่
