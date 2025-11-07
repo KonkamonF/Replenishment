@@ -310,7 +310,6 @@ export default function InventoryTradeMonitor() {
   const handleOpenRemarkModal = (item) => {
     setSelectedItem(item);
     setModalRemarkProduct(item); // ใช้ State ใหม่
-    console.log(`Opening remark modal for ${item.Code}`);
   };
   
   // NEW: ฟังก์ชันสำหรับอัปเดต Remark ใน State หลัก
@@ -437,7 +436,7 @@ export default function InventoryTradeMonitor() {
       <div className="p-8 bg-white shadow-2xl rounded-xl">
         {/* --- Header & Summary --- */}
         <header className="mb-6 border-b pb-4">
-          <h1 className="text-3xl font-extrabold text-[#640037] mb-2">Inventory & Trade Monitor</h1>
+          <h1 className="text-3xl font-extrabold text-[#640037] mb-2">Key Account Monitor</h1>
           <p className="text-gray-500">ข้อมูลคงคลัง (Stock) และยอดขาย (Sale Out) พร้อมช่องทางการบันทึกและติดตาม **Action/Communication**</p>
         </header>
 
