@@ -3,39 +3,11 @@
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import { Search, Eye, EyeOff, ChevronDown, Upload } from "lucide-react";
 
-// *** WARNING ***
-// ต้องแก้ไข path ของ StockShowModal ให้ถูกต้องตามโครงสร้างโปรเจกต์ของคุณ
-// ตัวอย่าง: import StockShowModal from "./StockShowModal";
-import StockShowModal from "../SupperAdmin/Stock/StockShow"; // Path เดิมของคุณ (สมมติว่าเป็น StockShowModal)
+// *** WARNING: ตรวจสอบ Path การ Import เหล่านี้ให้ถูกต้อง ***
+import StockShowModal from "../SupperAdmin/Stock/StockShow"; 
+import TradeCommunicationModal from "../SupperAdmin/Stock/CommunicateCard"; 
+// --------------------------------------------------------
 
-// --- Mock Component for Uploadimg ---
-const Uploadimg = () => (
-  <div className="flex items-center justify-center p-2 mt-2 text-sm text-gray-500 border border-dashed border-gray-300 rounded-lg bg-white cursor-pointer hover:bg-gray-100 transition">
-    <Upload className="w-4 h-4 mr-2" />
-    {/* Mock Upload Image Text (Thai) */}
-    แนบไฟล์รูปภาพ
-  </div>
-);
-
-// --- Mock Data (ชุดข้อมูล Inventory/Trade) ---
-const mockInventoryData = [
-  {
-    Code: "06-0005-01", Type: "TableTop", Class: "B", YN_Best_2025: "", Brand: "Tecno*", Description: "TNS IR 05", SubType: "set", ราคา_กลาง_หน่วย: 1390, ราคา_โปรล่าสุด: 1290, DayOnHand_DOH: 1413, DayOnHand_DOH_Stock2: 376.71, TargetSaleUnit_1: 70, SaleOutเฉลี่ยวัน: 1.42, Stock_จบเหลือจริง: 879, SaleOut_มีค68: 43, SaleOut_เมย68: 41, SaleOut_พค68: 48, SaleOut_มิย68: 28, Sale_in_Aging_Tier: "Aging1 M", สถานะTrade: "Abnormal", RemarkTrade: "AC น้อยกว่า FC เกิน 20%", DiffPercent: "-90.48%", LeadTime: 90, ตัดจ่ายเฉลี่ย3เดือน: 6.67, KeyRemarks: [{ key: 1, date: "2025-10-01", user: "Admin A", text: "สินค้า DOH สูงมาก ควรทำโปรโมชั่นพิเศษด่วน." }],
-  },
-  {
-    Code: "06-0003-01", Type: "TableTop", Class: "B", YN_Best_2025: "Yes", Brand: "Tecno*", Description: "Table top 1", SubType: "set", ราคา_กลาง_หน่วย: 1290, ราคา_โปรล่าสุด: 1250, DayOnHand_DOH: 310, DayOnHand_DOH_Stock2: 148.32, TargetSaleUnit_1: 140, SaleOutเฉลี่ยวัน: 2.45, Stock_จบเหลือจริง: 670, SaleOut_มีค68: 64, SaleOut_เมย68: 70, SaleOut_พค68: 71, SaleOut_มิย68: 65, Sale_in_Aging_Tier: "No Aging", สถานะTrade: "Abnormal", RemarkTrade: "AC น้อยกว่า FC เกิน 20%", DiffPercent: "-68.12%", LeadTime: 80, ตัดจ่ายเฉลี่ย3เดือน: 38.2, KeyRemarks: [{ key: 1, date: "2025-10-02", user: "KeyUser B", text: "ลูกค้าบ่นเรื่องราคาโปร ไม่ดึงดูดใจเท่าที่ควร." }, { key: 2, date: "2025-10-03", user: "Admin A", text: "รับทราบ. จะพิจารณาราคาโปรโมชั่นใหม่สำหรับเดือนหน้า." }],
-  },
-  {
-    Code: "06-0003-02", Type: "TableTop", Class: "A", YN_Best_2025: "", Brand: "Tecno*", Description: "Table top 2", SubType: "non set", ราคา_กลาง_หน่วย: 1450, ราคา_โปรล่าสุด: 1390, DayOnHand_DOH: 295, DayOnHand_DOH_Stock2: 160.44, TargetSaleUnit_1: 120, SaleOutเฉลี่ยวัน: 2.88, Stock_จบเหลือจริง: 710, SaleOut_มีค68: 72, SaleOut_เมย68: 76, SaleOut_พค68: 80, SaleOut_มิย68: 78, Sale_in_Aging_Tier: "Fresh", สถานะTrade: "Normal", RemarkTrade: "ยอดขายสอดคล้องกับแผน", DiffPercent: "-25.32%", LeadTime: 75, ตัดจ่ายเฉลี่ย3เดือน: 42.5, KeyRemarks: [],
-  },
-  {
-    Code: "06-0003-03", Type: "TableTop", Class: "C", YN_Best_2025: "", Brand: "Tecno*", Description: "Table top 3", SubType: "non set", ราคา_กลาง_หน่วย: 1100, ราคา_โปรล่าสุด: 990, DayOnHand_DOH: 420, DayOnHand_DOH_Stock2: 190.12, TargetSaleUnit_1: 90, SaleOutเฉลี่ยวัน: 1.95, Stock_จบเหลือจริง: 560, SaleOut_มีค68: 38, SaleOut_เมย68: 42, SaleOut_พค68: 39, SaleOut_มิย68: 40, Sale_in_Aging_Tier: "Aging2 M", สถานะTrade: "Abnormal", RemarkTrade: "สินค้าเคลื่อนไหวน้อย", DiffPercent: "-82.67%", LeadTime: 95, ตัดจ่ายเฉลี่ย3เดือน: 18.6, KeyRemarks: [],
-  },
-  {
-    Code: "06-0003-04", Type: "TableTop", Class: "B", YN_Best_2025: "Yes", Brand: "Tecno*", Description: "Table top 4", SubType: "non set", ราคา_กลาง_หน่วย: 1350, ราคา_โปรล่าสุด: 1320, DayOnHand_DOH: 285, DayOnHand_DOH_Stock2: 140.56, TargetSaleUnit_1: 150, SaleOutเฉลี่ยวัน: 3.12, Stock_จบเหลือจริง: 695, SaleOut_มีค68: 81, SaleOut_เมย68: 79, SaleOut_พค68: 85, SaleOut_มิย68: 83, Sale_in_Aging_Tier: "Fresh", สถานะTrade: "Normal", RemarkTrade: "สินค้าขายดีตามแผน", DiffPercent: "-15.24%", LeadTime: 70, ตัดจ่ายเฉลี่ย3เดือน: 55.4, KeyRemarks: [],
-  },
-];
-// -----------------
 
 // --- Helper Functions (สำหรับแสดงผล) ---
 const formatCurrency = (amount) => `฿${(amount || 0).toLocaleString()}`;
@@ -45,6 +17,7 @@ const getDOHStyle = (doh) => {
   if (doh > 180) return "text-orange-600 font-bold";
   return "text-green-600 font-bold";
 };
+
 const getStatusStyle = (status) => {
   switch (status) {
     case "Abnormal": return "bg-red-100 text-red-800 border-red-300";
@@ -54,74 +27,57 @@ const getStatusStyle = (status) => {
     default: return "bg-gray-100 text-gray-800 border-gray-300";
   }
 };
+
 const formatNumber = (num, decimals = 0) => {
   if (num === null || num === undefined) return "-";
   return num.toLocaleString("en-US", { maximumFractionDigits: decimals });
 };
 
-// --- Trade Communication Modal Component ---
-const TradeCommunicationModal = ({ item, onClose, onSubmit, currentData, onDataChange }) => {
-  const statusOptions = ["Normal", "Abnormal", "Resolved", "Pending"];
-  const currentUser = "Trade Planner (Key)";
+// --- Mock Data (ชุดข้อมูล Inventory/Trade) ---
+const mockInventoryData = [
+  {
+    Code: "06-0005-01", Type: "TableTop", Class: "B", YN_Best_2025: "", Brand: "Tecno*", Description: "TNS IR 05", SubType: "set", ราคา_กลาง_หน่วย: 1390, ราคา_โปรล่าสุด: 1290, DayOnHand_DOH: 1413, DayOnHand_DOH_Stock2: 376.71, TargetSaleUnit_1: 70, SaleOutเฉลี่ยวัน: 1.42, Stock_จบเหลือจริง: 879, SaleOut_มีค68: 43, SaleOut_เมย68: 41, SaleOut_พค68: 48, SaleOut_มิย68: 28, Sale_in_Aging_Tier: "Aging1 M", สถานะTrade: "Abnormal", RemarkTrade: "AC น้อยกว่า FC เกิน 20%", DiffPercent: "-90.48%", LeadTime: 90, ตัดจ่ายเฉลี่ย3เดือน: 6.67, KeyRemarks: [{ key: 1, date: "2025-10-01", user: "Admin A", text: "สินค้า DOH สูงมาก ควรทำโปรโมชั่นพิเศษด่วน." }],
+  },
+  // ... (Mock Data อื่น ๆ ที่คุณมี) ...
+  {
+    Code: "06-0003-04", Type: "TableTop", Class: "B", YN_Best_2025: "Yes", Brand: "Tecno*", Description: "Table top 4", SubType: "non set", ราคา_กลาง_หน่วย: 1350, ราคา_โปรล่าสุด: 1320, DayOnHand_DOH: 285, DayOnHand_DOH_Stock2: 140.56, TargetSaleUnit_1: 150, SaleOutเฉลี่ยวัน: 3.12, Stock_จบเหลือจริง: 695, SaleOut_มีค68: 81, SaleOut_เมย68: 79, SaleOut_พค68: 85, SaleOut_มิย68: 83, Sale_in_Aging_Tier: "Fresh", สถานะTrade: "Normal", RemarkTrade: "สินค้าขายดีตามแผน", DiffPercent: "-15.24%", LeadTime: 70, ตัดจ่ายเฉลี่ย3เดือน: 55.4, KeyRemarks: [],
+  },
+{
+    Code: "06-0003-04", Type: "TableTop", Class: "B", YN_Best_2025: "Yes", Brand: "Tecno*", Description: "Table top 4", SubType: "non set", ราคา_กลาง_หน่วย: 1350, ราคา_โปรล่าสุด: 1320, DayOnHand_DOH: 285, DayOnHand_DOH_Stock2: 140.56, TargetSaleUnit_1: 150, SaleOutเฉลี่ยวัน: 3.12, Stock_จบเหลือจริง: 695, SaleOut_มีค68: 81, SaleOut_เมย68: 79, SaleOut_พค68: 85, SaleOut_มิย68: 83, Sale_in_Aging_Tier: "Fresh", สถานะTrade: "Normal", RemarkTrade: "สินค้าขายดีตามแผน", DiffPercent: "-15.24%", LeadTime: 70, ตัดจ่ายเฉลี่ย3เดือน: 55.4, KeyRemarks: [],
+  },
+{
+    Code: "06-0003-04", Type: "TableTop", Class: "B", YN_Best_2025: "Yes", Brand: "Tecno*", Description: "Table top 4", SubType: "non set", ราคา_กลาง_หน่วย: 1350, ราคา_โปรล่าสุด: 1320, DayOnHand_DOH: 285, DayOnHand_DOH_Stock2: 140.56, TargetSaleUnit_1: 150, SaleOutเฉลี่ยวัน: 3.12, Stock_จบเหลือจริง: 695, SaleOut_มีค68: 81, SaleOut_เมย68: 79, SaleOut_พค68: 85, SaleOut_มิย68: 83, Sale_in_Aging_Tier: "Fresh", สถานะTrade: "Normal", RemarkTrade: "สินค้าขายดีตามแผน", DiffPercent: "-15.24%", LeadTime: 70, ตัดจ่ายเฉลี่ย3เดือน: 55.4, KeyRemarks: [],
+  },
+{
+    Code: "06-0003-04", Type: "TableTop", Class: "B", YN_Best_2025: "Yes", Brand: "Tecno*", Description: "Table top 4", SubType: "non set", ราคา_กลาง_หน่วย: 1350, ราคา_โปรล่าสุด: 1320, DayOnHand_DOH: 285, DayOnHand_DOH_Stock2: 140.56, TargetSaleUnit_1: 150, SaleOutเฉลี่ยวัน: 3.12, Stock_จบเหลือจริง: 695, SaleOut_มีค68: 81, SaleOut_เมย68: 79, SaleOut_พค68: 85, SaleOut_มิย68: 83, Sale_in_Aging_Tier: "Fresh", สถานะTrade: "Normal", RemarkTrade: "สินค้าขายดีตามแผน", DiffPercent: "-15.24%", LeadTime: 70, ตัดจ่ายเฉลี่ย3เดือน: 55.4, KeyRemarks: [],
+  },
+{
+    Code: "06-0003-04", Type: "TableTop", Class: "B", YN_Best_2025: "Yes", Brand: "Tecno*", Description: "Table top 4", SubType: "non set", ราคา_กลาง_หน่วย: 1350, ราคา_โปรล่าสุด: 1320, DayOnHand_DOH: 285, DayOnHand_DOH_Stock2: 140.56, TargetSaleUnit_1: 150, SaleOutเฉลี่ยวัน: 3.12, Stock_จบเหลือจริง: 695, SaleOut_มีค68: 81, SaleOut_เมย68: 79, SaleOut_พค68: 85, SaleOut_มิย68: 83, Sale_in_Aging_Tier: "Fresh", สถานะTrade: "Normal", RemarkTrade: "สินค้าขายดีตามแผน", DiffPercent: "-15.24%", LeadTime: 70, ตัดจ่ายเฉลี่ย3เดือน: 55.4, KeyRemarks: [],
+  },
+{
+    Code: "06-0003-04", Type: "TableTop", Class: "B", YN_Best_2025: "Yes", Brand: "Tecno*", Description: "Table top 4", SubType: "non set", ราคา_กลาง_หน่วย: 1350, ราคา_โปรล่าสุด: 1320, DayOnHand_DOH: 285, DayOnHand_DOH_Stock2: 140.56, TargetSaleUnit_1: 150, SaleOutเฉลี่ยวัน: 3.12, Stock_จบเหลือจริง: 695, SaleOut_มีค68: 81, SaleOut_เมย68: 79, SaleOut_พค68: 85, SaleOut_มิย68: 83, Sale_in_Aging_Tier: "Fresh", สถานะTrade: "Normal", RemarkTrade: "สินค้าขายดีตามแผน", DiffPercent: "-15.24%", LeadTime: 70, ตัดจ่ายเฉลี่ย3เดือน: 55.4, KeyRemarks: [],
+  },
+{
+    Code: "06-0003-04", Type: "TableTop", Class: "B", YN_Best_2025: "Yes", Brand: "Tecno*", Description: "Table top 4", SubType: "non set", ราคา_กลาง_หน่วย: 1350, ราคา_โปรล่าสุด: 1320, DayOnHand_DOH: 285, DayOnHand_DOH_Stock2: 140.56, TargetSaleUnit_1: 150, SaleOutเฉลี่ยวัน: 3.12, Stock_จบเหลือจริง: 695, SaleOut_มีค68: 81, SaleOut_เมย68: 79, SaleOut_พค68: 85, SaleOut_มิย68: 83, Sale_in_Aging_Tier: "Fresh", สถานะTrade: "Normal", RemarkTrade: "สินค้าขายดีตามแผน", DiffPercent: "-15.24%", LeadTime: 70, ตัดจ่ายเฉลี่ย3เดือน: 55.4, KeyRemarks: [],
+  },
+{
+    Code: "06-0003-04", Type: "TableTop", Class: "B", YN_Best_2025: "Yes", Brand: "Tecno*", Description: "Table top 4", SubType: "non set", ราคา_กลาง_หน่วย: 1350, ราคา_โปรล่าสุด: 1320, DayOnHand_DOH: 285, DayOnHand_DOH_Stock2: 140.56, TargetSaleUnit_1: 150, SaleOutเฉลี่ยวัน: 3.12, Stock_จบเหลือจริง: 695, SaleOut_มีค68: 81, SaleOut_เมย68: 79, SaleOut_พค68: 85, SaleOut_มิย68: 83, Sale_in_Aging_Tier: "Fresh", สถานะTrade: "Normal", RemarkTrade: "สินค้าขายดีตามแผน", DiffPercent: "-15.24%", LeadTime: 70, ตัดจ่ายเฉลี่ย3เดือน: 55.4, KeyRemarks: [],
+  },
+{
+    Code: "06-0003-04", Type: "TableTop", Class: "B", YN_Best_2025: "Yes", Brand: "Tecno*", Description: "Table top 4", SubType: "non set", ราคา_กลาง_หน่วย: 1350, ราคา_โปรล่าสุด: 1320, DayOnHand_DOH: 285, DayOnHand_DOH_Stock2: 140.56, TargetSaleUnit_1: 150, SaleOutเฉลี่ยวัน: 3.12, Stock_จบเหลือจริง: 695, SaleOut_มีค68: 81, SaleOut_เมย68: 79, SaleOut_พค68: 85, SaleOut_มิย68: 83, Sale_in_Aging_Tier: "Fresh", สถานะTrade: "Normal", RemarkTrade: "สินค้าขายดีตามแผน", DiffPercent: "-15.24%", LeadTime: 70, ตัดจ่ายเฉลี่ย3เดือน: 55.4, KeyRemarks: [],
+  },
+{
+    Code: "06-0003-04", Type: "TableTop", Class: "B", YN_Best_2025: "Yes", Brand: "Tecno*", Description: "Table top 4", SubType: "non set", ราคา_กลาง_หน่วย: 1350, ราคา_โปรล่าสุด: 1320, DayOnHand_DOH: 285, DayOnHand_DOH_Stock2: 140.56, TargetSaleUnit_1: 150, SaleOutเฉลี่ยวัน: 3.12, Stock_จบเหลือจริง: 695, SaleOut_มีค68: 81, SaleOut_เมย68: 79, SaleOut_พค68: 85, SaleOut_มิย68: 83, Sale_in_Aging_Tier: "Fresh", สถานะTrade: "Normal", RemarkTrade: "สินค้าขายดีตามแผน", DiffPercent: "-15.24%", LeadTime: 70, ตัดจ่ายเฉลี่ย3เดือน: 55.4, KeyRemarks: [],
+  },
+{
+    Code: "06-0003-04", Type: "TableTop", Class: "B", YN_Best_2025: "Yes", Brand: "Tecno*", Description: "Table top 4", SubType: "non set", ราคา_กลาง_หน่วย: 1350, ราคา_โปรล่าสุด: 1320, DayOnHand_DOH: 285, DayOnHand_DOH_Stock2: 140.56, TargetSaleUnit_1: 150, SaleOutเฉลี่ยวัน: 3.12, Stock_จบเหลือจริง: 695, SaleOut_มีค68: 81, SaleOut_เมย68: 79, SaleOut_พค68: 85, SaleOut_มิย68: 83, Sale_in_Aging_Tier: "Fresh", สถานะTrade: "Normal", RemarkTrade: "สินค้าขายดีตามแผน", DiffPercent: "-15.24%", LeadTime: 70, ตัดจ่ายเฉลี่ย3เดือน: 55.4, KeyRemarks: [],
+  },
 
-  const sortedRemarks = useMemo(() => (item.KeyRemarks || []).slice().sort((a, b) => new Date(b.date) - new Date(a.date)), [item.KeyRemarks]);
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-2xl w-full max-w-4xl p-6 overflow-y-scroll max-h-full">
-        <div className="flex justify-between items-start mb-4 border-b pb-2">
-          <h2 className="text-xl font-bold text-[#640037]">Action & Communication: {item.Code}</h2>
-          <button onClick={onClose} className="text-2xl text-gray-500 cursor-pointer hover:text-red-500 font-light">&times;</button>
-        </div>
-        <p className="text-sm text-gray-600 mb-4">{item.Description}</p>
-
-        {/* --- Remark History Section --- */}
-        <div className="mb-4">
-          <h3 className="text-md font-semibold text-gray-700 mb-2">ประวัติการสื่อสาร ({sortedRemarks.length})</h3>
-          <div className="h-48 p-3 border rounded-lg bg-gray-50 space-y-3 overflow-y-scroll">
-            {sortedRemarks.length > 0 ? (
-              sortedRemarks.map((remark, index) => (
-                <div key={index} className="border-l-4 border-pink-400 pl-3 py-1 bg-white rounded shadow-sm">
-                  <p className="font-semibold text-sm flex justify-between items-center">
-                    <span>{remark.user}</span>
-                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${getStatusStyle(remark.status)}`}>{remark.status}</span>
-                  </p>
-                  <p className="text-gray-800 text-sm">{remark.text}</p>
-                  <p className="text-xs text-gray-500 mt-1">{remark.date}</p>
-                </div>
-              ))
-            ) : (<p className="text-gray-500 text-center pt-8">ยังไม่มีบันทึกการสื่อสาร/ติดตาม</p>)}
-          </div>
-        </div>
-
-        {/* --- Action/New Remark Section --- */}
-        <div className="mt-6 pt-4 border-t border-gray-200">
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Change Status:</label>
-            <select value={currentData.newStatus} onChange={(e) => onDataChange("newStatus", e.target.value)} className="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-[#640037] focus:border-[#640037]">
-              {statusOptions.map((status) => (<option key={status} value={status}>{status}</option>))}
-            </select>
-          </div>
-
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Add Remark (บันทึก Action ใหม่):</label>
-            <textarea value={currentData.comment} onChange={(e) => onDataChange("comment", e.target.value)} rows="3" placeholder="พิมพ์บันทึกการสื่อสารหรืออัพเดทสถานะการจัดการ..." className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-pink-500 focus:border-pink-500 resize-none"></textarea>
-            <div><Uploadimg /></div>
-          </div>
-
-          <div className="flex justify-end space-x-3">
-            <button onClick={onClose} className="px-4 py-2 text-sm font-medium cursor-pointer text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-150">Cancel</button>
-            <button onClick={onSubmit} className="px-4 py-2 text-sm font-medium cursor-pointer text-white bg-pink-600 rounded-lg hover:bg-pink-700 transition duration-150 disabled:bg-pink-300" disabled={!currentData.comment.trim()}>Save</button>
-          </div>
-        </div>
-      </div>
-      
-    </div>
-  );
-};
+];
 // -----------------
 
-// --- List of ALL Toggleable Columns (Simplified keys for better use in filters) ---
+
+// --- LIST OF ALL COLUMNS: แก้ไขแล้ว โดยการนำกลับมาใส่ในไฟล์นี้ ---
 const ALL_COLUMNS = [
   { key: "No", name: "No.", field: null, isAlwaysVisible: true },
   { key: "Code", name: "ItemCode / Brand", field: "Code", isAlwaysVisible: true },
@@ -136,10 +92,13 @@ const ALL_COLUMNS = [
   { key: "TradeStatus", name: "สถานะ Trade", field: "สถานะTrade", isAlwaysVisible: false },
   { key: "TradeRemark", name: "Remark Trade / Action", field: "RemarkTrade", isAlwaysVisible: false },
 ];
+// -----------------------------------------------------------------
+
 
 // --- Column Toggle Dropdown Component ---
 function ColumnToggleDropdown({ hiddenColumns, toggleColumnVisibility }) {
   const toggleableColumns = ALL_COLUMNS.filter((col) => !col.isAlwaysVisible);
+  // ... (โค้ด ColumnToggleDropdown เดิม)
   const hasHiddenColumns = hiddenColumns.length > 0;
   const hiddenCount = hiddenColumns.length;
   const dropdownRef = useRef(null);
@@ -205,13 +164,12 @@ function ColumnToggleDropdown({ hiddenColumns, toggleColumnVisibility }) {
     </div>
   );
 }
-// Required Hooks are imported globally in React context
-
-// ไม่ต้อง import StockShowModal ซ้ำ เพราะถูก import ด้านบนแล้ว
+// ------------------------------------------
 
 
 // --- Main Component ---
 export default function InventoryTradeMonitor() {
+// ... (โค้ด State และ Logic เดิม)
   const [data, setData] = useState(mockInventoryData);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -306,14 +264,12 @@ export default function InventoryTradeMonitor() {
     handleCloseModal();
   };
 
-  // ** NEW: Function to open StockShowModal **
-  const handleShowStockModal = (item) => {
-    // สามารถใช้ selectedItem เพื่อระบุสินค้าที่จะแสดง Stock ใน Modal ได้
-    setSelectedItem(item); 
-    console.log(`Showing Stock Location for: ${item.Code}`);
-    setIsStockShow(true);
-  };
-  // ------------------------------------------
+  // ** Function to open StockShowModal **
+  const handleShowStockModal = (item) => {
+    setSelectedItem(item); 
+    setIsStockShow(true);
+  };
+  // ------------------------------------------
 
   // --- Summary Metrics calculation ---
   const totalSKUs = filteredData.length;
@@ -326,10 +282,10 @@ export default function InventoryTradeMonitor() {
 
   // --- Table Cell Renderer ---
   const renderCell = (item, col, index) => {
-    if (col.key === "No") return (<td className="p-3 min-w-[50px]">{index + 1}</td>);
+    if (col.key === "No") return (<td className="p-3 ">{index + 1}</td>);
     if (col.key === "Code") {
       return (
-        <td className="p-3 font-mono text-sm border-r border-gray-200 text-left min-w-[120px]">
+        <td className="p-3 font-mono text-sm border-r border-gray-200 text-left ">
           <span className="font-bold text-[#640037] block">{item.Code}</span>
           <span className="text-xs text-gray-500">{item.Brand}</span>
         </td>
@@ -361,24 +317,22 @@ export default function InventoryTradeMonitor() {
     if (col.key === "SetType") return (<td className="p-3 text-sm text-gray-600">{item.SubType || "-"}</td>);
     if (col.key === "Stock_Physical") return (<td className="p-3 font-bold text-lg border-r border-gray-200 text-right">{formatNumber(item.Stock_จบเหลือจริง)}</td>);
     
-    // ** EDITED: Stock (ตัวโชว์) with Button **
-    if (col.key === "Stock_Show") {
-      const stockShowValue = formatNumber(Math.round(item.Stock_จบเหลือจริง * 0.1));
+    // Stock (ตัวโชว์) with Button
+    if (col.key === "Stock_Show") {
+      const stockShowValue = formatNumber(Math.round(item.Stock_จบเหลือจริง * 0.1));
       return (
-        <td className="p-3 text-sm text-gray-500 text-right min-w-[150px]">
-          <p className="font-semibold text-base text-gray-800 mb-1">{stockShowValue}</p>
-          {/* ปุ่มเรียก Modal StockShowModal */}
-          <button 
-            onClick={() => handleShowStockModal(item)}
-            className="px-3 py-1 text-xs rounded-lg cursor-pointer shadow-sm transition font-medium bg-green-500 text-white hover:bg-green-600"
-            title="ดูตำแหน่งจัดเก็บและรายละเอียด Stock (ตัวโชว์)"
-          >
-            Show Location Stock
-          </button>
+        <td className="p-3 text-sm text-gray-500 ">
+          <p className="font-semibold text-base text-gray-800 mb-1">{stockShowValue}</p>
+          <button 
+            onClick={() => handleShowStockModal(item)}
+            className="px-3 py-1 text-xs rounded-lg cursor-pointer shadow-sm hover:bg-green-600 bg-green-600 text-white" // แก้สีปุ่มให้เป็นสีเขียวและข้อความสีขาว
+            title="ดูตำแหน่งจัดเก็บและรายละเอียด Stock (ตัวโชว์)"
+          >
+            Show Location Stock
+          </button>
         </td>
       );
     }
-    // ------------------------------------------
 
     if (col.key === "TradeStatus") {
       return (
@@ -403,8 +357,8 @@ export default function InventoryTradeMonitor() {
 
   return (
     <div className="min-h-screen">
-     {/* ** EDITED: StockShowModal Component ** */}
-     {isStockShow && <StockShowModal setIsStockShow={setIsStockShow}/>}
+     {/* ** StockShowModal Component ** */}
+     {isStockShow && <StockShowModal setIsStockShow={setIsStockShow} selectedItem={selectedItem} />} {/* ส่ง selectedItem ไปด้วยเผื่อ StockShowModal ต้องการใช้ */}
       <style>
         {`
           /* Global styles to ensure compatibility */
@@ -413,7 +367,7 @@ export default function InventoryTradeMonitor() {
           }
         `}
       </style>
-      <script src="https://cdn.tailwindcss.com"></script>
+      {/* NOTE: ควรลบ <script src="https://cdn.tailwindcss.com"></script> ออกหากคุณใช้ Build Tool ของ React */}
 
       <div className="p-8 bg-white shadow-2xl rounded-xl">
         {/* --- Header & Summary --- */}
@@ -504,7 +458,7 @@ export default function InventoryTradeMonitor() {
             <thead className="bg-[#640037] text-white sticky top-0 text-sm">
               <tr>
                 {ALL_COLUMNS.map((col) => !isColumnHidden(col.key) && (
-                  <th key={col.key} className="p-3 whitespace-nowrap min-w-[120px] border-l border-gray-500/30 first:border-l-0">{col.name}</th>
+                  <th key={col.key} className="p-3 border-l border-gray-500/30 first:border-l-0">{col.name}</th>
                 ))}
               </tr>
             </thead>
