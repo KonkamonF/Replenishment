@@ -10,7 +10,6 @@ import NonMove from "./AmountAdmin/NonMove";
 import AcAndFc from "./AmountAdmin/AcAndFc";
 import Charts from "./AmountAdmin/Charts";
 import Calendar from "./Calendar/Calendar";
-import Test from "./DetailsAdmin/test";
 import Test2 from "./DetailsAdmin/test2";
 
 export default function SuperAdmin() {
@@ -130,7 +129,6 @@ export default function SuperAdmin() {
           </div>
         </div>
         <Calendar />
-        <Test />
         <Test2 />
       </div>
     </div>
