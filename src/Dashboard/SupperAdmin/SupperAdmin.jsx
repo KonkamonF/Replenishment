@@ -11,6 +11,7 @@ import AcAndFc from "./AmountAdmin/AcAndFc";
 import Charts from "./AmountAdmin/Charts";
 import Calendar from "./Calendar/Calendar";
 import Test from "./DetailsAdmin/test";
+import Test2 from "./DetailsAdmin/test2";
 
 export default function SuperAdmin() {
   // Functions to handle button clicks (you'll implement the actual logic here)
@@ -130,6 +131,7 @@ export default function SuperAdmin() {
         </div>
         <Calendar />
         <Test />
+        <Test2 />
       </div>
     </div>
   );
