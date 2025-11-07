@@ -4,8 +4,6 @@ import DetailClassN from "../DetailsAdmin/DetailClassN";
 
 export default function ClassN() {
   const [isDetailsClassN, setIsDetailsClassN] = useState(false);
-
-  // ✅ ใช้ hook ใหม่ (แยกจากตัวแบ่งหน้า)
   const { total, loading, error } = useProductTotalByClass({
     classType: "manual",
     className: "N",
@@ -16,16 +14,15 @@ export default function ClassN() {
       {isDetailsClassN && (
         <DetailClassN setIsDetailsClassN={setIsDetailsClassN} />
       )}
-
       <div
         onClick={() => setIsDetailsClassN(true)}
       >
         {loading && <p>Loading...</p>}
-        {error && <p>Error: {error}</p>}
+        {error && <p className="text-red-500">Error: {error}</p>}
         {!loading && !error && (
           <>
             <p className="text-3xl font-bold">{total} Units</p>
-            Class <span className="font-bold text-xl">N</span>
+            <span className="font-bold text-lg">N</span>
           </>
         )}
       </div>
