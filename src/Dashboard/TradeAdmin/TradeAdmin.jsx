@@ -512,7 +512,7 @@ export default function InventoryTradeMonitor() {
               {formatNumber(overflowCount)}
             </p>
             <p className="text-xs text-gray-500 mt-1">
-              จำนวนรายการที่ Stock มากกว่า 3M alloc >100%
+              จำนวนรายการที่ Stock มากกว่า 3M alloc 100%
             </p>
           </div>
 
