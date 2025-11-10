@@ -9,63 +9,12 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  PieChart, // เพิ่ม PieChart
-  Pie, // เพิ่ม Pie
-  Cell, // เพิ่ม Cell
+  PieChart,
+  Pie,
+  Cell,
 } from "recharts";
+import { useMonthlySalesSummary } from "../hooks/useMonthlySalesSummary";
 
-// --- Mock Data (ข้อมูลรวมที่คุณให้มา) ---
-const mockInventoryData = [
-  {
-    Code: "06-0005-01",
-    Class: "B",
-    TargetSaleUnit_1: 70,
-    SaleOut_มีค68: 43,
-    SaleOut_เมย68: 41,
-    SaleOut_พค68: 48,
-    SaleOut_มิย68: 28,
-  },
-  {
-    Code: "06-0003-01",
-    Class: "B",
-    TargetSaleUnit_1: 140,
-    SaleOut_มีค68: 64,
-    SaleOut_เมย68: 70,
-    SaleOut_พค68: 71,
-    SaleOut_มิย68: 65,
-  },
-  {
-    Code: "06-0003-02",
-    Class: "A",
-    TargetSaleUnit_1: 120,
-    SaleOut_มีค68: 72,
-    SaleOut_เมย68: 76,
-    SaleOut_พค68: 80,
-    SaleOut_มิย68: 78,
-  },
-  {
-    Code: "06-0003-03",
-    Class: "C",
-    TargetSaleUnit_1: 90,
-    SaleOut_มีค68: 38,
-    SaleOut_เมย68: 42,
-    SaleOut_พค68: 39,
-    SaleOut_มิย68: 40,
-  },
-  {
-    Code: "06-0003-04",
-    Class: "B",
-    TargetSaleUnit_1: 150,
-    SaleOut_มีค68: 81,
-    SaleOut_เมย68: 79,
-    SaleOut_พค68: 85,
-    SaleOut_มิย68: 83,
-  },
-];
-
-const months = ["มีค68", "เมย68", "พค68", "มิย68"];
-
-// Define color palettes
 const COLORS_BY_CODE = [
   "#640037",
   "#ff9800",
@@ -78,101 +27,24 @@ const COLORS_BY_CODE = [
   "#7b68ee",
   "#f0e68c",
 ];
+
 const COLORS_BY_CLASS = {
-  A: "#4CAF50", // Green
-  B: "#FF9800", // Orange
-  C: "#F44336", // Red
-  N: "#9E9E9E", // Gray (for 'N' or undefined class)
+  A: "#4CAF50",
+  B: "#FF9800",
+  C: "#F44336",
+  N: "#9E9E9E",
 };
 
-// --- Data Preparation Function 1: Bar Chart Data (Actual vs Target by Month) ---
-const getBarChartData = (inventoryData) => {
-  const dataByMonth = {};
-
-  inventoryData.forEach((item) => {
-    months.forEach((monthKey) => {
-      const actualSale = item[`SaleOut_${monthKey}`] || 0;
-      const targetSale = item.TargetSaleUnit_1 || 0;
-
-      if (!dataByMonth[monthKey]) {
-        dataByMonth[monthKey] = {
-          name: monthKey,
-          "ยอดขายจริง (หน่วย)": 0,
-          "ยอดขายเป้าหมาย (หน่วย)": 0,
-        };
-      }
-      dataByMonth[monthKey]["ยอดขายจริง (หน่วย)"] += actualSale;
-      // Target is summed up and then averaged per month for approximation across all items
-      dataByMonth[monthKey]["ยอดขายเป้าหมาย (หน่วย)"] +=
-        targetSale / months.length;
-    });
-  });
-
-  return months.map((monthKey) => ({
-    ...dataByMonth[monthKey],
-    "ยอดขายเป้าหมาย (หน่วย)": Math.round(
-      dataByMonth[monthKey]["ยอดขายเป้าหมาย (หน่วย)"]
-    ),
-  }));
-};
-
-// --- Data Preparation Function 2: Pie Chart Data by Product Code (Total Sale Out) ---
-const getPieChartDataByCode = (inventoryData) => {
-  const pieData = inventoryData.map((item) => {
-    const totalSaleOut = months.reduce(
-      (sum, monthKey) => sum + (item[`SaleOut_${monthKey}`] || 0),
-      0
-    );
-    return {
-      name: `${item.Code} (Class ${item.Class})`,
-      value: totalSaleOut,
-    };
-  });
-  return pieData.filter((data) => data.value > 0);
-};
-
-// --- Data Preparation Function 3: Pie Chart Data by Class (Total Sale Out) ---
-const getPieChartDataByClass = (inventoryData) => {
-  const classMap = {};
-
-  inventoryData.forEach((item) => {
-    const itemClass = item.Class || "N";
-    const totalSaleOut = months.reduce(
-      (sum, monthKey) => sum + (item[`SaleOut_${monthKey}`] || 0),
-      0
-    );
-
-    classMap[itemClass] = (classMap[itemClass] || 0) + totalSaleOut;
-  });
-
-  return Object.keys(classMap)
-    .sort()
-    .map((className) => ({
-      name: `Class ${className}`,
-      value: classMap[className],
-    }))
-    .filter((data) => data.value > 0);
-};
-
-// Pre-calculate data
-const barChartData = getBarChartData(mockInventoryData);
-const pieChartDataByCode = getPieChartDataByCode(mockInventoryData);
-const pieChartDataByClass = getPieChartDataByClass(mockInventoryData);
-
-// Custom Tooltip content for Pie Charts (can be reused if data structure is similar)
+// Tooltip
 const CustomPieTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
-    const data = payload[0];
-    const chartData = data.name.startsWith("Class")
-      ? pieChartDataByClass
-      : pieChartDataByCode;
-    const total = chartData.reduce((sum, entry) => sum + entry.value, 0);
-    const percent = ((data.value / total) * 100).toFixed(2);
-
+    const { name, value } = payload[0];
+    const total = payload.reduce((sum, d) => sum + d.value, 0);
+    const percent = ((value / total) * 100).toFixed(2);
     return (
       <div className="p-2 bg-white border border-gray-300 rounded-lg shadow-md text-xs">
-        <p className="font-bold text-[#640037]">{data.name}</p>
-        <p>{`ยอดขาย: ${data.value.toLocaleString()} หน่วย`}</p>
+        <p className="font-bold text-[#640037]">{name}</p>
+        <p>{`ยอดขาย: ${value.toLocaleString()} หน่วย`}</p>
         <p>{`สัดส่วน: ${percent}%`}</p>
       </div>
     );
@@ -180,9 +52,43 @@ const CustomPieTooltip = ({ active, payload }) => {
   return null;
 };
 
-// Main component AcAndFc
 const AcAndFc = () => {
-  const [chartType, setChartType] = useState("bar"); // 'bar', 'pie-code', 'pie-class'
+  const { data, loading, error } = useMonthlySalesSummary();
+  const [chartType, setChartType] = useState("bar");
+
+  if (loading)
+    return (
+      <div className="h-96 flex items-center justify-center text-gray-500">
+        กำลังโหลดข้อมูล...
+      </div>
+    );
+  if (error)
+    return (
+      <div className="h-96 flex items-center justify-center text-red-600">
+        ❌ {error}
+      </div>
+    );
+  if (!data.length)
+    return (
+      <div className="h-96 flex items-center justify-center text-gray-400">
+        ไม่มีข้อมูลยอดขาย
+      </div>
+    );
+
+  // ข้อมูลจาก API
+  const totalActual = data.reduce(
+    (sum, d) => sum + (d["ยอดขายจริง (หน่วย)"] || 0),
+    0
+  );
+  const totalTarget = data.reduce(
+    (sum, d) => sum + (d["ยอดขายเป้าหมาย (หน่วย)"] || 0),
+    0
+  );
+
+  const pieData = [
+    { name: "ยอดขายจริง (หน่วย)", value: totalActual },
+    { name: "ยอดขายเป้าหมาย (หน่วย)", value: totalTarget },
+  ];
 
   const renderChart = () => {
     switch (chartType) {
@@ -190,36 +96,38 @@ const AcAndFc = () => {
         return (
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
-              data={barChartData}
+              data={data}
               margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis dataKey="name" stroke="#640037" className="text-xs" />
-              <YAxis stroke="#640037" className="text-xs" />
-              <Tooltip
-                formatter={(value) => value.toLocaleString()}
-                contentStyle={{
-                  borderRadius: "8px",
-                  border: "1px solid #ddd",
-                  fontSize: "12px",
-                }}
+              <XAxis
+                dataKey="name"
+                stroke="#640037"
+                className="text-xs"
+                tickFormatter={(v) => v.replace("2025-", "")}
               />
-              <Legend iconType="circle" wrapperStyle={{ paddingTop: "10px" }} />
+              <YAxis stroke="#640037" className="text-xs" />
+              <Tooltip formatter={(v) => v.toLocaleString()} />
+              <Legend
+                iconType="circle"
+                wrapperStyle={{ paddingTop: "10px" }}
+              />
               <Bar
                 dataKey="ยอดขายจริง (หน่วย)"
-                fill="#00bcd4" // Cyan/Teal color for Actual
+                fill="#00bcd4"
                 barSize={30}
                 radius={[4, 4, 0, 0]}
               />
               <Bar
                 dataKey="ยอดขายเป้าหมาย (หน่วย)"
-                fill="#ff9800" // Orange color for Target
+                fill="#ff9800"
                 barSize={30}
                 radius={[4, 4, 0, 0]}
               />
             </BarChart>
           </ResponsiveContainer>
         );
+
       case "pie-code":
         return (
           <div className="h-full flex flex-col items-center justify-center p-2">
@@ -227,7 +135,7 @@ const AcAndFc = () => {
               สัดส่วนยอดขายรวมตามรหัสสินค้า
             </h4>
             <ResponsiveContainer width="100%" height="100%">
-              <PieChart margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+              <PieChart>
                 <Legend
                   iconType="circle"
                   layout="vertical"
@@ -237,7 +145,7 @@ const AcAndFc = () => {
                 />
                 <Tooltip content={<CustomPieTooltip />} />
                 <Pie
-                  data={pieChartDataByCode}
+                  data={pieData}
                   dataKey="value"
                   nameKey="name"
                   cx="40%"
@@ -246,9 +154,9 @@ const AcAndFc = () => {
                   outerRadius={70}
                   paddingAngle={2}
                 >
-                  {pieChartDataByCode.map((entry, index) => (
+                  {pieData.map((entry, index) => (
                     <Cell
-                      key={`code-cell-${index}`}
+                      key={`pie-cell-${index}`}
                       fill={COLORS_BY_CODE[index % COLORS_BY_CODE.length]}
                     />
                   ))}
@@ -257,6 +165,7 @@ const AcAndFc = () => {
             </ResponsiveContainer>
           </div>
         );
+
       case "pie-class":
         return (
           <div className="h-full flex flex-col items-center justify-center p-2">
@@ -264,7 +173,7 @@ const AcAndFc = () => {
               สัดส่วนยอดขายรวมตาม Class (A, B, C)
             </h4>
             <ResponsiveContainer width="100%" height="100%">
-              <PieChart margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+              <PieChart>
                 <Legend
                   iconType="circle"
                   layout="vertical"
@@ -274,7 +183,7 @@ const AcAndFc = () => {
                 />
                 <Tooltip content={<CustomPieTooltip />} />
                 <Pie
-                  data={pieChartDataByClass}
+                  data={pieData}
                   dataKey="value"
                   nameKey="name"
                   cx="40%"
@@ -283,10 +192,14 @@ const AcAndFc = () => {
                   outerRadius={70}
                   paddingAngle={2}
                 >
-                  {pieChartDataByClass.map((entry, index) => (
+                  {pieData.map((entry, index) => (
                     <Cell
                       key={`class-cell-${index}`}
-                      fill={COLORS_BY_CLASS[entry.name.replace("Class ", "")]}
+                      fill={
+                        COLORS_BY_CLASS[
+                          entry.name.replace("Class ", "")
+                        ] || "#9E9E9E"
+                      }
                     />
                   ))}
                 </Pie>
@@ -294,6 +207,7 @@ const AcAndFc = () => {
             </ResponsiveContainer>
           </div>
         );
+
       default:
         return null;
     }
@@ -301,8 +215,6 @@ const AcAndFc = () => {
 
   return (
     <div className="h-[450px] w-full flex flex-col">
-      {" "}
-      {/* กำหนดความสูงให้ AcAndFc */}
       <div className="flex justify-center space-x-2 mb-4">
         <button
           onClick={() => setChartType("bar")}
@@ -335,15 +247,13 @@ const AcAndFc = () => {
           สัดส่วนยอดขาย (ตาม Class)
         </button>
       </div>
-      <div className="flex-grow">
-        {" "}
-        {/* ทำให้ส่วนกราฟขยายเต็มพื้นที่ที่เหลือ */}
-        {renderChart()}
-      </div>
-      <p className="text-xs text-gray-500 text-right mt-4 ">
-        {chartType === "bar" && "*Target Sale คือค่าประมาณการเฉลี่ยรายเดือน"}
-        {(chartType === "pie-code" || chartType === "pie-class") &&
-          "*ข้อมูลแสดงสัดส่วนยอดขายรวม (Sale Out) ตั้งแต่ มี.ค.68 ถึง มิ.ย.68"}
+
+      <div className="flex-grow">{renderChart()}</div>
+
+      <p className="text-xs text-gray-500 text-right mt-4">
+        {chartType === "bar"
+          ? "*Target Sale คือค่าประมาณการเฉลี่ยรายเดือน"
+          : "*ข้อมูลแสดงสัดส่วนยอดขายรวม (Sale Out)"}
       </p>
     </div>
   );

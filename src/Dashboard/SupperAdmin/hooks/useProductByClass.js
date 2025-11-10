@@ -17,7 +17,7 @@ export function useProductByClass({
   const [searchTerm, setSearchTerm] = useState("");
   const debounceTimer = useRef(null);
 
-  // ✅ โหลดข้อมูลทั้งหมดในคลาสเดียว
+  //โหลดข้อมูลทั้งหมดในคลาสเดียว
   const fetchAllOnce = async () => {
     setLoading(true);
     setError(null);
@@ -43,7 +43,6 @@ export function useProductByClass({
         const json = await res.json();
         const rawData = json?.data || json?.result?.data || [];
 
-        // ✅ Normalize key ให้ชื่อ field เป็นมาตรฐาน
         const normalized = rawData.map((p) => ({
           no: p.no ?? p.No ?? "",
           itemCode: p.itemCode?.trim?.() ?? p.ItemCode?.trim?.() ?? "",
@@ -61,14 +60,13 @@ export function useProductByClass({
 
         all = [...all, ...normalized];
 
-        // ✅ ถ้าข้อมูลที่ดึงมาน้อยกว่า pageSize ให้หยุดโหลด
         if (rawData.length < pageSize) keepGoing = false;
         else currentPage++;
       }
 
       setAllData(all);
       setTotal(all.length);
-      setData(all.slice(0, pageSize)); // แสดงหน้าแรก
+      setData(all.slice(0, pageSize)); // ✅ แสดงหน้าแรกหลังโหลดเสร็จ
     } catch (err) {
       console.error("❌ Fetch error:", err);
       setError(err.message);
@@ -77,8 +75,10 @@ export function useProductByClass({
     }
   };
 
-  // ✅ ฟังก์ชันกรองข้อมูลเมื่อมีการค้นหา
+  //ฟังก์ชันกรองข้อมูล
   const applyFilter = () => {
+    if (!allData.length) return; // ยังไม่มีข้อมูลให้กรอง
+
     let filtered = allData;
     if (searchTerm.trim()) {
       const q = searchTerm.toLowerCase();
@@ -95,20 +95,28 @@ export function useProductByClass({
     setTotal(filtered.length);
   };
 
-  // ✅ โหลดข้อมูลเมื่อเปลี่ยน classType / className
+  //โหลดข้อมูลเมื่อเปลี่ยน classType / className
   useEffect(() => {
     fetchAllOnce();
   }, [classType, className]);
 
-  // ✅ debounce การค้นหา
+  //เมื่อ searchTerm เปลี่ยน → รีเซ็ตหน้าเป็น 1 และกรองใหม่
   useEffect(() => {
+    if (!allData.length) return; // ป้องกันตอนโหลดครั้งแรก
+
     clearTimeout(debounceTimer.current);
     debounceTimer.current = setTimeout(() => {
-      if (searchTerm.trim()) setPage(1);
-      applyFilter();
+      setPage(1);
+      setTimeout(() => applyFilter(), 0);
     }, 300);
     return () => clearTimeout(debounceTimer.current);
-  }, [searchTerm, page, pageSize, allData]);
+  }, [searchTerm]);
+
+  //เมื่อ page / pageSize / allData เปลี่ยน → กรองใหม่
+  useEffect(() => {
+    if (!allData.length) return; // ป้องกันก่อนโหลดเสร็จ
+    applyFilter();
+  }, [page, pageSize, allData]);
 
   return {
     data,
