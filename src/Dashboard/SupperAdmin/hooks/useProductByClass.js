@@ -52,7 +52,7 @@ export function useProductByClass({
           type: p.type ?? p.Type ?? "",
           brand: p.brand ?? p.Brand ?? "",
           manualClass: p.manualClass ?? p.ManualClass ?? "",
-          autoClass: p.autoClass ?? p.AutoClass ?? "",
+          autoClass: p.autoClass ?? p.autoClass ?? "",
           pricePerUnit: p.pricePerUnit ?? p.PricePerUnit ?? 0,
           minPricePerUnit: p.minPricePerUnit ?? p.MinPricePerUnit ?? 0,
           stockAllStore: p.stockAllStore ?? p.StockAllStore ?? 0,
