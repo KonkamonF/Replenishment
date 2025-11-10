@@ -32,18 +32,15 @@ export default function EntryProductDate({
   const [quantity, setQuantity] = useState(0);
   const [entryDate, setEntryDate] = useState(formatDateForInput(selectedDate));
   const [comments, setComments] = useState("");
-  const [imageFile, setImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
+  const [imageFiles, setImageFiles] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImageFile(file);
-      setImagePreview(URL.createObjectURL(file));
-    } else {
-      setImageFile(null);
-      setImagePreview(null);
-    }
+    const files = Array.from(e.target.files).slice(0, 5); // จำกัดไม่เกิน 5 รูป
+    setImageFiles(files);
+
+    const previews = files.map((file) => URL.createObjectURL(file));
+    setImagePreviews(previews);
   };
 
   const handleSubmit = (e) => {
@@ -78,7 +75,7 @@ export default function EntryProductDate({
 
   return (
     <div className="fixed inset-0 bg-[#000000ba] z-50 flex justify-center items-center">
-      <div className="bg-white h-[90%] w-[80%] p-6 shadow-2xl z-50 overflow-y-auto">
+      <div className="bg-white h-[70%] w-[50%] p-6 shadow-2xl z-50 overflow-y-auto">
         <div className="flex justify-between items-start mb-6 border-b pb-4">
           <h1 className="text-3xl font-extrabold text-[#640037]">
             กำหนดสินค้าเข้าคลัง
@@ -97,7 +94,7 @@ export default function EntryProductDate({
 
         <form onSubmit={handleSubmit} className="flex flex-col">
           <div className="flex-grow overflow-y-auto pr-2 space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 gap-6">
               <div>
                 <label className="text-sm font-semibold text-gray-700 mb-1 flex items-center">
                   <Package className="w-4 h-4 mr-2 text-[#640037]" />
@@ -108,6 +105,37 @@ export default function EntryProductDate({
                   value={productName}
                   onChange={(e) => setProductName(e.target.value)}
                   placeholder="เช่น วัตถุดิบ A (ล็อต 12/25)"
+                  className="w-full p-2 border border-gray-300 hover:bg-amber-50 shadow-sm rounded-lg focus:ring focus:border-pink-700 focus:ring-pink-700 transition"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-semibold text-gray-700 mb-1 flex items-center">
+                  <Hash className="w-4 h-4 mr-2 text-[#640037]" />
+                  เลขที่ PO (Purchase Order)
+                </label>
+                <input
+                  type="text"
+                  value={poNumber}
+                  onChange={(e) => setPoNumber(e.target.value)}
+                  placeholder="PO-2025-001"
+                  className="w-full p-2 border border-gray-300 hover:bg-amber-50 shadow-sm rounded-lg focus:ring focus:border-pink-700 focus:ring-pink-700 transition"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-6">
+              <div>
+                <label className="text-sm font-semibold text-gray-700 mb-1 flex items-center">
+                  <Hash className="w-4 h-4 mr-2 text-[#640037]" />
+                  จำนวน (Stock)*
+                </label>
+                <input
+                  type="number"
+                  value={quantity}
+                  onChange={(e) => setQuantity(e.target.value)}
+                  placeholder="0"
                   className="w-full p-2 border border-gray-300 hover:bg-amber-50 shadow-sm rounded-lg focus:ring focus:border-pink-700 focus:ring-pink-700 transition"
                   required
                 />
@@ -127,74 +155,23 @@ export default function EntryProductDate({
                 />
               </div>
 
-              <div>
+              <div className="">
                 <label className="text-sm font-semibold text-gray-700 mb-1 flex items-center">
-                  <Hash className="w-4 h-4 mr-2 text-[#640037]" />
-                  เลขที่ PO (Purchase Order)
+                  <CalendarIcon className="w-4 h-4 mr-2 text-[#640037]" />
+                  วันที่กำหนดเข้า*
                 </label>
                 <input
-                  type="text"
-                  value={poNumber}
-                  onChange={(e) => setPoNumber(e.target.value)}
-                  placeholder="PO-2025-001"
-                  className="w-full p-2 border border-gray-300 hover:bg-amber-50 shadow-sm rounded-lg focus:ring focus:border-pink-700 focus:ring-pink-700 transition"
-                />
-              </div>
-
-              <div>
-                <label className="text-sm font-semibold text-gray-700 mb-1 flex items-center">
-                  <Hash className="w-4 h-4 mr-2 text-[#640037]" />
-                  จำนวน (Stock)*
-                </label>
-                <input
-                  type="number"
-                  value={quantity}
-                  onChange={(e) => setQuantity(e.target.value)}
-                  placeholder="0"
+                  type="date"
+                  value={entryDate}
+                  onChange={(e) => setEntryDate(e.target.value)}
                   className="w-full p-2 border border-gray-300 hover:bg-amber-50 shadow-sm rounded-lg focus:ring focus:border-pink-700 focus:ring-pink-700 transition"
                   required
                 />
               </div>
+            </div>
 
-              <div className="flex gap-4">
-                <div className="md:col-span-2">
-                  <label className="text-sm font-semibold text-gray-700 mb-1 flex items-center">
-                    <CalendarIcon className="w-4 h-4 mr-2 text-[#640037]" />
-                    วันที่กำหนดเข้า*
-                  </label>
-                  <input
-                    type="date"
-                    value={entryDate}
-                    onChange={(e) => setEntryDate(e.target.value)}
-                    className="p-2 border border-gray-300 hover:bg-amber-50 shadow-sm rounded-lg focus:ring focus:border-pink-700 focus:ring-pink-700 transition"
-                    required
-                  />
-                </div>
-
-                <div className="md:col-span-2">
-                  <label className="text-sm font-semibold text-gray-700 mb-1 flex items-center ">
-                    <UploadCloud className="w-4 h-4 mr-2 text-[#640037]" />
-                    แนบรูปภาพ (เช่น ใบส่งของ)
-                  </label>
-                  {imagePreview && (
-                    <div className="my-2 border rounded-lg p-2">
-                      <img
-                        src={imagePreview}
-                        alt="Preview"
-                        className="w-32 h-32 object-cover rounded"
-                      />
-                    </div>
-                  )}
-                  <input
-                    type="file"
-                    onChange={handleImageChange}
-                    accept="image/*"
-                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-pink-50 file:text-pink-700 hover:file:bg-pink-100"
-                  />
-                </div>
-              </div>
-
-              <div className="md:col-span-2">
+            <div className="grid grid-cols-2 gap-6">
+              <div className="">
                 <label className="text-sm font-semibold text-gray-700 mb-1 flex items-center">
                   <MessageSquare className="w-4 h-4 mr-2 text-[#640037]" />
                   คอมเมนต์ / หมายเหตุ
@@ -207,16 +184,47 @@ export default function EntryProductDate({
                   className="w-full p-2 border border-gray-300 hover:bg-amber-50 shadow-sm rounded-lg focus:ring focus:border-pink-700 focus:ring-pink-700 transition"
                 ></textarea>
               </div>
-            </div>
-          </div>
+              <div className="">
+                <label
+                  className="
+                text-sm font-semibold text-gray-700 mb-1 flex items-center"
+                >
+                  <UploadCloud className="mr-2 text-[#640037]" />
+                  แนบรูปภาพ (สูงสุด 5 รูป เช่น ใบส่งของ)
+                </label>
 
-          <div className="pt-2 border-t flex justify-end mt-4">
-            <button
-              type="submit"
-              className="bg-[#640037] text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-opacity-90 transition transform hover:scale-[1.01]"
-            >
-              บันทึกข้อมูล
-            </button>
+                {imagePreviews.length > 0 && (
+                  <div className="my-2 grid grid-cols-5 gap-2 overflow-x-auto">
+                    {imagePreviews.map((preview, index) => (
+                      <div key={index} className="border rounded-lg p-2">
+                        <img
+                          src={preview}
+                          alt={`Preview ${index + 1}`}
+                          className="w-32 h-20 object-cover rounded"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <input
+                  type="file"
+                  multiple
+                  onChange={handleImageChange}
+                  accept="image/*"
+                  className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-pink-50 file:text-pink-700 hover:file:bg-pink-100"
+                />
+              </div>
+            </div>
+
+            <div className="pt-2 border-t flex justify-end mt-4">
+              <button
+                type="submit"
+                className="bg-[#640037] text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-opacity-90 transition transform hover:scale-[1.01]"
+              >
+                บันทึกข้อมูล
+              </button>
+            </div>
           </div>
         </form>
       </div>
