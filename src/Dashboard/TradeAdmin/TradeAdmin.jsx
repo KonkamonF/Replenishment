@@ -662,7 +662,7 @@ export default function InventoryTradeMonitor() {
                     key={col.key}
                     className={colClass(
                       col.key,
-                      "p-3 border-l border-gray-500/30 first:border-l-0"
+                      "p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap"
                     )}
                   >
                     {col.name}
