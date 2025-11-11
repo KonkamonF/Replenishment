@@ -80,6 +80,7 @@ export default function EntryProductDate({
         comments,
         entryDate,
         images: imageFiles.map((f) => f.file),
+        status: "not_received", // ✅ ตั้งค่าเริ่มต้นสถานะ
       });
       await fetchByDate(entryDate);
       alert("✅ บันทึกข้อมูลเรียบร้อยแล้ว");
@@ -91,16 +92,43 @@ export default function EntryProductDate({
     }
   };
 
+  // ==========================================================
+  // ✅ 1. เพิ่มฟังก์ชันสำหรับจัดการการ Toggle สถานะ
+  // ==========================================================
+  const handleToggleStatus = async (item) => {
+    // สลับสถานะ: ถ้าไม่ใช่ 'received' (เช่น undefined หรือ 'not_received') ให้เปลี่ยนเป็น 'received'
+    const newStatus = item.status === "received" ? "not_received" : "received";
+
+    try {
+      // สร้าง payload ที่จะอัปเดต (ส่ง item ทั้งหมดกลับไปพร้อมสถานะใหม่)
+      const payload = {
+        ...item,
+        status: newStatus,
+      };
+
+      // เรียกใช้ hook 'updateEntry' (สมมติว่ามี signature คือ updateEntry(id, payload, entryDate))
+      await updateEntry(item.id, payload, entryDate);
+      
+      // รีเฟรชข้อมูลในรายการใหม่
+      await fetchByDate(entryDate);
+    } catch (err) {
+      console.error("Failed to update status:", err);
+      alert("เกิดข้อผิดพลาดในการอัปเดตสถานะ");
+    }
+  };
+  // ==========================================================
+
   const openDetail = (item) => {
     setSelectedItem(item);
     setMode("detail");
   };
 
   const displayDate = selectedDate
-    ? new Date(selectedDate.year, selectedDate.month, selectedDate.day).toLocaleDateString(
-        "th-TH",
-        { dateStyle: "long" }
-      )
+    ? new Date(
+        selectedDate.year,
+        selectedDate.month,
+        selectedDate.day
+      ).toLocaleDateString("th-TH", { dateStyle: "long" })
     : "ไม่พบวันที่";
 
   return (
@@ -142,30 +170,62 @@ export default function EntryProductDate({
             )}
 
             <div className="space-y-2">
-              {entries.map((item) => (
-                <div
-                  key={item.id}
-                  onClick={() => openDetail(item)}
-                  className="flex justify-between items-center bg-gray-50 px-3 py-2 rounded border cursor-pointer hover:bg-pink-50 transition"
-                >
-                  <div className="text-sm text-gray-700">
-                    <strong>{item.productName}</strong> — {item.quantity} ชิ้น
-                    <p className="text-xs text-gray-500">
-                      {item.poNumber || "-"} | {item.supplier || "-"}
-                    </p>
-                  </div>
-                  <button
-                    onClick={async (e) => {
-                      e.stopPropagation();
-                      await deleteEntry(item.id, entryDate);
-                      await fetchByDate(entryDate); // ✅ รีเฟรชรายการใหม่ทันที
-                    }}
-                    className="text-red-600 hover:text-red-800 transition"
+              {entries.map((item) => {
+                // ✅ ตรวจสอบสถานะ (ค่าเริ่มต้นคือ 'not_received' = สีแดง)
+                const isReceived = item.status === "received";
+
+                return (
+                  <div
+                    key={item.id}
+                    onClick={() => openDetail(item)}
+                    className="flex justify-between items-center bg-gray-50 px-3 py-2 rounded border cursor-pointer hover:bg-pink-50 transition"
                   >
-                    <Trash2 size={18} />
-                </button>
-                </div>
-              ))}
+                    <div className="text-sm text-gray-700">
+                      <strong>{item.productName}</strong> — {item.quantity} ชิ้น
+                      <p className="text-xs text-gray-500">
+                        {item.poNumber || "-"} | {item.supplier || "-"}
+                      </p>
+                    </div>
+
+                    {/* ================================================== */}
+                    {/* ✅ 2. อัปเดต UI ให้มีปุ่ม Toggle และปุ่มลบ */}
+                    {/* ================================================== */}
+                    <div className="flex items-center gap-3">
+                      {/* ปุ่ม Toggle */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation(); // หยุดไม่ให้ event click ลามไปถึง div แม่ (ไม่ให้เปิด detail)
+                          handleToggleStatus(item);
+                        }}
+                        title={isReceived ? "รับแล้ว" : "ยังไม่ได้รับ"}
+                        className={`w-10 h-5 rounded-full p-0.5 flex items-center transition-colors duration-200 ease-in-out
+                          ${isReceived ? "bg-green-500" : "bg-red-500"}
+                        `}
+                      >
+                        <span
+                          className={`block w-4 h-4 bg-white rounded-full shadow-md transform transition-transform duration-200 ease-in-out
+                            ${isReceived ? "translate-x-5" : "translate-x-0"}
+                          `}
+                        ></span>
+                      </button>
+
+                      {/* ปุ่มลบ (ของเดิม) */}
+                      <button
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          await deleteEntry(item.id, entryDate);
+                          await fetchByDate(entryDate); // ✅ รีเฟรชรายการใหม่ทันที
+                        }}
+                        className="text-red-600 hover:text-red-800 transition"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                    {/* ================================================== */}
+
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
@@ -320,6 +380,15 @@ export default function EntryProductDate({
             </div>
 
             <div className="space-y-2 text-gray-700">
+               {/* ✅ แสดงสถานะในหน้า Detail ด้วย */}
+              <p>
+                <strong>สถานะ:</strong>{" "}
+                {selectedItem.status === "received" ? (
+                  <span className="font-bold text-green-600">รับแล้ว</span>
+                ) : (
+                  <span className="font-bold text-red-600">ยังไม่ได้รับ</span>
+                )}
+              </p>
               <p><strong>ชื่อสินค้า:</strong> {selectedItem.productName}</p>
               <p><strong>จำนวน:</strong> {selectedItem.quantity} ชิ้น</p>
               <p><strong>PO:</strong> {selectedItem.poNumber || "-"}</p>
@@ -351,6 +420,7 @@ export default function EntryProductDate({
                   setPoNumber(selectedItem.poNumber);
                   setQuantity(selectedItem.quantity);
                   setComments(selectedItem.comments);
+                  // TODO: คุณยังไม่ได้สร้าง UI สำหรับ "edit" mode
                   setMode("edit");
                 }}
                 className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
@@ -370,6 +440,21 @@ export default function EntryProductDate({
             </div>
           </div>
         )}
+
+       
+        {mode === "edit" && (
+           <div className="text-center p-10">
+              <h2 className="text-xl font-bold">Edit Mode (TODO)</h2>
+              <p className="text-gray-500">ส่วนของการแก้ไขข้อมูลยังไม่ได้ถูกสร้าง UI</p>
+              <button 
+                onClick={() => setMode("detail")}
+                className="mt-4 text-sm text-blue-600 hover:underline"
+              >
+                ← กลับไปหน้ารายละเอียด
+              </button>
+           </div>
+        )}
+
       </div>
     </div>
   );
