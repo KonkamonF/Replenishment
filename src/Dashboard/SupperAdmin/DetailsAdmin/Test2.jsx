@@ -131,7 +131,7 @@ function useHiddenStorage(key = "mock_hidden_products") {
   return { hidden, hide, unhide, clearAll };
 }
 
-export default function Test2() {
+export default function test2() {
   const allData = useMockData();
 
   // ------- Controls -------
