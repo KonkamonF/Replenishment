@@ -83,13 +83,17 @@ export default function Appp() {
 
         {/* --- Main Layout: Sidebar and Content --- */}
         {/* ใช้ Flexbox จัดเรียง Sidebar และ Content */}
+<<<<<<< HEAD
         <div className="flex">
         
+=======
+        <div className="flex min-h-[calc(100vh-64px)]">
+          {/* Sidebar: ใช้ Sticky เพื่ออยู่ติดด้านบน และใช้ Transition จัดการการเปิด-ปิด */}
+>>>>>>> 0cec132a79391ed4e0b83f14ed739ee076ef79b0
           <div
-            className="bg-white shadow-lg pt-4  sticky top-16" // top-16 = 64px (ความสูง Header)
+            className="bg-white shadow-lg pt-4 sticky top-[64px] h-[calc(100vh-64px)] overflow-y-auto transition-all duration-300"
             style={{
-              width: isSidebarOpen ? sidebarWidth : "0", // ควบคุมความกว้าง
-              minHeight: "calc(100vh - 64px)", // ความสูงเต็มหน้าจอ ลบความสูง Header
+              width: isSidebarOpen ? sidebarWidth : "0",
             }}
           >
             {/* Side Component ถูกห่อด้วย div เพื่อป้องกันการย่อขนาด */}
@@ -104,7 +108,11 @@ export default function Appp() {
           </div>
 
           {/* Main Content Area (ขยายเต็มพื้นที่ที่เหลือ) */}
+<<<<<<< HEAD
           <main className="p-6 flex-1 max-w-full overflow-x-auto">
+=======
+          <main className="p-6 flex-1 max-w-full overflow-y-auto h-[calc(100vh-64px)] bg-gray-50">
+>>>>>>> 0cec132a79391ed4e0b83f14ed739ee076ef79b0
             <Outlet />
           </main>
         </div>
