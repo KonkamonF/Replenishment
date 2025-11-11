@@ -4,13 +4,41 @@ import EntryProductDate from "../StockModal/EntryProductDate";
 import { useProductEntry } from "../hooks/useProductEntry";
 
 export default function Calendar() {
+  // ✅ แยก state ออกเป็นสองชุดที่ถูกต้อง
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isOpenEntryProductDate, setIsEntryProductDate] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
-
   const token = import.meta.env.VITE_API_TOKEN;
-  // ✅ ใช้ monthEntries + prefetchMonth เพิ่มจาก hook
-  const { data, monthEntries, loading, error, fetchByDate, prefetchMonth } = useProductEntry(token);
+
+  // ✅ ได้ monthEntries มาจาก hook แล้ว
+  const { data, monthEntries, loading, error, fetchByDate, prefetchMonth, setMonthEntries } = useProductEntry(token);
+  useEffect(() => {
+    // ✅ สร้าง WebSocket
+    const ws = new WebSocket("ws://127.0.0.1:8000/ws/entry-updates");
+
+    ws.onopen = () => console.log("✅ WebSocket connected");
+    ws.onclose = () => console.log("❌ WebSocket disconnected");
+
+    // ✅ เมื่อมีการอัปเดตจากเครื่องอื่น
+    ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        console.log("📡 Realtime update:", data);
+
+        // ✅ อัปเดตสถานะใน monthEntries โดยไม่ต้อง reload
+        setMonthEntries((prev) =>
+          prev.map((x) =>
+            x.id === data.id ? { ...x, status: data.status } : x
+          )
+        );
+      } catch (err) {
+        console.error("WebSocket message error:", err);
+      }
+    };
+
+    // ✅ ปิดเมื่อ component ถูก unmount
+    return () => ws.close();
+  }, []);
 
   // ✅ โหลดทั้งเดือนทันที และเมื่อเปลี่ยนเดือน
   useEffect(() => {
