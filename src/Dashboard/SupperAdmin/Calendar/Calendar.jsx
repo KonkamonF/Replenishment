@@ -16,8 +16,8 @@ export default function Calendar() {
     // ✅ สร้าง WebSocket
     const ws = new WebSocket("ws://127.0.0.1:8000/ws/entry-updates");
 
-    ws.onopen = () => console.log("✅ WebSocket connected");
-    ws.onclose = () => console.log("❌ WebSocket disconnected");
+    // ws.onopen = () => console.log("✅ WebSocket connected");
+    // ws.onclose = () => console.log("❌ WebSocket disconnected");
 
     // ✅ เมื่อมีการอัปเดตจากเครื่องอื่น
     ws.onmessage = (event) => {
