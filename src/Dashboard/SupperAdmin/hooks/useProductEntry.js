@@ -64,37 +64,60 @@ export function useProductEntry() {
   }, [token]);
 
   // ✅ ดึงข้อมูลทั้งเดือนด้วยการเรียก by-date ทีละวัน (ไม่ต้องแก้ API)
-  const prefetchMonth = useCallback(
-    async (year, monthZeroBased) => {
-      // monthZeroBased: 0..11
-      setLoading(true);
-      setError(null);
-      try {
-        const first = new Date(year, monthZeroBased, 1);
-        const last = new Date(year, monthZeroBased + 1, 0);
-        const days = last.getDate();
+  // const prefetchMonth = useCallback(
+  //   async (year, monthZeroBased) => {
+  //     // monthZeroBased: 0..11
+  //     setLoading(true);
+  //     setError(null);
+  //     try {
+  //       const first = new Date(year, monthZeroBased, 1);
+  //       const last = new Date(year, monthZeroBased + 1, 0);
+  //       const days = last.getDate();
 
-        const all = [];
-        for (let d = 1; d <= days; d++) {
-          const dateStr = `${year}-${String(monthZeroBased + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
-          const entries = await fetchByDate(dateStr); // ใช้ API เดิม
-          if (Array.isArray(entries) && entries.length) {
-            // ใส่ entryDate ให้แน่ใจทุกแถว
-            entries.forEach((e) => {
-              all.push({ ...e, entryDate: e.entryDate || dateStr });
-            });
-          }
+  //       const all = [];
+  //       for (let d = 1; d <= days; d++) {
+  //         const dateStr = `${year}-${String(monthZeroBased + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+  //         const entries = await fetchByDate(dateStr); // ใช้ API เดิม
+  //         if (Array.isArray(entries) && entries.length) {
+  //           // ใส่ entryDate ให้แน่ใจทุกแถว
+  //           entries.forEach((e) => {
+  //             all.push({ ...e, entryDate: e.entryDate || dateStr });
+  //           });
+  //         }
+  //       }
+  //       setMonthEntries(all);
+  //     } catch (err) {
+  //       console.error("❌ Prefetch month error:", err);
+  //       setError(err.message);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   },
+  //   [fetchByDate]
+  // );
+  const prefetchMonth = useCallback(async (year, monthZeroBased) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(
+        `${API_BASE_URL}/product-entry/by-month?year=${year}&month=${monthZeroBased + 1}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
         }
-        setMonthEntries(all);
-      } catch (err) {
-        console.error("❌ Prefetch month error:", err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [fetchByDate]
-  );
+      );
+
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.detail || "โหลดข้อมูลเดือนล้มเหลว");
+
+      // ✅ เซ็ตข้อมูลทั้งหมดของเดือนนี้
+      setMonthEntries(json.entries || []);
+    } catch (err) {
+      console.error("❌ Prefetch month error:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
 
   // เพิ่มข้อมูลใหม่ (ใส่ status เริ่มต้นเป็น F)
   const addEntry = useCallback(
@@ -279,5 +302,6 @@ export function useProductEntry() {
     updateEntry,
     deleteEntry,
     toggleStatus,
+    setMonthEntries,
   };
 }
