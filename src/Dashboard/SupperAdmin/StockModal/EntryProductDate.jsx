@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   UploadCloud,
   Package,
@@ -27,7 +27,7 @@ export default function EntryProductDate({
   fetchByDate,
 }) {
   const token = import.meta.env.VITE_API_TOKEN;
-  const { addEntry, updateEntry, deleteEntry } = useProductEntry(token);
+  const { addEntry, updateEntry, deleteEntry, toggleStatus } = useProductEntry(token);
 
   const [mode, setMode] = useState("list"); // "list" | "add" | "detail" | "edit"
   const [selectedItem, setSelectedItem] = useState(null);
@@ -40,6 +40,10 @@ export default function EntryProductDate({
   const [previews, setPreviews] = useState([]);
   const fileInputRef = useRef(null);
   const entryDate = formatDateForInput(selectedDate);
+  const [Entries, setEntries] = useState(entries);
+  useEffect(() => {
+    setEntries(entries);
+  }, [entries]);
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
@@ -80,7 +84,7 @@ export default function EntryProductDate({
         comments,
         entryDate,
         images: imageFiles.map((f) => f.file),
-        status: "not_received", // ✅ ตั้งค่าเริ่มต้นสถานะ
+        status: "F", // ✅ ตั้งค่าเริ่มต้นสถานะ
       });
       await fetchByDate(entryDate);
       alert("✅ บันทึกข้อมูลเรียบร้อยแล้ว");
@@ -96,26 +100,23 @@ export default function EntryProductDate({
   // ✅ 1. เพิ่มฟังก์ชันสำหรับจัดการการ Toggle สถานะ
   // ==========================================================
   const handleToggleStatus = async (item) => {
-    // สลับสถานะ: ถ้าไม่ใช่ 'received' (เช่น undefined หรือ 'not_received') ให้เปลี่ยนเป็น 'received'
-    const newStatus = item.status === "received" ? "not_received" : "received";
-
+    const newStatus = item.status === "T" ? "F" : "T";
     try {
-      // สร้าง payload ที่จะอัปเดต (ส่ง item ทั้งหมดกลับไปพร้อมสถานะใหม่)
-      const payload = {
-        ...item,
-        status: newStatus,
-      };
+      await toggleStatus(item.id, item.status);
 
-      // เรียกใช้ hook 'updateEntry' (สมมติว่ามี signature คือ updateEntry(id, payload, entryDate))
-      await updateEntry(item.id, payload, entryDate);
-      
-      // รีเฟรชข้อมูลในรายการใหม่
-      await fetchByDate(entryDate);
+      // ✅ อัปเดต state ทันทีให้เปลี่ยนสี toggle โดยไม่ต้อง refresh
+      setEntries((prev) =>
+        prev.map((x) =>
+          x.id === item.id ? { ...x, status: newStatus } : x
+        )
+      );
     } catch (err) {
       console.error("Failed to update status:", err);
       alert("เกิดข้อผิดพลาดในการอัปเดตสถานะ");
     }
   };
+
+
   // ==========================================================
 
   const openDetail = (item) => {
@@ -170,9 +171,9 @@ export default function EntryProductDate({
             )}
 
             <div className="space-y-2">
-              {entries.map((item) => {
-                // ✅ ตรวจสอบสถานะ (ค่าเริ่มต้นคือ 'not_received' = สีแดง)
-                const isReceived = item.status === "received";
+              {Entries.map((item) => {
+                // ✅ ตรวจสอบสถานะ (ค่าเริ่มต้นคือ 'F' = สีแดง)
+                const isT = item.status === "T";
 
                 return (
                   <div
@@ -194,20 +195,21 @@ export default function EntryProductDate({
                       {/* ปุ่ม Toggle */}
                       <button
                         onClick={(e) => {
-                          e.stopPropagation(); // หยุดไม่ให้ event click ลามไปถึง div แม่ (ไม่ให้เปิด detail)
+                          e.stopPropagation();
                           handleToggleStatus(item);
                         }}
-                        title={isReceived ? "รับแล้ว" : "ยังไม่ได้รับ"}
-                        className={`w-10 h-5 rounded-full p-0.5 flex items-center transition-colors duration-200 ease-in-out
-                          ${isReceived ? "bg-green-500" : "bg-red-500"}
-                        `}
+                        title={item.status === "T" ? "รับแล้ว" : "ยังไม่ได้รับ"}
+                        className={`w-10 h-5 rounded-full p-0.5 flex items-center transition-colors duration-200 ease-in-out ${
+                          item.status === "T" ? "bg-green-500" : "bg-red-500"
+                        }`}
                       >
                         <span
-                          className={`block w-4 h-4 bg-white rounded-full shadow-md transform transition-transform duration-200 ease-in-out
-                            ${isReceived ? "translate-x-5" : "translate-x-0"}
-                          `}
+                          className={`block w-4 h-4 bg-white rounded-full shadow-md transform transition-transform duration-200 ease-in-out ${
+                            item.status === "T" ? "translate-x-5" : "translate-x-0"
+                          }`}
                         ></span>
                       </button>
+
 
                       {/* ปุ่มลบ (ของเดิม) */}
                       <button
@@ -383,7 +385,7 @@ export default function EntryProductDate({
                {/* ✅ แสดงสถานะในหน้า Detail ด้วย */}
               <p>
                 <strong>สถานะ:</strong>{" "}
-                {selectedItem.status === "received" ? (
+                {selectedItem.status === "T" ? (
                   <span className="font-bold text-green-600">รับแล้ว</span>
                 ) : (
                   <span className="font-bold text-red-600">ยังไม่ได้รับ</span>
