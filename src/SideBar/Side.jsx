@@ -1,21 +1,33 @@
-import { Link } from "react-router-dom";
+// 1. เปลี่ยน import จาก Link เป็น NavLink
+import { NavLink } from "react-router-dom";
 
 // กำหนด base class สำหรับลิงก์
 const baseClass =
   "p-3 w-full text-left transition duration-150 ease-in-out block font-medium tracking-wide";
 // กำหนด class สำหรับ hover
-const hoverClass = "hover:bg-pink-100 hover:text-pink-800";
-// กำหนด class สำหรับสีหลัก
-const activeClass = "text-[#640037]"; // ใช้สีหลัก
+const hoverClass = "hover:bg-[#640037] hover:text-pink-50";
+// กำหนด class สำหรับสีหลัก (Active)
+const activeClass = "text-[#ffffff] bg-gray-300"; // ใช้สีหลัก
+// กำหนด class สำหรับสีปกติ (Inactive)
+const inactiveClass = "text-gray-700 rounded-r-lg";
 
 export default function Side() {
+  // 3. สร้างฟังก์ชันสำหรับจัดการ className
+  //    NavLink จะส่ง object ที่มี { isActive } มาให้
+  const getNavLinkClass = ({ isActive }) => {
+    return `${baseClass} ${hoverClass} rounded-l-full p-4 ml-5 ${
+      isActive ? activeClass : inactiveClass
+    }`;
+  };
+
   return (
-    // Padding ด้านข้าง 4 (1rem) เพื่อไม่ให้เมนูชิดขอบซ้ายจนเกินไป
+    // Padding ด้านข้าง 4 (1rem)
     <div className="flex flex-col py-4">
       {/* Super Admin / Dashboard */}
-      <Link
+      {/* 2. เปลี่ยน <Link> เป็น <NavLink> */}
+      <NavLink
         to="/"
-        className={`${baseClass} ${activeClass} ${hoverClass} rounded-lg`} // ให้เมนูนี้เป็นเมนูเริ่มต้น (Active)
+        className={getNavLinkClass} // 4. ใช้ฟังก์ชันที่สร้างไว้
       >
         <div className="flex items-center space-x-2">
           <svg
@@ -34,12 +46,12 @@ export default function Side() {
           </svg>
           <span>Dashboard</span>
         </div>
-      </Link>
+      </NavLink>
 
       {/* Trade Admin / Order Approval */}
-      <Link
+      <NavLink
         to="/trade-admin"
-        className={`${baseClass} text-gray-700 ${hoverClass} rounded-lg`}
+        className={getNavLinkClass} // 4. ใช้ฟังก์ชันเดียวกัน
       >
         <div className="flex items-center space-x-2">
           <svg
@@ -58,12 +70,12 @@ export default function Side() {
           </svg>
           <span>Trade</span>
         </div>
-      </Link>
+      </NavLink>
 
       {/* Key ACC Admin / Product Management */}
-      <Link
+      <NavLink
         to="/key-admin"
-        className={`${baseClass} text-gray-700 ${hoverClass} rounded-lg`}
+        className={getNavLinkClass} // 4. ใช้ฟังก์ชันเดียวกัน
       >
         <div className="flex items-center space-x-2">
           <svg
@@ -82,10 +94,12 @@ export default function Side() {
           </svg>
           <span>Key Account</span>
         </div>
-      </Link>
-      <Link
+      </NavLink>
+
+      {/* Key Forecast */}
+      <NavLink
         to="/key-fc"
-        className={`${baseClass} text-gray-700 ${hoverClass} rounded-lg`}
+        className={getNavLinkClass} // 4. ใช้ฟังก์ชันเดียวกัน
       >
         <div className="flex items-center space-x-2">
           <svg
@@ -104,7 +118,7 @@ export default function Side() {
           </svg>
           <span>Key Forecast</span>
         </div>
-      </Link>
+      </NavLink>
     </div>
   );
 }

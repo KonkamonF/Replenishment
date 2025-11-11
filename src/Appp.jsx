@@ -18,7 +18,7 @@ export default function Appp() {
 
   return (
     <>
-      <div className="bg-gray-100 min-h-screen">
+      <div className="bg-gray-200 min-h-screen">
         {/* --- Header / Navigation Bar --- */}
         {/* Header ถูกปรับให้มี z-index สูงและลอยอยู่เหนือทุกอย่าง */}
         <header className="bg-white shadow-md h-[64px] flex items-center px-6 z-20 sticky top-0 border-b border-pink-100">

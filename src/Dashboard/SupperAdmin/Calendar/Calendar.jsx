@@ -10,7 +10,8 @@ export default function Calendar() {
 
   const token = import.meta.env.VITE_API_TOKEN;
   // ✅ ใช้ monthEntries + prefetchMonth เพิ่มจาก hook
-  const { data, monthEntries, loading, error, fetchByDate, prefetchMonth } = useProductEntry(token);
+  const { data, monthEntries, loading, error, fetchByDate, prefetchMonth } =
+    useProductEntry(token);
 
   // ✅ โหลดทั้งเดือนทันที และเมื่อเปลี่ยนเดือน
   useEffect(() => {
@@ -81,7 +82,7 @@ export default function Calendar() {
         <EntryProductDate
           setIsEntryProductDate={setIsEntryProductDate}
           selectedDate={selectedDate}
-          entries={data}           // รายการของ "วัน" ที่เลือก
+          entries={data} // รายการของ "วัน" ที่เลือก
           loading={loading}
           fetchByDate={fetchByDate}
         />
@@ -95,7 +96,7 @@ export default function Calendar() {
           <div className="flex justify-between items-center mb-6 pb-3 border-b">
             <button
               onClick={handlePrevMonth}
-              className="p-2 rounded-full text-indigo-600 hover:bg-indigo-50 transition duration-150 transform hover:scale-105"
+              className="p-2 rounded-full text-[#640037] hover:bg-indigo-50 transition duration-150 transform hover:scale-105"
             >
               <ChevronLeft className="w-6 h-6" />
             </button>
@@ -106,7 +107,7 @@ export default function Calendar() {
 
             <button
               onClick={handleNextMonth}
-              className="p-2 rounded-full text-indigo-600 hover:bg-indigo-50 transition duration-110 transform hover:scale-105"
+              className="p-2 rounded-full text-[#640037] hover:bg-indigo-50 transition duration-110 transform hover:scale-105"
             >
               <ChevronRight className="w-6 h-6" />
             </button>
@@ -117,7 +118,7 @@ export default function Calendar() {
             {weekdays.map((day) => (
               <div
                 key={day}
-                className="font-bold text-sm sm:text-base text-indigo-600 py-2 border-b-2 border-indigo-100"
+                className="font-bold text-sm sm:text-base text-[#640037] py-2 border-b-2 border-pink-100"
               >
                 {day}
               </div>
@@ -135,7 +136,9 @@ export default function Calendar() {
               )}-${String(day).padStart(2, "0")}`;
 
               // ✅ ใช้ monthEntries (ดึงทั้งเดือนไว้แล้ว) แสดงผลทันที
-              const dayEntries = monthEntries.filter((e) => e.entryDate === dateKey);
+              const dayEntries = monthEntries.filter(
+                (e) => e.entryDate === dateKey
+              );
               const countF = dayEntries.filter((e) => e.status === "F").length;
               const countT = dayEntries.filter((e) => e.status === "T").length;
 

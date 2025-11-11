@@ -25,7 +25,7 @@ export default function ClassA() {
         {!loading && !error && (
           <>
             <p className="text-3xl font-bold">{total} Units</p>
-            <span className="font-bold text-lg">A</span>
+            <span className="font-bold text-lg">Class A</span>
           </>
         )}
       </div>
