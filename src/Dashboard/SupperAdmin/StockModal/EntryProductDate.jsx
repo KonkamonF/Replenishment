@@ -88,11 +88,7 @@ export default function EntryProductDate({
         comments,
         entryDate,
         images: imageFiles.map((f) => f.file),
-<<<<<<< HEAD
-        status: "not_received",
-=======
         status: "F", // ✅ ตั้งค่าเริ่มต้นสถานะ
->>>>>>> 1b5f34b5bef79f4fe66baa64de3404dc549a37cd
       });
       await fetchByDate(entryDate);
       alert("✅ บันทึกข้อมูลเรียบร้อยแล้ว");
@@ -105,20 +101,6 @@ export default function EntryProductDate({
   };
 
   const handleToggleStatus = async (item) => {
-<<<<<<< HEAD
-  setTogglingId(item.id);
-  const newStatus = item.status === "received" ? "not_received" : "received";
-
-  try {
-    const payload = { status: newStatus };
-    await updateEntry(item.id, payload, entryDate);
-    await fetchByDate(entryDate);
-  } catch (err) {
-    console.error("Failed to update status:", err);
-  } 
-};
-
-=======
     const newStatus = item.status === "T" ? "F" : "T";
     try {
       await toggleStatus(item.id, item.status);
@@ -137,7 +119,6 @@ export default function EntryProductDate({
 
 
   // ==========================================================
->>>>>>> 1b5f34b5bef79f4fe66baa64de3404dc549a37cd
 
   const openDetail = (item) => {
     setSelectedItem(item);
@@ -191,15 +172,9 @@ export default function EntryProductDate({
             )}
 
             <div className="space-y-2">
-<<<<<<< HEAD
-              {entries.map((item) => {
-                const isReceived = item.status === "received";
-                const isToggling = togglingId === item.id;
-=======
               {Entries.map((item) => {
                 // ✅ ตรวจสอบสถานะ (ค่าเริ่มต้นคือ 'F' = สีแดง)
                 const isT = item.status === "T";
->>>>>>> 1b5f34b5bef79f4fe66baa64de3404dc549a37cd
 
                 return (
                   <div
@@ -229,19 +204,10 @@ export default function EntryProductDate({
                           e.stopPropagation();
                           handleToggleStatus(item);
                         }}
-<<<<<<< HEAD
-                        disabled={isToggling}
-                        title={isReceived ? "รับแล้ว" : "ยังไม่ได้รับ"}
-                        className={`w-10 h-5 rounded-full p-0.5 flex items-center transition-colors duration-200 ease-in-out
-                          ${isReceived ? "bg-green-500" : "bg-red-500"}
-                          ${isToggling ? "opacity-50 cursor-wait" : ""} 
-                        `}
-=======
                         title={item.status === "T" ? "รับแล้ว" : "ยังไม่ได้รับ"}
                         className={`w-10 h-5 rounded-full p-0.5 flex items-center transition-colors duration-200 ease-in-out ${
                           item.status === "T" ? "bg-green-500" : "bg-red-500"
                         }`}
->>>>>>> 1b5f34b5bef79f4fe66baa64de3404dc549a37cd
                       >
                         <span
                           className={`block w-4 h-4 bg-white rounded-full shadow-md transform transition-transform duration-200 ease-in-out ${
@@ -250,12 +216,8 @@ export default function EntryProductDate({
                         ></span>
                       </button>
 
-<<<<<<< HEAD
-                      {/* ปุ่มลบ */}
-=======
 
                       {/* ปุ่มลบ (ของเดิม) */}
->>>>>>> 1b5f34b5bef79f4fe66baa64de3404dc549a37cd
                       <button
                         onClick={async (e) => {
                           e.stopPropagation();
