@@ -38,13 +38,6 @@ export default function EntryProductDate({
   const [comments, setComments] = useState("");
   const [imageFiles, setImageFiles] = useState([]);
   const [previews, setPreviews] = useState([]);
-<<<<<<< HEAD
-
-  // ✅ [แก้ไขจุดที่ 2] เปลี่ยนค่าเริ่มต้นเป็น null ให้ตรงกับ .finally
-  const [isToggling , setTogglingId] = useState(null);
-
-=======
->>>>>>> 74e6e22efc71f8db45efbc7792d88eba4f8216ce
   const fileInputRef = useRef(null);
   const entryDate = formatDateForInput(selectedDate);
   const [Entries, setEntries] = useState(entries);
