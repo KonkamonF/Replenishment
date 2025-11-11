@@ -40,7 +40,7 @@ export default function EntryProductDate({
   const [previews, setPreviews] = useState([]);
 
   // ✅ [แก้ไขจุดที่ 2] เปลี่ยนค่าเริ่มต้นเป็น null ให้ตรงกับ .finally
-  const [togglingId, setTogglingId] = useState(null);
+  const [isToggling , setTogglingId] = useState(null);
 
   const fileInputRef = useRef(null);
   const entryDate = formatDateForInput(selectedDate);
