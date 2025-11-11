@@ -5,9 +5,9 @@ import { NavLink } from "react-router-dom";
 const baseClass =
   "p-3 w-full text-left transition duration-150 ease-in-out block font-medium tracking-wide";
 // กำหนด class สำหรับ hover
-const hoverClass = "hover:bg-[#640037] hover:text-pink-50";
+const hoverClass = "hover:bg-gray-300 hover:text-[#640037]";
 // กำหนด class สำหรับสีหลัก (Active)
-const activeClass = "text-[#ffffff] bg-gray-300"; // ใช้สีหลัก
+const activeClass = "text-[#640037] bg-gray-200 "; // ใช้สีหลัก
 // กำหนด class สำหรับสีปกติ (Inactive)
 const inactiveClass = "text-gray-700 rounded-r-lg";
 
@@ -15,7 +15,7 @@ export default function Side() {
   // 3. สร้างฟังก์ชันสำหรับจัดการ className
   //    NavLink จะส่ง object ที่มี { isActive } มาให้
   const getNavLinkClass = ({ isActive }) => {
-    return `${baseClass} ${hoverClass} rounded-l-full p-4 ml-5 ${
+    return `${baseClass} ${hoverClass} rounded-l-full p-2 ml-5 ${
       isActive ? activeClass : inactiveClass
     }`;
   };

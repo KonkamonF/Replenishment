@@ -84,7 +84,7 @@ export default function Appp() {
         {/* --- Main Layout: Sidebar and Content --- */}
         {/* ใช้ Flexbox จัดเรียง Sidebar และ Content */}
         <div className="flex">
-          {/* Sidebar: ใช้ Sticky เพื่ออยู่ติดด้านบน และใช้ Transition จัดการการเปิด-ปิด */}
+        
           <div
             className="bg-white shadow-lg pt-4  sticky top-16" // top-16 = 64px (ความสูง Header)
             style={{
@@ -104,7 +104,7 @@ export default function Appp() {
           </div>
 
           {/* Main Content Area (ขยายเต็มพื้นที่ที่เหลือ) */}
-          <main className="p-6 flex-1 max-w-full overflow-scroll">
+          <main className="p-6 flex-1 max-w-full overflow-x-auto">
             <Outlet />
           </main>
         </div>
