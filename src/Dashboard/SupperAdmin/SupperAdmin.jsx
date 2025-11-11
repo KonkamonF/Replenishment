@@ -1,16 +1,13 @@
 import React from "react";
-// Import Components ที่เป็น Placeholder
 import ClassA from "./AmountAdmin/ClassA";
 import ClassB from "./AmountAdmin/ClassB";
 import ClassC from "./AmountAdmin/ClassC";
 import ClassN from "./AmountAdmin/ClassN";
 import Best from "./AmountAdmin/Best";
 import NonMove from "./AmountAdmin/NonMove";
-// Import Component กราฟ
 import AcAndFc from "./AmountAdmin/AcAndFc";
 import Charts from "./AmountAdmin/Charts";
 import Calendar from "./Calendar/Calendar";
-// import Test2 from "./DetailsAdmin/Test2";
 import Test2 from "./DetailsAdmin/Test2";
 
 export default function SuperAdmin() {
@@ -130,7 +127,6 @@ export default function SuperAdmin() {
           </div>
         </div>
         <Calendar />
-        {/* <Test2 /> */}
         <Test2/>
       </div>
     </div>
