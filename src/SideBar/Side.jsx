@@ -7,7 +7,7 @@ const baseClass =
 // กำหนด class สำหรับ hover
 const hoverClass = "hover:bg-gray-300 hover:text-[#640037]";
 // กำหนด class สำหรับสีหลัก (Active)
-const activeClass = "text-[#640037] bg-gray-200 "; // ใช้สีหลัก
+const activeClass = "text-[#640037] bg-gray-200 "; 
 // กำหนด class สำหรับสีปกติ (Inactive)
 const inactiveClass = "text-gray-700 rounded-r-lg";
 

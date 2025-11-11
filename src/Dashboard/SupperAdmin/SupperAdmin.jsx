@@ -33,23 +33,23 @@ export default function SuperAdmin() {
 
   return (
     // Main container, using 'min-h-screen' for full height and a light background
-    <div className="h-full bg-white rounded-xl p-6 ">
+    <div className="h-full bg-white rounded-xl p-6">
       {/* --- Header Section (Unchanged) --- */}
       <header className="flex justify-between items-center mb-8 pb-4 border-b border-pink-200">
-        <h1 className="text-3xl font-extrabold text-[#640037]">
+        <h1 className="text-xl font-extrabold text-[#640037]">
           Super Admin Dashboard
         </h1>
 
         <div className="space-x-4 ">
           <button
             onClick={handleImport}
-            className="px-4 py-2 bg-[#640037] cursor-pointer text-white font-semibold rounded-lg shadow-md hover:shadow-xl hover:bg-pink-600"
+            className="text-sm px-4 py-2 bg-[#640037] cursor-pointer text-white rounded-lg shadow-md hover:shadow-xl hover:bg-pink-600"
           >
             Import Excel
           </button>
           <button
             onClick={handleExport}
-            className="px-4 py-2 bg-pink-800 cursor-pointer text-white font-semibold rounded-lg shadow-md hover:shadow-xl hover:bg-pink-600 "
+            className="text-sm px-4 py-2 bg-pink-800 cursor-pointer text-white rounded-lg shadow-md hover:shadow-xl hover:bg-pink-600 "
           >
             Export Excel
           </button>
@@ -60,11 +60,11 @@ export default function SuperAdmin() {
       <div className="flex flex-col gap-8">
         {/* --- Left Column: Summary Cards (Unchanged) --- */}
         <div className="text-[#640037]">
-          <h2 className="text-2xl font-bold mb-6 text-[#640037]">
+          <h2 className=" font-bold mb-6 text-[#640037]">
             Summary Metrics
           </h2>
 
-          <div className="grid gap-6 text-white sm:grid-cols-2 md:grid-cols-6 lg:grid-cols-6 ">
+          <div className="grid gap-6 text-white sm:grid-cols-2 md:grid-cols-6 lg:grid-cols-6">
             {/* Class Cards */}
             <div className="text-center cursor-pointer p-6 bg-gradient-to-t from-[#ffd9c3] to-yellow-100 text-[#e25e00] rounded-xl shadow-md hover:shadow-xl">
               <ClassA />
@@ -91,7 +91,7 @@ export default function SuperAdmin() {
         <hr />
         {/* --- Right Column: Primary Component (AcAndFc) - FOCUS OF CHANGE --- */}
         <div className="">
-          <h2 className="text-2xl font-bold mb-6 text-[#640037]">
+          <h2 className="text-xl font-bold mb-6 text-[#640037]">
             Analysis & Forecast (Interactive Charts)
           </h2>
 

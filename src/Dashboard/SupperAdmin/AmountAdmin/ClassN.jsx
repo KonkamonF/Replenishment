@@ -16,13 +16,14 @@ export default function ClassN() {
       )}
       <div
         onClick={() => setIsDetailsClassN(true)}
+        className="flex justify-center items-center flex-col"
       >
         {loading && <p>Loading...</p>}
         {error && <p className="text-red-500">Error: {error}</p>}
         {!loading && !error && (
           <>
-            <p className="text-3xl font-bold">{total} Units</p>
-            <span className="font-bold text-lg">Class N</span>
+            <p className="text-xl font-bold">{total} Units</p>
+            <span className="text-sm">Class N</span>
           </>
         )}
       </div>
