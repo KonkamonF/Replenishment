@@ -9,11 +9,6 @@ export default function Calendar() {
   const [isOpenEntryProductDate, setIsEntryProductDate] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const token = import.meta.env.VITE_API_TOKEN;
-<<<<<<< HEAD
-  // ✅ ใช้ monthEntries + prefetchMonth เพิ่มจาก hook
-  const { data, monthEntries, loading, error, fetchByDate, prefetchMonth } =
-    useProductEntry(token);
-=======
 
   // ✅ ได้ monthEntries มาจาก hook แล้ว
   const { data, monthEntries, loading, error, fetchByDate, prefetchMonth, setMonthEntries } = useProductEntry(token);
@@ -44,7 +39,6 @@ export default function Calendar() {
     // ✅ ปิดเมื่อ component ถูก unmount
     return () => ws.close();
   }, []);
->>>>>>> a60bfe59b1614bc02c030429f2c28930cd8e6dfb
 
   // ✅ โหลดทั้งเดือนทันที และเมื่อเปลี่ยนเดือน
   useEffect(() => {
