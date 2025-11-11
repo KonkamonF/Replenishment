@@ -14,7 +14,7 @@ export default function Appp() {
   };
 
   // กำหนดความกว้างของ Sidebar
-  const sidebarWidth = "250px";
+  const sidebarWidth = "200px";
 
   return (
     <>

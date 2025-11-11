@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 
 // กำหนด base class สำหรับลิงก์
 const baseClass =
-  "p-3 w-full text-left transition duration-150 ease-in-out block font-medium tracking-wide";
+  "p-3 w-full text-left transition duration-150 ease-in-out block font-medium tracking-wide text-sm";
 // กำหนด class สำหรับ hover
 const hoverClass = "hover:bg-gray-300 hover:text-[#640037]";
 // กำหนด class สำหรับสีหลัก (Active)
