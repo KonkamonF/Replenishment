@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   UploadCloud,
   Package,
@@ -27,7 +27,7 @@ export default function EntryProductDate({
   fetchByDate,
 }) {
   const token = import.meta.env.VITE_API_TOKEN;
-  const { addEntry, updateEntry, deleteEntry } = useProductEntry(token);
+  const { addEntry, updateEntry, deleteEntry, toggleStatus } = useProductEntry(token);
 
   const [mode, setMode] = useState("list"); // "list" | "add" | "detail" | "edit"
   const [selectedItem, setSelectedItem] = useState(null);
@@ -44,6 +44,10 @@ export default function EntryProductDate({
 
   const fileInputRef = useRef(null);
   const entryDate = formatDateForInput(selectedDate);
+  const [Entries, setEntries] = useState(entries);
+  useEffect(() => {
+    setEntries(entries);
+  }, [entries]);
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
@@ -84,7 +88,11 @@ export default function EntryProductDate({
         comments,
         entryDate,
         images: imageFiles.map((f) => f.file),
+<<<<<<< HEAD
         status: "not_received",
+=======
+        status: "F", // ✅ ตั้งค่าเริ่มต้นสถานะ
+>>>>>>> 1b5f34b5bef79f4fe66baa64de3404dc549a37cd
       });
       await fetchByDate(entryDate);
       alert("✅ บันทึกข้อมูลเรียบร้อยแล้ว");
@@ -97,6 +105,7 @@ export default function EntryProductDate({
   };
 
   const handleToggleStatus = async (item) => {
+<<<<<<< HEAD
   setTogglingId(item.id);
   const newStatus = item.status === "received" ? "not_received" : "received";
 
@@ -109,6 +118,26 @@ export default function EntryProductDate({
   } 
 };
 
+=======
+    const newStatus = item.status === "T" ? "F" : "T";
+    try {
+      await toggleStatus(item.id, item.status);
+
+      // ✅ อัปเดต state ทันทีให้เปลี่ยนสี toggle โดยไม่ต้อง refresh
+      setEntries((prev) =>
+        prev.map((x) =>
+          x.id === item.id ? { ...x, status: newStatus } : x
+        )
+      );
+    } catch (err) {
+      console.error("Failed to update status:", err);
+      alert("เกิดข้อผิดพลาดในการอัปเดตสถานะ");
+    }
+  };
+
+
+  // ==========================================================
+>>>>>>> 1b5f34b5bef79f4fe66baa64de3404dc549a37cd
 
   const openDetail = (item) => {
     setSelectedItem(item);
@@ -162,9 +191,15 @@ export default function EntryProductDate({
             )}
 
             <div className="space-y-2">
+<<<<<<< HEAD
               {entries.map((item) => {
                 const isReceived = item.status === "received";
                 const isToggling = togglingId === item.id;
+=======
+              {Entries.map((item) => {
+                // ✅ ตรวจสอบสถานะ (ค่าเริ่มต้นคือ 'F' = สีแดง)
+                const isT = item.status === "T";
+>>>>>>> 1b5f34b5bef79f4fe66baa64de3404dc549a37cd
 
                 return (
                   <div
@@ -194,21 +229,33 @@ export default function EntryProductDate({
                           e.stopPropagation();
                           handleToggleStatus(item);
                         }}
+<<<<<<< HEAD
                         disabled={isToggling}
                         title={isReceived ? "รับแล้ว" : "ยังไม่ได้รับ"}
                         className={`w-10 h-5 rounded-full p-0.5 flex items-center transition-colors duration-200 ease-in-out
                           ${isReceived ? "bg-green-500" : "bg-red-500"}
                           ${isToggling ? "opacity-50 cursor-wait" : ""} 
                         `}
+=======
+                        title={item.status === "T" ? "รับแล้ว" : "ยังไม่ได้รับ"}
+                        className={`w-10 h-5 rounded-full p-0.5 flex items-center transition-colors duration-200 ease-in-out ${
+                          item.status === "T" ? "bg-green-500" : "bg-red-500"
+                        }`}
+>>>>>>> 1b5f34b5bef79f4fe66baa64de3404dc549a37cd
                       >
                         <span
-                          className={`block w-4 h-4 bg-white rounded-full shadow-md transform transition-transform duration-200 ease-in-out
-                            ${isReceived ? "translate-x-5" : "translate-x-0"}
-                          `}
+                          className={`block w-4 h-4 bg-white rounded-full shadow-md transform transition-transform duration-200 ease-in-out ${
+                            item.status === "T" ? "translate-x-5" : "translate-x-0"
+                          }`}
                         ></span>
                       </button>
 
+<<<<<<< HEAD
                       {/* ปุ่มลบ */}
+=======
+
+                      {/* ปุ่มลบ (ของเดิม) */}
+>>>>>>> 1b5f34b5bef79f4fe66baa64de3404dc549a37cd
                       <button
                         onClick={async (e) => {
                           e.stopPropagation();
@@ -381,7 +428,7 @@ export default function EntryProductDate({
             <div className="space-y-2 text-gray-700">
               <p>
                 <strong>สถานะ:</strong>{" "}
-                {selectedItem.status === "received" ? (
+                {selectedItem.status === "T" ? (
                   <span className="font-bold text-green-600">รับแล้ว</span>
                 ) : (
                   <span className="font-bold text-red-600">ยังไม่ได้รับ</span>

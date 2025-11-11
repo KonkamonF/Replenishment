@@ -9,15 +9,9 @@ export default function Calendar() {
   const [selectedDate, setSelectedDate] = useState(null);
 
   const token = import.meta.env.VITE_API_TOKEN;
-  // ✅ ใช้ monthEntries + prefetchMonth เพิ่มจาก hook
-  const { data, monthEntries, loading, error, fetchByDate, prefetchMonth } = useProductEntry(token);
+  const { data, loading, error, fetchByDate } = useProductEntry(token);
 
-  // ✅ โหลดทั้งเดือนทันที และเมื่อเปลี่ยนเดือน
-  useEffect(() => {
-    prefetchMonth(currentDate.getFullYear(), currentDate.getMonth());
-  }, [currentDate.getFullYear(), currentDate.getMonth(), prefetchMonth]);
-
-  // Helper
+  // 🔹 Helper Functions
   const getDaysInMonth = (date) =>
     new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
 
@@ -48,6 +42,7 @@ export default function Calendar() {
       (prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1)
     );
 
+  // 🔹 เมื่อคลิกวัน
   const handleDateClick = (year, month, day) => {
     const selected = { year, month, day };
     const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(
@@ -55,8 +50,8 @@ export default function Calendar() {
     ).padStart(2, "0")}`;
 
     setSelectedDate(selected);
-    fetchByDate(dateStr); // ดึงข้อมูลของวันนั้นไว้เข้า modal
-    setIsEntryProductDate(true);
+    fetchByDate(dateStr); // 🔸 ดึงข้อมูลจาก API hook
+    setIsEntryProductDate(true); // 🔸 เปิด modal
   };
 
   const year = currentDate.getFullYear();
@@ -76,12 +71,12 @@ export default function Calendar() {
 
   return (
     <>
-      {/* Modal */}
+      {/* 🔸 Modal */}
       {isOpenEntryProductDate && (
         <EntryProductDate
           setIsEntryProductDate={setIsEntryProductDate}
           selectedDate={selectedDate}
-          entries={data}           // รายการของ "วัน" ที่เลือก
+          entries={data}
           loading={loading}
           fetchByDate={fetchByDate}
         />
@@ -133,36 +128,31 @@ export default function Calendar() {
                 2,
                 "0"
               )}-${String(day).padStart(2, "0")}`;
-
-              // ✅ ใช้ monthEntries (ดึงทั้งเดือนไว้แล้ว) แสดงผลทันที
-              const dayEntries = monthEntries.filter((e) => e.entryDate === dateKey);
-              const countF = dayEntries.filter((e) => e.status === "F").length;
-              const countT = dayEntries.filter((e) => e.status === "T").length;
-
-              const bgColor =
-                countF > 0 && countT === 0
-                  ? "bg-red-100 text-red-700"
-                  : countT > 0 && countF === 0
-                  ? "bg-green-100 text-green-700"
-                  : countF > 0 && countT > 0
-                  ? "bg-yellow-100 text-yellow-700"
-                  : "";
+              const hasEntry = data.some((e) => e.entryDate === dateKey);
 
               return (
                 <div
                   key={`day-${day}`}
                   onClick={() => handleDateClick(year, month, day)}
                   className={`h-16 flex flex-col items-center justify-start p-1 text-sm rounded-lg cursor-pointer transition
-                    ${bgColor}
-                  `}
+                    ${
+                      isToday(year, month, day)
+                        ? "bg-pink-100 text-pink-700 font-bold"
+                        : "text-gray-700 hover:bg-gray-100"
+                    }`}
                 >
-                  <span className="w-7 h-7 flex items-center justify-center rounded-full">
+                  <span
+                    className={`w-7 h-7 flex items-center justify-center rounded-full ${
+                      isToday(year, month, day) ? "" : "hover:bg-gray-200"
+                    }`}
+                  >
                     {day}
                   </span>
 
-                  {dayEntries.length > 0 && (
-                    <div className="mt-1 w-full text-xs font-medium truncate">
-                      {dayEntries.length} รายการ
+                  {/* 🔹 มีสินค้าของวันนั้น */}
+                  {hasEntry && (
+                    <div className="mt-1 w-full text-xs text-indigo-700 font-medium truncate">
+                      {data.filter((e) => e.entryDate === dateKey).length} รายการ
                     </div>
                   )}
                 </div>
