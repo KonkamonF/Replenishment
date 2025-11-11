@@ -22,7 +22,7 @@ export default function ClassC() {
         {!loading && !error && (
           <>
             <p className="text-3xl font-bold">{total} Units</p>
-            <span className="font-bold text-lg">C</span>
+            <span className="font-bold text-lg">Class C</span>
           </>
         )}
       </div>
