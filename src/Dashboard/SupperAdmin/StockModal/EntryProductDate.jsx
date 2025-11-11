@@ -38,10 +38,13 @@ export default function EntryProductDate({
   const [comments, setComments] = useState("");
   const [imageFiles, setImageFiles] = useState([]);
   const [previews, setPreviews] = useState([]);
+<<<<<<< HEAD
 
   // ✅ [แก้ไขจุดที่ 2] เปลี่ยนค่าเริ่มต้นเป็น null ให้ตรงกับ .finally
   const [isToggling , setTogglingId] = useState(null);
 
+=======
+>>>>>>> 74e6e22efc71f8db45efbc7792d88eba4f8216ce
   const fileInputRef = useRef(null);
   const entryDate = formatDateForInput(selectedDate);
   const [Entries, setEntries] = useState(entries);
@@ -100,6 +103,9 @@ export default function EntryProductDate({
     }
   };
 
+  // ==========================================================
+  // ✅ 1. เพิ่มฟังก์ชันสำหรับจัดการการ Toggle สถานะ
+  // ==========================================================
   const handleToggleStatus = async (item) => {
     const newStatus = item.status === "T" ? "F" : "T";
     try {
@@ -130,7 +136,7 @@ export default function EntryProductDate({
         selectedDate.year,
         selectedDate.month,
         selectedDate.day
-      ).toLocaleString("th-TH", { dateStyle: "long" })
+      ).toLocaleDateString("th-TH", { dateStyle: "long" })
     : "ไม่พบวันที่";
 
   return (
@@ -179,24 +185,19 @@ export default function EntryProductDate({
                 return (
                   <div
                     key={item.id}
-                    // ✅ [แก้ไขจุดที่ 1] ส่ง item ทั้งก้อนไปให้ openDetail
-                    onClick={() => openDetail(item.id)}
+                    onClick={() => openDetail(item)}
                     className="flex justify-between items-center bg-gray-50 px-3 py-2 rounded border cursor-pointer hover:bg-pink-50 transition"
                   >
                     <div className="text-sm text-gray-700">
-                      <strong className={`${isToggling ? "opacity-50" : ""}`}>
-                        {item.productName}
-                      </strong>{" "}
-                      — {item.quantity} ชิ้น
-                      <p
-                        className={`text-xs text-gray-500 ${
-                          isToggling ? "opacity-50" : ""
-                        }`}
-                      >
+                      <strong>{item.productName}</strong> — {item.quantity} ชิ้น
+                      <p className="text-xs text-gray-500">
                         {item.poNumber || "-"} | {item.supplier || "-"}
                       </p>
                     </div>
 
+                    {/* ================================================== */}
+                    {/* ✅ 2. อัปเดต UI ให้มีปุ่ม Toggle และปุ่มลบ */}
+                    {/* ================================================== */}
                     <div className="flex items-center gap-3">
                       {/* ปุ่ม Toggle */}
                       <button
@@ -222,16 +223,15 @@ export default function EntryProductDate({
                         onClick={async (e) => {
                           e.stopPropagation();
                           await deleteEntry(item.id, entryDate);
-                          await fetchByDate(entryDate);
+                          await fetchByDate(entryDate); // ✅ รีเฟรชรายการใหม่ทันที
                         }}
-                        disabled={isToggling}
-                        className={`text-red-600 hover:text-red-800 transition ${
-                          isToggling ? "opacity-30 cursor-wait" : ""
-                        }`}
+                        className="text-red-600 hover:text-red-800 transition"
                       >
                         <Trash2 size={18} />
                       </button>
                     </div>
+                    {/* ================================================== */}
+
                   </div>
                 );
               })}
@@ -242,7 +242,6 @@ export default function EntryProductDate({
         {/* ===================== MODE ADD ===================== */}
         {mode === "add" && (
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* ... (เนื้อหา Form ไม่ได้แก้ไข) ... */}
             <div className="flex justify-between items-center mb-2">
               <h2 className="text-lg font-bold text-gray-700">
                 เพิ่มรายการสินค้าใหม่
@@ -256,6 +255,7 @@ export default function EntryProductDate({
               </button>
             </div>
 
+            {/* ฟอร์มเดิมทั้งหมด */}
             <div className="grid grid-cols-2 gap-6">
               <div>
                 <label className="text-sm font-semibold text-gray-700 mb-1 flex items-center">
@@ -327,6 +327,7 @@ export default function EntryProductDate({
                 <UploadCloud className="mr-2 text-[#640037]" />
                 แนบรูปภาพ (ไม่จำกัดจำนวน)
               </label>
+
               {previews.length > 0 && (
                 <div className="flex overflow-x-auto gap-3 pb-2">
                   {previews.map((img) => (
@@ -350,6 +351,7 @@ export default function EntryProductDate({
                   ))}
                 </div>
               )}
+
               <input
                 ref={fileInputRef}
                 type="file"
@@ -374,7 +376,6 @@ export default function EntryProductDate({
         {/* ===================== MODE DETAIL ===================== */}
         {mode === "detail" && selectedItem && (
           <div>
-            {/* ... (เนื้อหา Detail ไม่ได้แก้ไข) ... */}
             <div className="flex justify-between mb-4">
               <h2 className="text-lg font-bold text-gray-700">
                 รายละเอียดสินค้า
@@ -388,6 +389,7 @@ export default function EntryProductDate({
             </div>
 
             <div className="space-y-2 text-gray-700">
+               {/* ✅ แสดงสถานะในหน้า Detail ด้วย */}
               <p>
                 <strong>สถานะ:</strong>{" "}
                 {selectedItem.status === "T" ? (
@@ -396,21 +398,11 @@ export default function EntryProductDate({
                   <span className="font-bold text-red-600">ยังไม่ได้รับ</span>
                 )}
               </p>
-              <p>
-                <strong>ชื่อสินค้า:</strong> {selectedItem.productName}
-              </p>
-              <p>
-                <strong>จำนวน:</strong> {selectedItem.quantity} ชิ้น
-              </p>
-              <p>
-                <strong>PO:</strong> {selectedItem.poNumber || "-"}
-              </p>
-              <p>
-                <strong>ซัพพลายเออร์:</strong> {selectedItem.supplier || "-"}
-              </p>
-              <p>
-                <strong>หมายเหตุ:</strong> {selectedItem.comments || "-"}
-              </p>
+              <p><strong>ชื่อสินค้า:</strong> {selectedItem.productName}</p>
+              <p><strong>จำนวน:</strong> {selectedItem.quantity} ชิ้น</p>
+              <p><strong>PO:</strong> {selectedItem.poNumber || "-"}</p>
+              <p><strong>ซัพพลายเออร์:</strong> {selectedItem.supplier || "-"}</p>
+              <p><strong>หมายเหตุ:</strong> {selectedItem.comments || "-"}</p>
             </div>
 
             {selectedItem.images?.length > 0 && (
@@ -437,6 +429,7 @@ export default function EntryProductDate({
                   setPoNumber(selectedItem.poNumber);
                   setQuantity(selectedItem.quantity);
                   setComments(selectedItem.comments);
+                  // TODO: คุณยังไม่ได้สร้าง UI สำหรับ "edit" mode
                   setMode("edit");
                 }}
                 className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
@@ -446,7 +439,7 @@ export default function EntryProductDate({
               <button
                 onClick={async () => {
                   await deleteEntry(selectedItem.id, entryDate);
-                  await fetchByDate(entryDate);
+                  await fetchByDate(entryDate); // ✅ โหลดใหม่หลังลบ
                   setMode("list");
                 }}
                 className="flex items-center bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
@@ -457,22 +450,20 @@ export default function EntryProductDate({
           </div>
         )}
 
-        {/* ===================== MODE EDIT ===================== */}
+       
         {mode === "edit" && (
-          <div className="text-center p-10">
-            {/* ... (เนื้อหา Edit ไม่ได้แก้ไข) ... */}
-            <h2 className="text-xl font-bold">Edit Mode (TODO)</h2>
-            <p className="text-gray-500">
-              ส่วนของการแก้ไขข้อมูลยังไม่ได้ถูกสร้าง UI
-            </p>
-            <button
-              onClick={() => setMode("detail")}
-              className="mt-4 text-sm text-blue-600 hover:underline"
-            >
-              ← กลับไปหน้ารายละเอียด
-            </button>
-          </div>
+           <div className="text-center p-10">
+              <h2 className="text-xl font-bold">Edit Mode (TODO)</h2>
+              <p className="text-gray-500">ส่วนของการแก้ไขข้อมูลยังไม่ได้ถูกสร้าง UI</p>
+              <button 
+                onClick={() => setMode("detail")}
+                className="mt-4 text-sm text-blue-600 hover:underline"
+              >
+                ← กลับไปหน้ารายละเอียด
+              </button>
+           </div>
         )}
+
       </div>
     </div>
   );
