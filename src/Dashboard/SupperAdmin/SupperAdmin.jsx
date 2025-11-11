@@ -10,7 +10,7 @@ import NonMove from "./AmountAdmin/NonMove";
 import AcAndFc from "./AmountAdmin/AcAndFc";
 import Charts from "./AmountAdmin/Charts";
 import Calendar from "./Calendar/Calendar";
-import Test2 from "./DetailsAdmin/test2";
+import Test2 from "./DetailsAdmin/Test2";
 
 export default function SuperAdmin() {
   // Functions to handle button clicks (you'll implement the actual logic here)
