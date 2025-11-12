@@ -37,7 +37,7 @@ export default function DetailClassD({ setIsDetailsClassD }) {
         {/* Header */}
         <div className="flex justify-between items-start mb-6 border-b pb-4">
           <h1 className="text-3xl font-extrabold text-[#640037]">
-            สินค้า Class A
+            สินค้า Class D
             <p className="text-base text-gray-600 mt-1">
               หน้าปัจจุบัน : {page}
             </p>

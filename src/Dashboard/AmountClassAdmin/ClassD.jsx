@@ -6,7 +6,7 @@ export default function ClassD() {
   const [isDetailsClassD, setIsDetailsClassD] = useState(false);
   const { total, loading, error } = useProductTotalByClass({
     classType: "manual",
-    className: "C",
+    className: "D",
   });
 
   return (
