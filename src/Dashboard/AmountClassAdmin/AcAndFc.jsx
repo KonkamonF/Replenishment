@@ -205,7 +205,7 @@ const AcAndFc = ({ classSummaryData }) => {
         //   value,
         // }));
 
-        const allowedClasses = ["A", "B", "C", "N"];
+        const allowedClasses = ["A", "B", "C", "D", "MD", "N"];
         const pieData = Object.entries(totals || {})
           .filter(([key]) => allowedClasses.includes(key))
           .map(([key, value]) => ({
