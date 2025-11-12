@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, Outlet } from "react-router-dom";
-import Side from "./SideBar/Side";
+import Side from "../src/SideBar-Modal/Side.jsx";
 import sbo from "../src/assets/sbo.png";
 
 export default function Appp() {

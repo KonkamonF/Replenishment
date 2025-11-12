@@ -1,9 +1,9 @@
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
-import SupperAdmin from "../Dashboard/SupperAdmin/SupperAdmin";
-import TradeAdmin from "../Dashboard/TradeAdmin/TradeAdmin";
-import KeyAdmin from "../Dashboard/KeyAdmin/KeyAdmin";
+import SupperAdmin from "../SupperAdmin/SupperAdmin";
+import TradeAdmin from "../TradeAdmin/TradeAdmin";
+import KeyAdmin from "../KeyAdmin/KeyAdmin";
 import Appp from "../Appp";
-import KeyFC from "../Dashboard/KeyAdmin/KeyFC";
+import KeyFC from "../KeyAdmin/KeyFC.jsx";
 
 const route = createBrowserRouter([
   {
