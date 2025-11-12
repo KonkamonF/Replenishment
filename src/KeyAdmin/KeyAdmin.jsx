@@ -5,10 +5,6 @@ import { Search, Eye, EyeOff, ChevronDown, Upload } from "lucide-react";
 
 // *** WARNING: ตรวจสอบ Path การ Import เหล่านี้ให้ถูกต้อง ***
 import StockShowModal from "../SideBar-Modal/StockModal/StockShow.jsx"
-// NOTE: เปลี่ยนการ import TradeCommunicationModal/CommunicateCard เป็น TradeRemarkModal ตามโค้ดล่าสุดของคุณ
-// import TradeCommunicationModal from "../SupperAdmin/Stock/CommunicateCard"; 
-// หาก TradeRemarkModal อยู่ในไฟล์เดียวกัน ไม่ต้อง Import แต่หากแยกไฟล์ ต้อง Import ที่นี่
-// สมมติว่า TradeRemarkModal ถูกประกาศในไฟล์นี้ชั่วคราวเพื่อแก้ไข
 // --------------------------------------------------------
 
 
@@ -82,20 +78,21 @@ function TradeRemarkModal({ product, onClose, onAddRemark }) {
       setRemarkText("");
     }
   };
-    // ใช้ getStatusStyle ที่ถูกประกาศด้านบน
-    const getModalStatusStyle = (status) => {
-        switch (status) {
-            case "Abnormal": return "border-red-400";
-            case "Normal": return "border-green-400";
-            case "Resolved": return "border-blue-400";
-            case "Pending": return "border-yellow-400";
-            default: return "border-gray-400";
-        }
-    };
-    
+    // ใช้ getStatusStyle ที่ถูกประกาศด้านบน
+    const getModalStatusStyle = (status) => {
+        switch (status) {
+            case "Abnormal": return "border-red-400";
+            case "Normal": return "border-green-400";
+            case "Resolved": return "border-blue-400";
+            case "Pending": return "border-yellow-400";
+            default: return "border-gray-400";
+        }
+    };
+    
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4">
+    	{/* ... (เนื้อหา Modal เหมือนเดิมทุกประการ) ... */}
       <div className="bg-white rounded-xl w-full max-w-4xl p-6 shadow-2xl overflow-y-scroll max-h-full">
         <div className="flex justify-between items-start border-b pb-3 mb-4">
           <h2 className="text-xl font-bold text-[#640037]">
@@ -179,10 +176,10 @@ const ALL_COLUMNS = [
   { key: "SetType", name: "ชุด Set / แตก Set", isAlwaysVisible: false },
   { key: "Stock_Show", name: "Stock (ตัวโชว์)", isAlwaysVisible: false },
   { key: "Stock_Physical", name: "Stock (กายภาพ)", isAlwaysVisible: false },
-  { key: "Stock", name: "Stock หักจอง", isAlwaysVisible: false },
-  { key: "Stock_Cl", name: "Stock Clearance", isAlwaysVisible: false },
-  { key: "Forecash", name: "Forecash Now", isAlwaysVisible: false },
-  { key: "Actual", name: "Actual Now", isAlwaysVisible: false },
+  { key: "Stock", name: "Stock หักจอง", isAlwaysVisible: false },
+  { key: "Stock_Cl", name: "Stock Clearance", isAlwaysVisible: false },
+  { key: "Forecash", name: "Forecash Now", isAlwaysVisible: false },
+  { key: "Actual", name: "Actual Now", isAlwaysVisible: false }, // 🚨 มี key 'Actual' ซ้ำ
 
   { key: "TradeStatus", name: "สถานะ Trade", isAlwaysVisible: false },
   { key: "TradeRemark", name: "Remark Trade / Action", isAlwaysVisible: false },
@@ -196,23 +193,21 @@ function ColumnToggleDropdown({ hiddenColumns, toggleColumnVisibility }) {
   const dropdownRef = useRef(null);
   const [open, setOpen] = useState(false);
 
-    // *NOTE: ผมได้เปลี่ยน Logic Dropdown ให้ใช้ State 'open' แทนการ Toggle Class 'hidden' 
-    // เพื่อให้ทำงานร่วมกับ React ได้ดีขึ้น และใช้ useRef/useEffect ในการจัดการ Click Outside
-    const handleToggle = () => setOpen((prev) => !prev);
-    const handleItemClick = (key) => toggleColumnVisibility(key);
+    const handleToggle = () => setOpen((prev) => !prev);
+    const handleItemClick = (key) => toggleColumnVisibility(key);
 
-    const handleClickOutside = (event) => {
-        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-            setOpen(false);
-        }
-    };
+    const handleClickOutside = (event) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+            setOpen(false);
+        }
+    };
 
-    useEffect(() => {
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, []);
+    useEffect(() => {
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
 
   return (
     <div className="relative inline-block text-left z-10" ref={dropdownRef}>
@@ -240,7 +235,8 @@ function ColumnToggleDropdown({ hiddenColumns, toggleColumnVisibility }) {
             <p className="px-3 py-1 text-xs text-gray-500 font-bold border-b mb-1">Toggleable Columns</p>
             {toggleableColumns.map((col) => (
               <div
-                key={col.key}
+                // 🚨 แก้ key เพื่อป้องกันการซ้ำ
+                key={`${col.key}-${col.name}`}
                 onClick={() => handleItemClick(col.key)}
                 className="flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-pink-100 cursor-pointer transition duration-100 rounded-md"
                 role="menuitem"
@@ -262,9 +258,8 @@ function ColumnToggleDropdown({ hiddenColumns, toggleColumnVisibility }) {
 
 
 // --- Main Component ---
-export default function InventoryTradeMonitor() {
+export default function KeyAdmin() { // ✅ เปลี่ยนชื่อ Component ตามที่คุณระบุ
   const [data, setData] = useState(mockInventoryData);
-  // เปลี่ยน isModalOpen เป็น modalRemarkProduct เพื่อจัดการ Modal State โดยตรง
   const [modalRemarkProduct, setModalRemarkProduct] = useState(null); 
   const [selectedItem, setSelectedItem] = useState(null);
   const [isStockShow,setIsStockShow]=useState(false); 
@@ -272,20 +267,18 @@ export default function InventoryTradeMonitor() {
   const [filters, setFilters] = useState({
     search: "", brand: "All", class: "All", best2025: "All", tradeStatus: "All", set: "All",
   });
-
-  // State: สำหรับจัดการคอลัมน์ที่ถูกซ่อน (Array of keys)
   const [hiddenColumns, setHiddenColumns] = useState([]);
-
-  // * NOTE: ลบ modalData state ออกไป เพราะ Logic ถูกย้ายไปที่ TradeRemarkModal แล้ว
-  // const [modalData, setModalData] = useState({ comment: "", newStatus: "Pending" });
-
   const CURRENT_USER = "Trade Planner (Key)";
 
-  // --- Column Visibility Handlers & Filters (โค้ดเดิม) ---
+  // --- Column Visibility Handlers & Filters ---
   const toggleColumnVisibility = (key) => {
     setHiddenColumns((prev) => (prev.includes(key) ? prev.filter((col) => col !== key) : [...prev, key]));
   };
   const isColumnHidden = (key) => hiddenColumns.includes(key);
+
+  // ✅ NEW: เพิ่ม helper function colClass
+  const colClass = (key, base = "") =>
+    isColumnHidden(key) ? `hidden ${base}` : base;
 
   const handleFilterChange = (name, value) => setFilters((prev) => ({ ...prev, [name]: value }));
 
@@ -296,11 +289,9 @@ export default function InventoryTradeMonitor() {
   const uniqueSets = useMemo(() => ["All", ...new Set(data.map((item) => item.Type))], [data]);
 
   const filteredData = useMemo(() => {
-    // ... (Filtered Data Logic เดิม)
-    return data.filter((item) => {
+    return data.filter((item) => {
       const searchTerm = filters.search.toLowerCase();
       const bestValue = item.YN_Best_2025 || "";
-      
       const matchesSearch = item.Code.toLowerCase().includes(searchTerm) || item.Description.toLowerCase().includes(searchTerm) || (item.RemarkTrade && item.RemarkTrade.toLowerCase().includes(searchTerm));
       const matchesBrand = filters.brand === "All" || item.Brand === filters.brand;
       const matchesClass = filters.class === "All" || item.Class === filters.class;
@@ -315,10 +306,9 @@ export default function InventoryTradeMonitor() {
   // --- NEW: Modal Logic (Trade Communication) ---
   const handleOpenRemarkModal = (item) => {
     setSelectedItem(item);
-    setModalRemarkProduct(item); // ใช้ State ใหม่
+    setModalRemarkProduct(item);
   };
   
-  // NEW: ฟังก์ชันสำหรับอัปเดต Remark ใน State หลัก
   const handleAddRemark = (productCode, newRemark) => {
     setData((prevData) =>
       prevData.map((item) =>
@@ -327,11 +317,9 @@ export default function InventoryTradeMonitor() {
           : item
       )
     );
-    // ปิด Modal หลังจากบันทึก
     setModalRemarkProduct(null); 
     console.log(`บันทึกการสื่อสารสำหรับ ${productCode} สำเร็จ!`);
   };
-
 
   // ** Function to open StockShowModal **
   const handleShowStockModal = (item) => {
@@ -346,84 +334,11 @@ export default function InventoryTradeMonitor() {
   const avgDOH = totalSKUs > 0 ? filteredData.reduce((sum, item) => sum + (item.Stock_จบเหลือจริง * item.DayOnHand_DOH_Stock2 || 0), 0) / totalStock : 0;
   const abnormalCount = filteredData.filter((item) => item.สถานะTrade === "Abnormal").length;
 
-  // คำนวณ ColSpan สำหรับแถบ 'ไม่พบข้อมูล'
-  const visibleColumnCount = ALL_COLUMNS.filter((col) => !isColumnHidden(col.key)).length + 1; // +1 for No.
+  // ✅ UPDATED: คำนวณ ColSpan (ลบ +1 ออก)
+  const visibleColumnCount = ALL_COLUMNS.filter((col) => !isColumnHidden(col.key)).length;
 
-  // --- Table Cell Renderer ---
-  const renderCell = (item, col, index) => {
-    // โค้ดส่วนนี้ถูกปรับปรุงเพื่อให้ใช้ Logic เดิมของคุณ และใช้ getStatusStyle ที่นำกลับมา
-    if (col.key === "No") return (<td className="p-3 min-w-[50px]">{index + 1}</td>);
-    if (col.key === "Code") {
-      return (
-        <td className="p-3 font-mono text-sm border-r border-gray-200 text-left min-w-[120px]">
-          <span className="font-bold text-[#640037] block">{item.Code}</span>
-          <span className="text-xs text-gray-500">{item.Brand}</span>
-        </td>
-      );
-    }
-    if (col.key === "Description") {
-      return (
-        <td className="p-3 font-semibold text-gray-700 border-r border-gray-200 text-left min-w-[200px]">
-          <span className="block">{item.Description}</span>
-          <span className={`ml-1 text-xs font-normal text-white px-2 py-0.5 rounded-full inline-block ${item.Class === "A" ? "bg-orange-500" : "bg-pink-500"}`}>Class {item.Class}</span>
-          <span className="text-xs text-gray-400 block mt-1">{item.Type} ({item.SubType})</span>
-        </td>
-      );
-    }
-    if (col.key === "Best") {
-      return (
-        <td className="p-3">
-          <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${item.YN_Best_2025 === "Yes" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
-            {item.YN_Best_2025 || "No"}
-          </span>
-        </td>
-      );
-    }
-    if (col.key === "Forecast") return (<td className="p-3 font-bold text-lg border-r border-gray-200 text-right">{formatNumber(item.TargetSaleUnit_1)}</td>);
-    if (col.key === "Actual") return (<td className="p-3 font-semibold text-lg border-r border-gray-200 text-right text-blue-600">{formatNumber(item.SaleOut_เมย68)}</td>);
-    if (col.key === "DOH") {
-      return (<td className={`p-3 font-extrabold text-lg border-r border-gray-200 ${getDOHStyle(item.DayOnHand_DOH_Stock2)} text-right`}>{formatNumber(item.DayOnHand_DOH_Stock2, 0)}</td>);
-    }
-    if (col.key === "SetType") return (<td className="p-3 text-sm text-gray-600">{item.SubType || "-"}</td>);
-    if (col.key === "Stock_Physical") return (<td className="p-3 font-bold text-lg border-r border-gray-200 text-right">{formatNumber(item.Stock_จบเหลือจริง)}</td>);
-    
-    // Stock (ตัวโชว์) with Button
-    if (col.key === "Stock_Show") {
-      const stockShowValue = formatNumber(Math.round(item.Stock_จบเหลือจริง * 0.1));
-      return (
-        <td className="p-3 text-sm text-gray-500 ">
-          <p className="font-semibold text-base text-gray-800 mb-1">{stockShowValue}</p>
-          <button 
-            onClick={() => handleShowStockModal(item)}
-            className="p-2 text-xs rounded-lg cursor-pointer shadow-sm bg-green-500 text-white hover:bg-green-600 transition" 
-            title="ดูตำแหน่งจัดเก็บและรายละเอียด Stock (ตัวโชว์)"
-          >
-            Show Location Stock
-          </button>
-        </td>
-      );
-    }
-
-    if (col.key === "TradeStatus") {
-      return (
-        <td className="p-3 border-r border-gray-200">
-          <span className={`px-3 py-1 text-xs font-semibold rounded-full border ${getStatusStyle(item.สถานะTrade)}`}>{item.สถานะTrade}</span>
-          {item.DiffPercent && (<p className={`text-xs mt-1 font-bold ${item.DiffPercent.startsWith("-") ? "text-red-500" : "text-green-500"}`}>{item.DiffPercent}</p>)}
-        </td>
-      );
-    }
-    if (col.key === "TradeRemark") {
-      return (
-        <td className="p-3 text-sm max-w-xs whitespace-normal text-gray-600 border-r border-gray-200">
-          <p className="text-xs mb-1 italic truncate">{item.RemarkTrade || "-"}</p>
-          <button onClick={() => handleOpenRemarkModal(item)} className={`px-3 py-1 text-xs rounded-lg cursor-pointer shadow-md transition font-medium ${item.KeyRemarks && item.KeyRemarks.length > 0 ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}>
-            บันทึก/ดูการสื่อสาร ({item.KeyRemarks ? item.KeyRemarks.length : 0})
-          </button>
-        </td>
-      );
-    }
-    return <td className="p-3">-</td>;
-  };
+  // --- ❌ Table Cell Renderer (REMOVED) ---
+  // const renderCell = (item, col, index) => { ... }
 
   return (
     <div className="min-h-screen">
@@ -437,7 +352,6 @@ export default function InventoryTradeMonitor() {
           }
         `}
       </style>
-      {/* NOTE: ควรลบ <script src="https://cdn.tailwindcss.com"></script> ออกหากคุณใช้ Build Tool ของ React */}
 
       <div className="p-8 bg-white shadow-2xl rounded-xl">
         {/* --- Header & Summary --- */}
@@ -448,6 +362,7 @@ export default function InventoryTradeMonitor() {
 
         {/* --- Key Metrics (Condensed Summary) --- */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-8">
+          {/* ... (Metrics JSX เหมือนเดิม) ... */}
           <div className="bg-pink-50 p-4 rounded-lg shadow-inner">
             <p className="text-sm text-pink-600 font-semibold">Total SKUs</p>
             <p className="text-2xl font-extrabold text-[#640037]">{formatNumber(totalSKUs)}</p>
@@ -472,7 +387,7 @@ export default function InventoryTradeMonitor() {
 
         {/* --- Filter Bar --- */}
         <div className="grid grid-cols-2 md:grid-cols-7 gap-4 mb-4 items-end p-4 bg-pink-50 rounded-lg border border-pink-200">
-          {/* Search Bar */}
+          {/* ... (Filters JSX เหมือนเดิม) ... */}
           <div className="col-span-2 md:col-span-2">
             <label className="block text-sm font-bold text-gray-700 mb-1">ค้นหาสินค้า (Code/Desc/Remark)</label>
             <div className="relative w-full">
@@ -483,8 +398,6 @@ export default function InventoryTradeMonitor() {
               )}
             </div>
           </div>
-
-          {/* Filters Dropdowns */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">Brand</label>
             <select value={filters.brand} onChange={(e) => handleFilterChange("brand", e.target.value)} className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500">
@@ -513,7 +426,7 @@ export default function InventoryTradeMonitor() {
             <label className="block text-sm font-semibold text-gray-700 mb-1">ชุด Set / แตก Set</label>
             <select value={filters.set} onChange={(e) => handleFilterChange("set", e.target.value)} className="w-full p-2 pr-10 border border-gray-300 rounded-lg shadow-sm text-gray-700 bg-white focus:ring-pink-500 focus:border-pink-500">
               {uniqueSets.map((type) => (<option key={type} value={type}>{type}</option>))}
-            </select>
+          	</select>
           </div>
         </div>
 
@@ -525,23 +438,134 @@ export default function InventoryTradeMonitor() {
         {/* --- Data Table Container --- */}
         <div className="overflow-x-auto shadow-xl rounded-xl border border-gray-200">
           <table className="min-w-full table-auto bg-white text-center">
+            
+            {/* ✅ UPDATED: <thead> (ใช้ colClass และ key ที่ปลอดภัย) */}
             <thead className="bg-[#640037] text-white sticky top-0 text-sm">
               <tr>
-                {ALL_COLUMNS.map((col) => !isColumnHidden(col.key) && (
-                  <th key={col.key} className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">{col.name}</th>
+                {ALL_COLUMNS.map((col, idx) => (
+                  <th
+                    key={`${col.key}-${col.name}-${idx}`} 
+                    className={colClass(
+                      col.key,
+                      "p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap"
+                    )}
+                  >
+                    {col.name}
+                  </th>
                 ))}
               </tr>
             </thead>
+            
+            {/* ✅ UPDATED: <tbody> (ใช้ <td> แบบ Manual) */}
             <tbody>
               {filteredData.length > 0 ? (
-                filteredData.map((item, index) => (
+                filteredData.map((item, idx) => {
+                  // ย้ายการคำนวณที่เคยอยู่ใน renderCell มาไว้ที่นี่
+                  const stockShowValue = formatNumber(Math.round(item.Stock_จบเหลือจริง * 0.1));
+
+                  return (
                   <tr key={item.Code} className="border-b border-gray-200 hover:bg-pink-50 transition duration-150">
-                    {ALL_COLUMNS.map((col) => !isColumnHidden(col.key) && renderCell(item, col, index))}
+                    
+                    {/* 1. No */}
+                    <td className={colClass("No", "p-3 min-w-[50px]")}>
+                      {idx + 1}
+                    </td>
+                    
+                    {/* 2. Code */}
+                    <td className={colClass("Code", "p-3 font-mono text-sm border-r border-gray-200 text-left min-w-[120px]")}>
+                      <span className="font-bold text-[#640037] block">{item.Code}</span>
+                      <span className="text-xs text-gray-500">{item.Brand}</span>
+                    </td>
+                    
+                    {/* 3. Description */}
+                    <td className={colClass("Description", "p-3 font-semibold text-gray-700 border-r border-gray-200 text-left min-w-[200px]")}>
+                      <span className="block">{item.Description}</span>
+                      <span className={`ml-1 text-xs font-normal text-white px-2 py-0.5 rounded-full inline-block ${item.Class === "A" ? "bg-orange-500" : "bg-pink-500"}`}>Class {item.Class}</span>
+                      <span className="text-xs text-gray-400 block mt-1">{item.Type} ({item.SubType})</span>
+                    </td>
+                    
+                    {/* 4. Best */}
+                    <td className={colClass("Best", "p-3")}>
+                      <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${item.YN_Best_2025 === "Yes" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
+                        {item.YN_Best_2025 || "No"}
+                      </span>
+                    </td>
+
+                    {/* 5. Categories */}
+                    <td className={colClass("Categories", "p-3")}>-</td>
+
+                    {/* 6. Forecast */}
+                    <td className={colClass("Forecast", "p-3 font-bold text-lg border-r border-gray-200 text-right")}>
+                      {formatNumber(item.TargetSaleUnit_1)}
+                    </td>
+                    
+                    {/* 7. Actual (ยอด Actual) */}
+                    <td className={colClass("Actual", "p-3 font-semibold text-lg border-r border-gray-200 text-right text-blue-600")}>
+              _       {formatNumber(item.SaleOut_เมย68)}
+                    </td>
+                    
+                    {/* 8. DOH */}
+                    <td className={colClass("DOH", `p-3 font-extrabold text-lg border-r border-gray-200 ${getDOHStyle(item.DayOnHand_DOH_Stock2)} text-right`)}>
+                      {formatNumber(item.DayOnHand_DOH_Stock2, 0)}
+                    </td>
+                    
+                    {/* 9. SetType */}
+                    <td className={colClass("SetType", "p-3 text-sm text-gray-600")}>
+                      {item.SubType || "-"}
+                    </td>
+                    
+                    {/* 10. Stock_Show */}
+                    <td className={colClass("Stock_Show", "p-3 text-sm text-gray-500 ")}>
+                      <p className="font-semibold text-base text-gray-800 mb-1">{stockShowValue}</p>
+                      <button 
+                        onClick={() => handleShowStockModal(item)}
+                        // ✅ CSS p-2 จาก renderCell เดิม
+                        className="p-2 text-xs rounded-lg cursor-pointer shadow-sm bg-green-500 text-white hover:bg-green-600 transition" 
+                        title="ดูตำแหน่งจัดเก็บและรายละเอียด Stock (ตัวโชว์)"
+                      >
+                        Show Location Stock
+                      </button>
+                    </td>
+                    
+                    {/* 11. Stock_Physical */}
+                    <td className={colClass("Stock_Physical", "p-3 font-bold text-lg border-r border-gray-200 text-right")}>
+                      {formatNumber(item.Stock_จบเหลือจริง)}
+                    </td>
+                    
+                    {/* 12. Stock */}
+                    <td className={colClass("Stock", "p-3")}>-</td>
+                    
+                    {/* 13. Stock_Cl */}
+                    <td className={colClass("Stock_Cl", "p-3")}>-</td>
+                    
+                    {/* 14. Forecash */}
+                    <td className={colClass("Forecash", "p-3")}>-</td>
+                    
+                    {/* 15. Actual (Actual Now) */}
+                    <td className={colClass("Actual", "p-3 font-semibold text-lg border-r border-gray-200 text-right text-blue-600")}>
+                      {formatNumber(item.SaleOut_เมย68)}
+                    </td>
+                    
+                    {/* 16. TradeStatus */}
+                    <td className={colClass("TradeStatus", "p-3 border-r border-gray-200")}>
+                      <span className={`px-3 py-1 text-xs font-semibold rounded-full border ${getStatusStyle(item.สถานะTrade)}`}>{item.สถานะTrade}</span>
+                      {item.DiffPercent && (<p className={`text-xs mt-1 font-bold ${item.DiffPercent.startsWith("-") ? "text-red-500" : "text-green-500"}`}>{item.DiffPercent}</p>)}
+                    </td>
+                    
+                    {/* 17. TradeRemark */}
+                    <td className={colClass("TradeRemark", "p-3 text-sm max-w-xs whitespace-normal text-gray-600 border-r border-gray-200")}>
+                      <p className="text-xs mb-1 italic truncate">{item.RemarkTrade || "-"}</p>
+                	  <button onClick={() => handleOpenRemarkModal(item)} className={`px-3 py-1 text-xs rounded-lg cursor-pointer shadow-md transition font-medium ${item.KeyRemarks && item.KeyRemarks.length > 0 ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}>
+                        บันทึก/ดูการสื่อสาร ({item.KeyRemarks ? item.KeyRemarks.length : 0})
+                      </button>
+                    </td>
                   </tr>
-                ))
+                  );
+                })
               ) : (
                 <tr>
-                  <td colSpan={visibleColumnCount} className="p-4 text-center text-lg text-gray-500">ไม่พบข้อมูลสินค้าที่ตรงกับเงื่อนไขการกรอง</td>
+                  {/* ✅ UPDATED: p-6 (จาก p-4) และ colSpan ใช้ visibleColumnCount ที่อัปเดตแล้ว */}
+                  <td colSpan={visibleColumnCount} className="p-6 text-center text-lg text-gray-500">ไม่พบข้อมูลสินค้าที่ตรงกับเงื่อนไขการกรอง</td>
                 </tr>
               )}
             </tbody>

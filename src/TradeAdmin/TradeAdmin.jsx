@@ -496,9 +496,7 @@ export default function InventoryTradeMonitor() {
           </div>
 
           <div className="bg-orange-50 p-3 rounded-lg shadow-inner">
-            <p className="text-xs text-orange-700 font-semibold">
-              Total 6M
-            </p>
+            <p className="text-xs text-orange-700 font-semibold">Total 6M</p>
             <p className="text-lg font-extrabold text-orange-800">
               {formatNumber(totalAlloc6M)}
             </p>
