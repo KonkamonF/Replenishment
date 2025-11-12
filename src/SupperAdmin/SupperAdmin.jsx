@@ -2,6 +2,8 @@ import React from "react";
 import ClassA from "../Dashboard/AmountClassAdmin/ClassA.jsx";
 import ClassB from "../Dashboard/AmountClassAdmin/ClassB.jsx";
 import ClassC from "../Dashboard/AmountClassAdmin/ClassC.jsx";
+import ClassD from "../Dashboard/AmountClassAdmin/ClassD.jsx";
+import ClassMD from "../Dashboard/AmountClassAdmin/ClassMD.jsx";
 import ClassN from "../Dashboard/AmountClassAdmin/ClassN.jsx";
 import Best from "../Dashboard/AmountClassAdmin/Best.jsx";
 import NonMove from "../Dashboard/AmountClassAdmin/NonMove.jsx";
