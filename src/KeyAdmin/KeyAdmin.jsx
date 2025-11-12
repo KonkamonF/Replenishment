@@ -395,7 +395,7 @@ export default function InventoryTradeMonitor() {
           <p className="font-semibold text-base text-gray-800 mb-1">{stockShowValue}</p>
           <button 
             onClick={() => handleShowStockModal(item)}
-            className="p-1 text-xs rounded-lg cursor-pointer shadow-sm bg-green-500 text-white hover:bg-green-600 transition" 
+            className="p-2 text-xs rounded-lg cursor-pointer shadow-sm bg-green-500 text-white hover:bg-green-600 transition" 
             title="ดูตำแหน่งจัดเก็บและรายละเอียด Stock (ตัวโชว์)"
           >
             Show Location Stock
