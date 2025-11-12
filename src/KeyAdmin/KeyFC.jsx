@@ -589,7 +589,7 @@ export default function KeyFC() {
                 {/* Editable Channel Headers */}
                 {editableChannels.map((channel) =>
                   !isColumnHidden(channel) ? (
-                    <th key={channel} className="p-3 ">
+                    <th key={channel} className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap ">
                       {channel}
                     </th>
                   ) : null
@@ -602,7 +602,7 @@ export default function KeyFC() {
               {filteredData.map((item, index) => (
                 <tr
                   key={item.Code + index} // ใช้ key ที่ Unique มากขึ้น
-                  className="border-b border-gray-200 text-center hover:bg-pink-50 "
+                  className="border-b border-gray-200 text-center hover:bg-pink-50 p-3 border-l first:border-l-0 whitespace-nowrap"
                 >
                   <td className="p-3 w-36 font-mono text-sm border-r text-center border-gray-200">
                     <span className="font-bold text-[#640037]">

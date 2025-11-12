@@ -395,7 +395,7 @@ export default function InventoryTradeMonitor() {
           <p className="font-semibold text-base text-gray-800 mb-1">{stockShowValue}</p>
           <button 
             onClick={() => handleShowStockModal(item)}
-            className="px-3 py-1 text-xs rounded-lg cursor-pointer shadow-sm bg-green-500 text-white hover:bg-green-600 transition" 
+            className="p-1 text-xs rounded-lg cursor-pointer shadow-sm bg-green-500 text-white hover:bg-green-600 transition" 
             title="ดูตำแหน่งจัดเก็บและรายละเอียด Stock (ตัวโชว์)"
           >
             Show Location Stock
@@ -528,7 +528,7 @@ export default function InventoryTradeMonitor() {
             <thead className="bg-[#640037] text-white sticky top-0 text-sm">
               <tr>
                 {ALL_COLUMNS.map((col) => !isColumnHidden(col.key) && (
-                  <th key={col.key} className="p-3 border-l border-gray-500/30 first:border-l-0">{col.name}</th>
+                  <th key={col.key} className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">{col.name}</th>
                 ))}
               </tr>
             </thead>
@@ -541,7 +541,7 @@ export default function InventoryTradeMonitor() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={visibleColumnCount} className="p-6 text-center text-lg text-gray-500">ไม่พบข้อมูลสินค้าที่ตรงกับเงื่อนไขการกรอง</td>
+                  <td colSpan={visibleColumnCount} className="p-4 text-center text-lg text-gray-500">ไม่พบข้อมูลสินค้าที่ตรงกับเงื่อนไขการกรอง</td>
                 </tr>
               )}
             </tbody>
