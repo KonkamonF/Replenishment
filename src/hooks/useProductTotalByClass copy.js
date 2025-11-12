@@ -36,7 +36,6 @@ export function useProductTotalByClass({ className = "A", classType = "manual" }
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
             Accept: "application/json",
-            "ngrok-skip-browser-warning": "1",
           },
         })
           .then(async (res) => {

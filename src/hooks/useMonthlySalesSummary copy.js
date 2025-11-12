@@ -17,7 +17,6 @@ export function useMonthlySalesSummary() {
           headers: {
             Authorization: `Bearer ${API_TOKEN}`,
             "Content-Type": "application/json",
-            "ngrok-skip-browser-warning": "1",
           },
         });
 

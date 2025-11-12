@@ -24,12 +24,7 @@ export function useProductEntry() {
       setError(null);
       try {
         const res = await fetch(`${API_BASE_URL}/product-entry/by-date?date=${date}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Accept": "application/json",
-            "ngrok-skip-browser-warning": "1",
-          }
-
+          headers: { Authorization: `Bearer ${token}` },
         });
         const json = await res.json();
         if (!res.ok) throw new Error(json.detail || "โหลดข้อมูลไม่สำเร็จ");

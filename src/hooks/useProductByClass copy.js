@@ -35,7 +35,6 @@ export function useProductByClass({
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
             Accept: "application/json",
-            "ngrok-skip-browser-warning": "1",
           },
         });
 
