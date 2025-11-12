@@ -9,12 +9,6 @@ import StockShowModal from "../SideBar-Modal/StockModal/StockShow.jsx"
 // ✅ --- ADDED IMPORT ---
 import CommunicationCard from "../SideBar-Modal/StockModal/CommunicateCard.jsx";
 // --------------------------------------------------------
-
-
-// --- ❌ REMOVED MOCK COMPONENT ---
-// const Uploadimg = () => ( ... );
-
-
 // --- Mock Data (ชุดข้อมูล Inventory/Trade) ---
 const mockInventoryData = [
   {
