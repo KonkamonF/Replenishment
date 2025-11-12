@@ -11,7 +11,15 @@ export default function Calendar() {
   const token = import.meta.env.VITE_API_TOKEN;
 
   // ✅ ได้ monthEntries มาจาก hook แล้ว
-  const { data, monthEntries, loading, error, fetchByDate, prefetchMonth, setMonthEntries } = useProductEntry(token);
+  const {
+    data,
+    monthEntries,
+    loading,
+    error,
+    fetchByDate,
+    prefetchMonth,
+    setMonthEntries,
+  } = useProductEntry(token);
   useEffect(() => {
     // ✅ สร้าง WebSocket
     const ws = new WebSocket("ws://127.0.0.1:8000/ws/entry-updates");
@@ -93,13 +101,13 @@ export default function Calendar() {
   const firstDayIndex = getFirstDayOfMonth(currentDate);
 
   const weekdays = [
+    "อาทิตย์",
     "จันทร์",
     "อังคาร",
     "พุธ",
     "พฤหัสบดี",
     "ศุกร์",
     "เสาร์",
-    "อาทิตย์",
   ];
 
   return (
@@ -115,10 +123,10 @@ export default function Calendar() {
         />
       )}
 
-      <div className="min-h-screen flex flex-col items-center justify-center p-4 font-['Inter']">
+      <div className="flex flex-col items-center justify-center p-4 font-['Inter']">
         <h2 className="text-4xl mb-4">กำหนดสินค้าเข้า</h2>
 
-        <div className="w-full max-w-xl bg-white rounded-xl shadow-2xl p-6 border-t-4 border-pink-600">
+        <div className="w-full max-w-6xl bg-white rounded-xl shadow-2xl p-6 border-t-4 border-pink-600">
           {/* Header */}
           <div className="flex justify-between items-center mb-6 pb-3 border-b">
             <button
@@ -145,18 +153,18 @@ export default function Calendar() {
             {weekdays.map((day) => (
               <div
                 key={day}
-                className="font-bold text-sm sm:text-base text-[#640037] py-2 border-b-2 border-pink-100"
+                className="font-bold text-sm sm:text-base text-[#640037] py-2 border-b-2 border-pink-100 "
               >
                 {day}
               </div>
             ))}
 
             {Array.from({ length: firstDayIndex }).map((_, i) => (
-              <div key={`blank-${i}`} className="h-16"></div>
+              <div key={`blank-${i}`} className="h-16 "></div>
             ))}
 
             {Array.from({ length: numDays }).map((_, i) => {
-              const day = i + 1;
+              const day = i;
               const dateKey = `${year}-${String(month + 1).padStart(
                 2,
                 "0"
@@ -182,16 +190,16 @@ export default function Calendar() {
                 <div
                   key={`day-${day}`}
                   onClick={() => handleDateClick(year, month, day)}
-                  className={`h-16 flex flex-col items-center justify-start p-1 text-sm rounded-lg cursor-pointer transition
+                  className={`h-20 flex flex-col hover:font-extrabold hover:text-xl hover:bg-gray-100 items-center justify-start p-1 text-sm rounded-lg cursor-pointer 
                     ${bgColor}
                   `}
                 >
                   <span className="w-7 h-7 flex items-center justify-center rounded-full">
-                    {day}
+                    {day === 0 ? " " : day}
                   </span>
 
                   {dayEntries.length > 0 && (
-                    <div className="mt-1 w-full text-xs font-medium truncate">
+                    <div className="mt-1 w-full text-xs">
                       {dayEntries.length} รายการ
                     </div>
                   )}
@@ -199,9 +207,21 @@ export default function Calendar() {
               );
             })}
           </div>
-
-          <div className="mt-8 text-center text-sm text-gray-400">
-            ปฏิทินเริ่มต้นที่วันจันทร์
+          <hr />
+          <div className="my-4 text-center text-[#640037]">
+            รายการทั้งหมดในเดือนนี้{" "}
+            <span className="font-bold">{monthEntries.length}</span> รายการ
+            <br />
+            ที่รอเข้าสินค้า{" "}
+            <span className="font-bold">
+              {monthEntries.filter((e) => e.status === "F").length}
+            </span>{" "}
+            รายการ ที่เข้าแล้ว{" "}
+            <span className="font-bold">
+              {" "}
+              {monthEntries.filter((e) => e.status === "T").length}
+            </span>{" "}
+            รายการ
           </div>
         </div>
       </div>

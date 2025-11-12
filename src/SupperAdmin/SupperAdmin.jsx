@@ -60,9 +60,7 @@ export default function SuperAdmin() {
       <div className="flex flex-col gap-8">
         {/* --- Left Column: Summary Cards (Unchanged) --- */}
         <div className="text-[#640037]">
-          <h2 className=" font-bold mb-6 text-[#640037]">
-            Summary Metrics
-          </h2>
+          <h2 className=" font-bold mb-6 text-[#640037]">Summary Metrics</h2>
 
           <div className="grid gap-6 text-white sm:grid-cols-2 md:grid-cols-6 lg:grid-cols-6">
             {/* Class Cards */}
@@ -98,6 +96,7 @@ export default function SuperAdmin() {
           <div className="bg-white p-6 rounded-xl shadow-2xl border-4  border-[#640037]">
             {/* The chart component itself */}
             <AcAndFc />
+
             <Charts />
 
             {/* Button to view the data behind the chart */}
@@ -126,8 +125,10 @@ export default function SuperAdmin() {
             </div>
           </div>
         </div>
+        <hr />
         <Calendar />
-        <Test2/>
+        <hr />
+        <Test2 />
       </div>
     </div>
   );

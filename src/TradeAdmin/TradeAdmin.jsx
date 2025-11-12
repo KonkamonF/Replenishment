@@ -489,7 +489,7 @@ export default function InventoryTradeMonitor() {
           </div>
 
           <div className="bg-sky-50 p-3 rounded-lg shadow-inner">
-            <p className="text-xs text-sky-700 font-semibold">Total Alloc 3M</p>
+            <p className="text-xs text-sky-700 font-semibold">Total 3M</p>
             <p className="text-lg font-extrabold text-sky-800">
               {formatNumber(totalAlloc3M)}
             </p>
@@ -497,7 +497,7 @@ export default function InventoryTradeMonitor() {
 
           <div className="bg-orange-50 p-3 rounded-lg shadow-inner">
             <p className="text-xs text-orange-700 font-semibold">
-              Total Alloc 6M
+              Total 6M
             </p>
             <p className="text-lg font-extrabold text-orange-800">
               {formatNumber(totalAlloc6M)}
