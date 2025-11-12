@@ -2,7 +2,7 @@ import React from "react";
 import { useProductByClass } from "../../hooks/useProductByClass.js";
 import { NativeAnimationWrapper } from "motion";
 
-export default function DetailClassA({ setIsDetailsClassB }) {
+export default function DetailClassC({ setIsDetailsClassB }) {
   const token = import.meta.env.VITE_API_TOKEN;
   const {
     data: products,

@@ -76,6 +76,12 @@ export default function SuperAdmin() {
             <div className="text-center cursor-pointer p-6 bg-gradient-to-b from-[#f2ffc9] to-[#c3ffc9] text-[#0a5511] rounded-xl shadow-md hover:shadow-xl">
               <ClassN />
             </div>
+            <div className="text-center cursor-pointer p-6 bg-gradient-to-b from-[#f2ffc9] to-[#c3ffc9] text-[#0a5511] rounded-xl shadow-md hover:shadow-xl">
+              <ClassD />
+            </div>
+            <div className="text-center cursor-pointer p-6 bg-gradient-to-b from-[#f2ffc9] to-[#c3ffc9] text-[#0a5511] rounded-xl shadow-md hover:shadow-xl">
+              <ClassMD />
+            </div>
 
             {/* Other Cards */}
             <div className="text-center cursor-pointer p-6 bg-gradient-to-t from-[#fff8d3] to-[#ffd4b9] text-[#d15000] rounded-xl shadow-md hover:shadow-xl">

@@ -2,7 +2,7 @@ import React from "react";
 import { useProductByClass } from "../../hooks/useProductByClass.js";
 import { NativeAnimationWrapper } from "motion";
 
-export default function DetailClassC({ setIsDetailsClassC }) {
+export default function DetailClassMD({ setIsDetailsClassMD }) {
   const token = import.meta.env.VITE_API_TOKEN;
   const {
     data: products,
@@ -16,7 +16,7 @@ export default function DetailClassC({ setIsDetailsClassC }) {
     total,
   } = useProductByClass({
     classType: "manual",
-    className: "C",
+    className: "MD",
     token,
     initialPageSize: 50,
   });
@@ -37,13 +37,13 @@ export default function DetailClassC({ setIsDetailsClassC }) {
         {/* Header */}
         <div className="flex justify-between items-start mb-6 border-b pb-4">
           <h1 className="text-3xl font-extrabold text-[#640037]">
-            สินค้า Class C
+            สินค้า Class A
             <p className="text-base text-gray-600 mt-1">
               หน้าปัจจุบัน : {page}
             </p>
           </h1>
           <button
-            onClick={() => setIsDetailsClassC(false)}
+            onClick={() => setIsDetailsClassMD(false)}
             className="text-4xl text-gray-500 hover:text-[#640037] transition p-1 leading-none"
           >
             &times;
