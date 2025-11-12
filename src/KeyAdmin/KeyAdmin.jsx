@@ -1,21 +1,19 @@
 // InventoryTradeMonitor.jsx (แก้ไขล่าสุด)
 
 import React, { useState, useMemo, useRef, useEffect } from "react";
-import { Search, Eye, EyeOff, ChevronDown, Upload } from "lucide-react";
+// ✅ ลบ Upload ออกเนื่องจาก TradeRemarkModal ถูกลบแล้ว
+import { Search, Eye, EyeOff, ChevronDown } from "lucide-react"; 
 
 // *** WARNING: ตรวจสอบ Path การ Import เหล่านี้ให้ถูกต้อง ***
 import StockShowModal from "../SideBar-Modal/StockModal/StockShow.jsx"
+// ✅ --- ADDED IMPORT ---
+import CommunicationCard from "../SideBar-Modal/StockModal/CommunicateCard.jsx";
 // --------------------------------------------------------
 
 
-// --- Mock Component for Uploadimg ---
-const Uploadimg = () => (
-  <div className="flex items-center justify-center p-2 mt-2 text-sm text-gray-500 border border-dashed border-gray-300 rounded-lg bg-white cursor-pointer hover:bg-gray-100 transition">
-    <Upload className="w-4 h-4 mr-2" />
-    {/* Mock Upload Image Text (Thai) */}
-    แนบไฟล์รูปภาพ
-  </div>
-);
+// --- ❌ REMOVED MOCK COMPONENT ---
+// const Uploadimg = () => ( ... );
+
 
 // --- Mock Data (ชุดข้อมูล Inventory/Trade) ---
 const mockInventoryData = [
@@ -51,6 +49,11 @@ const getStatusStyle = (status) => {
       return "bg-red-100 text-red-800 border-red-300";
     case "Normal":
       return "bg-green-100 text-green-800 border-green-300";
+    // ✅ เพิ่ม Status จากโค้ดตัวอย่างเผื่อ CommunicationCard ใช้
+    case "Resolved":
+      return "bg-blue-100 text-blue-800 border-blue-300";
+    case "Pending":
+      return "bg-yellow-100 text-yellow-800 border-yellow-300";
     default:
       return "bg-gray-100 text-gray-800 border-gray-300";
   }
@@ -61,111 +64,14 @@ const formatNumber = (num, decimals = 0) => {
   return num.toLocaleString("en-US", { maximumFractionDigits: decimals });
 };
 
-// --- Trade Remark Modal Component (คัดลอกกลับมาไว้ที่นี่) ---
-function TradeRemarkModal({ product, onClose, onAddRemark }) {
-  const [remarkText, setRemarkText] = useState("");
-  const currentUser = "Key User (Admin)"; 
-
-  const handleAddRemark = () => {
-    if (remarkText.trim()) {
-      const newRemark = {
-        key: Date.now(),
-        date: new Date().toISOString().slice(0, 10), 
-        user: currentUser,
-        text: remarkText.trim(),
-      };
-      onAddRemark(product.Code, newRemark);
-      setRemarkText("");
-    }
-  };
-    // ใช้ getStatusStyle ที่ถูกประกาศด้านบน
-    const getModalStatusStyle = (status) => {
-        switch (status) {
-            case "Abnormal": return "border-red-400";
-            case "Normal": return "border-green-400";
-            case "Resolved": return "border-blue-400";
-            case "Pending": return "border-yellow-400";
-            default: return "border-gray-400";
-        }
-    };
-    
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4">
-    	{/* ... (เนื้อหา Modal เหมือนเดิมทุกประการ) ... */}
-      <div className="bg-white rounded-xl w-full max-w-4xl p-6 shadow-2xl overflow-y-scroll max-h-full">
-        <div className="flex justify-between items-start border-b pb-3 mb-4">
-          <h2 className="text-xl font-bold text-[#640037]">
-            บันทึกการสื่อสาร/ติดตาม: {product.Code}
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-3xl text-gray-500 cursor-pointer hover:text-red-500"
-            aria-label="Close modal"
-          >
-            &times;
-          </button>
-        </div>
-
-        <p className="text-gray-700 mb-4 font-medium">{product.Description}</p>
-
-        {/* Remark History */}
-        <div className="h-64 overflow-y-auto mb-4 space-y-3 p-2 border rounded-lg bg-gray-50 ">
-          {product.KeyRemarks && product.KeyRemarks.length > 0 ? (
-            product.KeyRemarks.slice()
-              .reverse()
-              .map((remark) => (
-                <div
-                  key={remark.key || Date.now() + Math.random()} 
-                  className={`border-l-4 pl-3 py-1 bg-white rounded shadow-sm ${getModalStatusStyle(remark.status)}`}
-                >
-                  <p className="font-semibold text-sm">
-                    {remark.user}
-                    <span className="text-xs font-normal text-gray-500 ml-2">
-                      ({remark.date})
-                    </span>
-                  </p>
-                  <p className="text-gray-800">{remark.text}</p>
-                </div>
-              ))
-          ) : (
-            <p className="text-gray-500 text-center pt-8">
-              ยังไม่มีบันทึกการสื่อสารเฉพาะกิจ
-            </p>
-          )}
-        </div>
-
-        {/* New Remark Input */}
-        <div className="pt-4 border-t border-gray-200">
-          <label className="block text-gray-700 font-semibold mb-2">
-            เพิ่มบันทึกใหม่ ในนาม: {currentUser}
-          </label>
-          <textarea
-            className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-pink-300"
-            rows="3"
-            placeholder="พิมพ์บันทึกการสื่อสารหรือข้อเสนอแนะ..."
-            value={remarkText}
-            onChange={(e) => setRemarkText(e.target.value)}
-          ></textarea>
-          <Uploadimg />
-          <button
-            onClick={handleAddRemark}
-            className="mt-2 w-full px-4 py-2 bg-pink-600 cursor-pointer text-white font-semibold rounded-lg hover:bg-pink-700 transition shadow-md disabled:bg-pink-300"
-            disabled={!remarkText.trim()}
-          >
-            บันทึกการสื่อสาร
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
+// --- ❌ REMOVED Trade Remark Modal Component ---
+// function TradeRemarkModal({ product, onClose, onAddRemark }) { ... }
 // ----------------------------------------------------
 
 
 // --- List of ALL Toggleable Columns ---
 const ALL_COLUMNS = [
-  { key: "No", name: "No.", isAlwaysVisible: true }, // เพิ่ม No. กลับมาเพื่อให้ตารางแสดงผลถูกต้อง
+  { key: "No", name: "No.", isAlwaysVisible: true }, 
   { key: "Code", name: "ItemCode / Brand", isAlwaysVisible: true },
   { key: "Description", name: "Description / Class", isAlwaysVisible: true },
   { key: "Best", name: "Best/BestSet", isAlwaysVisible: false },
@@ -178,8 +84,8 @@ const ALL_COLUMNS = [
   { key: "Stock_Physical", name: "Stock (กายภาพ)", isAlwaysVisible: false },
   { key: "Stock", name: "Stock หักจอง", isAlwaysVisible: false },
   { key: "Stock_Cl", name: "Stock Clearance", isAlwaysVisible: false },
-  { key: "Forecash", name: "Forecash Now", isAlwaysVisible: false },
-  { key: "Actual", name: "Actual Now", isAlwaysVisible: false }, // 🚨 มี key 'Actual' ซ้ำ
+  { key: "Forecash", name: "Forecash Now", isAlwaysVisible: false }, // 🚨 key ซ้ำ "Forecast"
+  { key: "Actual", name: "Actual Now", isAlwaysVisible: false }, // 🚨 key ซ้ำ "Actual"
 
   { key: "TradeStatus", name: "สถานะ Trade", isAlwaysVisible: false },
   { key: "TradeRemark", name: "Remark Trade / Action", isAlwaysVisible: false },
@@ -233,10 +139,9 @@ function ColumnToggleDropdown({ hiddenColumns, toggleColumnVisibility }) {
         >
           <div className="p-2 max-h-60 overflow-y-auto">
             <p className="px-3 py-1 text-xs text-gray-500 font-bold border-b mb-1">Toggleable Columns</p>
-            {toggleableColumns.map((col) => (
+            {toggleableColumns.map((col, idx) => (
               <div
-                // 🚨 แก้ key เพื่อป้องกันการซ้ำ
-                key={`${col.key}-${col.name}`}
+                key={`${col.key}-${col.name}-${idx}`} // 🚨 แก้ key เพื่อป้องกันการซ้ำ
                 onClick={() => handleItemClick(col.key)}
                 className="flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-pink-100 cursor-pointer transition duration-100 rounded-md"
                 role="menuitem"
@@ -258,11 +163,16 @@ function ColumnToggleDropdown({ hiddenColumns, toggleColumnVisibility }) {
 
 
 // --- Main Component ---
-export default function KeyAdmin() { // ✅ เปลี่ยนชื่อ Component ตามที่คุณระบุ
+export default function KeyAdmin() { 
   const [data, setData] = useState(mockInventoryData);
-  const [modalRemarkProduct, setModalRemarkProduct] = useState(null); 
+  // --- ❌ REMOVED OLD STATE ---
+  // const [modalRemarkProduct, setModalRemarkProduct] = useState(null); 
   const [selectedItem, setSelectedItem] = useState(null);
   const [isStockShow,setIsStockShow]=useState(false); 
+
+  // --- ✅ ADDED NEW STATE ---
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalData, setModalData] = useState({ comment: "", newStatus: "Pending" });
 
   const [filters, setFilters] = useState({
     search: "", brand: "All", class: "All", best2025: "All", tradeStatus: "All", set: "All",
@@ -276,7 +186,6 @@ export default function KeyAdmin() { // ✅ เปลี่ยนชื่อ Co
   };
   const isColumnHidden = (key) => hiddenColumns.includes(key);
 
-  // ✅ NEW: เพิ่ม helper function colClass
   const colClass = (key, base = "") =>
     isColumnHidden(key) ? `hidden ${base}` : base;
 
@@ -303,22 +212,52 @@ export default function KeyAdmin() { // ✅ เปลี่ยนชื่อ Co
     });
   }, [filters, data]);
 
-  // --- NEW: Modal Logic (Trade Communication) ---
-  const handleOpenRemarkModal = (item) => {
+  // --- ❌ REMOVED OLD HANDLERS ---
+  // const handleOpenRemarkModal = (item) => { ... };
+  // const handleAddRemark = (productCode, newRemark) => { ... };
+
+  // --- ✅ ADDED NEW MODAL HANDLERS ---
+  const openTradeModal = (item) => {
     setSelectedItem(item);
-    setModalRemarkProduct(item);
+    setModalData({ comment: "", newStatus: item.สถานะTrade || "Pending" });
+    setIsModalOpen(true);
   };
   
-  const handleAddRemark = (productCode, newRemark) => {
-    setData((prevData) =>
-      prevData.map((item) =>
-        item.Code === productCode
-          ? { ...item, KeyRemarks: [...(item.KeyRemarks || []), newRemark] }
-          : item
-      )
+  const closeTradeModal = () => {
+    setIsModalOpen(false);
+    setSelectedItem(null);
+    setModalData({ comment: "", newStatus: "Pending" });
+  };
+  
+  const handleModalDataChange = (name, value) =>
+    setModalData((p) => ({ ...p, [name]: value }));
+
+  const handleSubmitAction = () => {
+    if (!selectedItem || !modalData.comment.trim()) {
+      console.error("กรุณาเพิ่มข้อความ Remark ก่อนทำการบันทึก Action");
+      return;
+    }
+    const newRemark = {
+      key: Date.now(),
+      date: new Date().toISOString().slice(0, 10),
+      user: CURRENT_USER,
+      status: modalData.newStatus, // Using newStatus from modalData
+      text: modalData.comment.trim(),
+    };
+    
+    const updated = data.map((it) =>
+      it.Code === selectedItem.Code
+        ? {
+            ...it,
+            สถานะTrade: modalData.newStatus, // Update status
+            RemarkTrade: modalData.comment.trim(), // Update main remark
+            KeyRemarks: [...(it.KeyRemarks || []), newRemark],
+          }
+        : it
     );
-    setModalRemarkProduct(null); 
-    console.log(`บันทึกการสื่อสารสำหรับ ${productCode} สำเร็จ!`);
+    setData(updated);
+    closeTradeModal();
+    console.log(`บันทึกการสื่อสารสำหรับ ${selectedItem.Code} สำเร็จ!`);
   };
 
   // ** Function to open StockShowModal **
@@ -334,16 +273,24 @@ export default function KeyAdmin() { // ✅ เปลี่ยนชื่อ Co
   const avgDOH = totalSKUs > 0 ? filteredData.reduce((sum, item) => sum + (item.Stock_จบเหลือจริง * item.DayOnHand_DOH_Stock2 || 0), 0) / totalStock : 0;
   const abnormalCount = filteredData.filter((item) => item.สถานะTrade === "Abnormal").length;
 
-  // ✅ UPDATED: คำนวณ ColSpan (ลบ +1 ออก)
   const visibleColumnCount = ALL_COLUMNS.filter((col) => !isColumnHidden(col.key)).length;
-
-  // --- ❌ Table Cell Renderer (REMOVED) ---
-  // const renderCell = (item, col, index) => { ... }
 
   return (
     <div className="min-h-screen">
      {/* ** StockShowModal Component ** */}
      {isStockShow && <StockShowModal setIsStockShow={setIsStockShow} selectedItem={selectedItem} />} 
+     
+     {/* ✅ --- ADDED CommunicationCard MODAL --- */}
+     {isModalOpen && selectedItem && (
+        <CommunicationCard
+          item={selectedItem}
+          onClose={closeTradeModal}
+          onSubmit={handleSubmitAction}
+          currentData={modalData}
+          onDataChange={handleModalDataChange}
+        />
+      )}
+
       <style>
         {`
           /* Global styles to ensure compatibility */
@@ -362,7 +309,6 @@ export default function KeyAdmin() { // ✅ เปลี่ยนชื่อ Co
 
         {/* --- Key Metrics (Condensed Summary) --- */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-8">
-          {/* ... (Metrics JSX เหมือนเดิม) ... */}
           <div className="bg-pink-50 p-4 rounded-lg shadow-inner">
             <p className="text-sm text-pink-600 font-semibold">Total SKUs</p>
             <p className="text-2xl font-extrabold text-[#640037]">{formatNumber(totalSKUs)}</p>
@@ -387,7 +333,6 @@ export default function KeyAdmin() { // ✅ เปลี่ยนชื่อ Co
 
         {/* --- Filter Bar --- */}
         <div className="grid grid-cols-2 md:grid-cols-7 gap-4 mb-4 items-end p-4 bg-pink-50 rounded-lg border border-pink-200">
-          {/* ... (Filters JSX เหมือนเดิม) ... */}
           <div className="col-span-2 md:col-span-2">
             <label className="block text-sm font-bold text-gray-700 mb-1">ค้นหาสินค้า (Code/Desc/Remark)</label>
             <div className="relative w-full">
@@ -438,8 +383,6 @@ export default function KeyAdmin() { // ✅ เปลี่ยนชื่อ Co
         {/* --- Data Table Container --- */}
         <div className="overflow-x-auto shadow-xl rounded-xl border border-gray-200">
           <table className="min-w-full table-auto bg-white text-center">
-            
-            {/* ✅ UPDATED: <thead> (ใช้ colClass และ key ที่ปลอดภัย) */}
             <thead className="bg-[#640037] text-white sticky top-0 text-sm">
               <tr>
                 {ALL_COLUMNS.map((col, idx) => (
@@ -456,106 +399,69 @@ export default function KeyAdmin() { // ✅ เปลี่ยนชื่อ Co
               </tr>
             </thead>
             
-            {/* ✅ UPDATED: <tbody> (ใช้ <td> แบบ Manual) */}
             <tbody>
               {filteredData.length > 0 ? (
                 filteredData.map((item, idx) => {
-                  // ย้ายการคำนวณที่เคยอยู่ใน renderCell มาไว้ที่นี่
                   const stockShowValue = formatNumber(Math.round(item.Stock_จบเหลือจริง * 0.1));
-
                   return (
                   <tr key={item.Code} className="border-b border-gray-200 hover:bg-pink-50 transition duration-150">
-                    
-                    {/* 1. No */}
                     <td className={colClass("No", "p-3 min-w-[50px]")}>
                       {idx + 1}
                     </td>
-                    
-                    {/* 2. Code */}
                     <td className={colClass("Code", "p-3 font-mono text-sm border-r border-gray-200 text-left min-w-[120px]")}>
                       <span className="font-bold text-[#640037] block">{item.Code}</span>
                       <span className="text-xs text-gray-500">{item.Brand}</span>
                     </td>
-                    
-                    {/* 3. Description */}
                     <td className={colClass("Description", "p-3 font-semibold text-gray-700 border-r border-gray-200 text-left min-w-[200px]")}>
                       <span className="block">{item.Description}</span>
                       <span className={`ml-1 text-xs font-normal text-white px-2 py-0.5 rounded-full inline-block ${item.Class === "A" ? "bg-orange-500" : "bg-pink-500"}`}>Class {item.Class}</span>
-                      <span className="text-xs text-gray-400 block mt-1">{item.Type} ({item.SubType})</span>
+                  <span className="text-xs text-gray-400 block mt-1">{item.Type} ({item.SubType})</span>
                     </td>
-                    
-                    {/* 4. Best */}
                     <td className={colClass("Best", "p-3")}>
                       <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${item.YN_Best_2025 === "Yes" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
                         {item.YN_Best_2025 || "No"}
                       </span>
                     </td>
-
-                    {/* 5. Categories */}
                     <td className={colClass("Categories", "p-3")}>-</td>
-
-                    {/* 6. Forecast */}
                     <td className={colClass("Forecast", "p-3 font-bold text-lg border-r border-gray-200 text-right")}>
                       {formatNumber(item.TargetSaleUnit_1)}
                     </td>
-                    
-                    {/* 7. Actual (ยอด Actual) */}
                     <td className={colClass("Actual", "p-3 font-semibold text-lg border-r border-gray-200 text-right text-blue-600")}>
-              _       {formatNumber(item.SaleOut_เมย68)}
+                      {formatNumber(item.SaleOut_เมย68)}
                     </td>
-                    
-                    {/* 8. DOH */}
                     <td className={colClass("DOH", `p-3 font-extrabold text-lg border-r border-gray-200 ${getDOHStyle(item.DayOnHand_DOH_Stock2)} text-right`)}>
                       {formatNumber(item.DayOnHand_DOH_Stock2, 0)}
                     </td>
-                    
-                    {/* 9. SetType */}
                     <td className={colClass("SetType", "p-3 text-sm text-gray-600")}>
                       {item.SubType || "-"}
                     </td>
-                    
-                    {/* 10. Stock_Show */}
                     <td className={colClass("Stock_Show", "p-3 text-sm text-gray-500 ")}>
                       <p className="font-semibold text-base text-gray-800 mb-1">{stockShowValue}</p>
                       <button 
                         onClick={() => handleShowStockModal(item)}
-                        // ✅ CSS p-2 จาก renderCell เดิม
-                        className="p-2 text-xs rounded-lg cursor-pointer shadow-sm bg-green-500 text-white hover:bg-green-600 transition" 
+                      className="p-2 text-xs rounded-lg cursor-pointer shadow-sm bg-green-500 text-white hover:bg-green-600 transition" 
                         title="ดูตำแหน่งจัดเก็บและรายละเอียด Stock (ตัวโชว์)"
                       >
                         Show Location Stock
-                      </button>
+                </button>
                     </td>
-                    
-                    {/* 11. Stock_Physical */}
                     <td className={colClass("Stock_Physical", "p-3 font-bold text-lg border-r border-gray-200 text-right")}>
                       {formatNumber(item.Stock_จบเหลือจริง)}
                     </td>
-                    
-                    {/* 12. Stock */}
                     <td className={colClass("Stock", "p-3")}>-</td>
-                    
-                    {/* 13. Stock_Cl */}
                     <td className={colClass("Stock_Cl", "p-3")}>-</td>
-                    
-                    {/* 14. Forecash */}
-                    <td className={colClass("Forecash", "p-3")}>-</td>
-                    
-                    {/* 15. Actual (Actual Now) */}
+                    <td className={colClass("Forecash", "p-3")}>-</td> 
                     <td className={colClass("Actual", "p-3 font-semibold text-lg border-r border-gray-200 text-right text-blue-600")}>
                       {formatNumber(item.SaleOut_เมย68)}
                     </td>
-                    
-                    {/* 16. TradeStatus */}
                     <td className={colClass("TradeStatus", "p-3 border-r border-gray-200")}>
                       <span className={`px-3 py-1 text-xs font-semibold rounded-full border ${getStatusStyle(item.สถานะTrade)}`}>{item.สถานะTrade}</span>
                       {item.DiffPercent && (<p className={`text-xs mt-1 font-bold ${item.DiffPercent.startsWith("-") ? "text-red-500" : "text-green-500"}`}>{item.DiffPercent}</p>)}
-                    </td>
-                    
-                    {/* 17. TradeRemark */}
+               </td>
                     <td className={colClass("TradeRemark", "p-3 text-sm max-w-xs whitespace-normal text-gray-600 border-r border-gray-200")}>
                       <p className="text-xs mb-1 italic truncate">{item.RemarkTrade || "-"}</p>
-                	  <button onClick={() => handleOpenRemarkModal(item)} className={`px-3 py-1 text-xs rounded-lg cursor-pointer shadow-md transition font-medium ${item.KeyRemarks && item.KeyRemarks.length > 0 ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}>
+                      {/* ✅ --- UPDATED OnClick --- */}
+                      <button onClick={() => openTradeModal(item)} className={`px-3 py-1 text-xs rounded-lg cursor-pointer shadow-md transition font-medium ${item.KeyRemarks && item.KeyRemarks.length > 0 ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}>
                         บันทึก/ดูการสื่อสาร ({item.KeyRemarks ? item.KeyRemarks.length : 0})
                       </button>
                     </td>
@@ -564,7 +470,6 @@ export default function KeyAdmin() { // ✅ เปลี่ยนชื่อ Co
                 })
               ) : (
                 <tr>
-                  {/* ✅ UPDATED: p-6 (จาก p-4) และ colSpan ใช้ visibleColumnCount ที่อัปเดตแล้ว */}
                   <td colSpan={visibleColumnCount} className="p-6 text-center text-lg text-gray-500">ไม่พบข้อมูลสินค้าที่ตรงกับเงื่อนไขการกรอง</td>
                 </tr>
               )}
@@ -580,15 +485,6 @@ export default function KeyAdmin() { // ✅ เปลี่ยนชื่อ Co
             <span className="text-green-600 font-bold ml-2">DOH &lt; 180 วัน</span> (ปกติ)
           </p>
         </div>
-
-        {/* --- TRADE REMARK MODAL --- */}
-        {modalRemarkProduct && (
-          <TradeRemarkModal
-            product={modalRemarkProduct}
-            onClose={() => setModalRemarkProduct(null)} // ปิด Modal
-            onAddRemark={handleAddRemark} // ส่งฟังก์ชันบันทึก Remark ไปให้ Modal
-          />
-        )}
       </div>
     </div>
   );
