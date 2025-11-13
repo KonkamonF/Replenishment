@@ -253,7 +253,10 @@ export function useProductEntry() {
         });
 
         const json = await res.json();
-        if (!res.ok) throw new Error(json.detail || "อัปเดตข้อมูลไม่สำเร็จ");
+        if (!res.ok) {
+          console.error("UPDATE ERROR:", json);
+          throw new Error(json.detail || JSON.stringify(json) || "อัปเดตข้อมูลไม่สำเร็จ");
+        }
 
         await fetchByDate(entryDate);
         // sync monthEntries

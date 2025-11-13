@@ -6,7 +6,8 @@ import { useProductEntry } from "../../hooks/useProductEntry";
 export default function Calendar() {
   //  แยก state ออกเป็นสองชุดที่ถูกต้อง
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [isOpenEntryProductDate, setIsEntryProductDate] = useState(false);
+  // const [isOpenEntryProductDate, setIsEntryProductDate] = useState(false);
+  const [isEntryProductDate, setIsEntryProductDate] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const token = import.meta.env.VITE_API_TOKEN;
 
@@ -22,48 +23,61 @@ export default function Calendar() {
   } = useProductEntry(token);
   useEffect(() => {
     //  สร้าง WebSocket
-    const ws = new WebSocket("ws://127.0.0.1:8000/ws/entry-updates");
-
+    // const ws = new WebSocket("ws://127.0.0.1:8000/ws/entry-updates");
+    const ws = new WebSocket("wss://syble-intelligential-patiently.ngrok-free.dev/ws/entry-updates?ngrok-skip-browser-warning=true");
     // ws.onopen = () => console.log(" WebSocket connected");
     // ws.onclose = () => console.log(" WebSocket disconnected");
 
     // เมื่อมีการอัปเดตจากเครื่องอื่น
     ws.onmessage = (event) => {
-    try {
-      const msg = JSON.parse(event.data);
+      try {
+        const msg = JSON.parse(event.data);
 
-      setMonthEntries((prev) => {
-        // added
-        if (msg.action === "added") {
-          if (!msg.id) return prev.filter(x => x.id);
-          if (prev.some(x => x.id === msg.id)) return prev.filter(x => x.id);
-          return [...prev, msg].filter(x => x.id);
-        }
+        setMonthEntries((prev) => {
+          // added
+          if (msg.action === "added") {
+            if (!msg.id) return prev.filter((x) => x.id);
+            if (prev.some((x) => x.id === msg.id))
+              return prev.filter((x) => x.id);
+            return [...prev, msg].filter((x) => x.id);
+          }
 
-        // updated / status changed
-        if (msg.action === "updated" || msg.action === "status-changed") {
-          return prev
-            .map(x => x.id === msg.id ? { ...x, ...msg } : x)
-            .filter(x => x.id);
-        }
+          // updated / status changed
+          // if (msg.action === "updated" || msg.action === "status-changed") {
+          //   return prev
+          //     .map(x => x.id === msg.id ? { ...x, ...msg } : x)
+          //     .filter(x => x.id);
+          // }
+          if (msg.action === "updated") {
+            return prev.map((x) =>
+              x.id === msg.id
+                ? { ...x, ...msg } // merge เฉพาะ field ใหม่
+                : x
+            );
+          }
 
-        // deleted
-        if (msg.action === "deleted") {
-          return prev.filter(x => x.id !== msg.id).filter(x => x.id);
-        }
+          if (msg.action === "status-changed") {
+            return prev
+              .map((x) => (x.id === msg.id ? { ...x, status: msg.status } : x))
+              .filter((x) => x.id);
+          }
 
-        // fallback: รองรับกรณีเก่า ๆ ที่ส่งมาแค่ {id, status}
-        
+          // deleted
+          if (msg.action === "deleted") {
+            return prev.filter((x) => x.id !== msg.id).filter((x) => x.id);
+          }
 
-        return prev.filter(x => x.id);
-      });
-    } catch (err) {
-      console.error("WebSocket message error:", err);
-    }
-  };
+          // fallback: รองรับกรณีเก่า ๆ ที่ส่งมาแค่ {id, status}
 
-  return () => ws.close();
-}, [setMonthEntries]);
+          return prev.filter((x) => x.id);
+        });
+      } catch (err) {
+        console.error("WebSocket message error:", err);
+      }
+    };
+
+    return () => ws.close();
+  }, [setMonthEntries]);
 
   // โหลดทั้งเดือนทันที และเมื่อเปลี่ยนเดือน
   useEffect(() => {
@@ -130,7 +144,7 @@ export default function Calendar() {
   return (
     <>
       {/* Modal */}
-      {isOpenEntryProductDate && (
+      {isEntryProductDate && (
         <EntryProductDate
           setIsEntryProductDate={setIsEntryProductDate}
           selectedDate={selectedDate}
@@ -208,18 +222,18 @@ export default function Calendar() {
                 <div
                   key={`day-${day}`}
                   onClick={() => handleDateClick(year, month, day)}
-                  className={`h-20 flex flex-col hover:font-extrabold hover:text-xl hover:bg-gray-100 items-center justify-start p-1 text-sm rounded-lg cursor-pointer 
-                    ${bgColor}
-                  `}
+                  className={`relative h-20 flex flex-col items-center justify-start p-1 text-sm rounded-lg cursor-pointer hover:font-extrabold hover:text-xl hover:bg-gray-100 ${bgColor}`}
                 >
+                  {/* ตัวเลขวัน */}
                   <span className="w-7 h-7 flex items-center justify-center rounded-full">
-                    {/*{day === 0 ? " " : day} */}
                     {day}
                   </span>
 
+                  {/* bubble จำนวนรายการ */}
                   {dayEntries.length > 0 && (
                     <div className="mt-1 w-full text-xs">
-                      {dayEntries.length} รายการ
+                      <div>{dayEntries.length}</div>
+                      <div>รายการ</div>
                     </div>
                   )}
                 </div>
