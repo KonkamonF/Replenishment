@@ -147,6 +147,9 @@ const ALL_COLUMNS = [
   { key: "Best", name: "Best/BestSet", isAlwaysVisible: false },
   { key: "Forecast", name: "ยอด Forecast", isAlwaysVisible: false },
   { key: "Actual", name: "ยอด Actual", isAlwaysVisible: false },
+  { key: "Target", name: "Target Now", isAlwaysVisible: false },
+  { key: "TargetLast", name: "Target Last Mount", isAlwaysVisible: false },
+
   { key: "DOH", name: "DOH (วัน)", isAlwaysVisible: false },
   { key: "POH", name: "PO on Hand", isAlwaysVisible: false },
   { key: "SetType", name: "ชุด Set / แตก Set", isAlwaysVisible: false },
@@ -772,6 +775,23 @@ export default function InventoryTradeMonitor() {
 
                       <td
                         className={colClass(
+                          "TargetNow",
+                          "p-3 border-r border-gray-200 text-base text-gray-700 font-medium"
+                        )}
+                      >
+                        -
+                      </td>
+                      <td
+                        className={colClass(
+                          "TargetLast",
+                          "p-3 border-r border-gray-200 text-base text-gray-700 font-medium"
+                        )}
+                      >
+                        -
+                      </td>
+
+                      <td
+                        className={colClass(
                           "DOH",
                           `p-3 font-extrabold text-lg border-r border-gray-200 ${getDOHStyle(
                             item.DayOnHand_DOH_Stock2
@@ -876,7 +896,6 @@ export default function InventoryTradeMonitor() {
                       >
                         {formatNumber(alloc6)}
                       </td>
-
                       <td
                         className={colClass(
                           "OverflowScore",
