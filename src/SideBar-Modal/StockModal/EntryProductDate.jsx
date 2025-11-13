@@ -27,8 +27,10 @@ export default function EntryProductDate({
   fetchByDate,
 }) {
   const token = import.meta.env.VITE_API_TOKEN;
-  const { addEntry, updateEntry, deleteEntry, toggleStatus } = useProductEntry(token);
-
+  const { addEntry, updateEntry, deleteEntry, toggleStatus } =
+    useProductEntry(token);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loadingItemId, setLoadingItemId] = useState(null)
   const [mode, setMode] = useState("list"); // "list" | "add" | "detail" | "edit"
   const [selectedItem, setSelectedItem] = useState(null);
   const [productName, setProductName] = useState("");
@@ -75,6 +77,9 @@ export default function EntryProductDate({
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!productName) return alert("กรุณากรอกชื่อสินค้า");
+    if (isSubmitting) return; // 👈 1. ป้องกันการกดซ้ำ
+
+    setIsSubmitting(true); // 👈 2. เริ่ม Loading
     try {
       await addEntry({
         productName,
@@ -84,7 +89,7 @@ export default function EntryProductDate({
         comments,
         entryDate,
         images: imageFiles.map((f) => f.file),
-        status: "F", //  ตั้งค่าเริ่มต้นสถานะ
+        status: "F",
       });
       await fetchByDate(entryDate);
       alert(" บันทึกข้อมูลเรียบร้อยแล้ว");
@@ -93,6 +98,8 @@ export default function EntryProductDate({
     } catch (err) {
       console.error(err);
       alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+    } finally {
+      setIsSubmitting(false); // 👈 3. หยุด Loading เสมอ (ไม่ว่าจะสำเร็จหรือล้มเหลว)
     }
   };
 
@@ -100,22 +107,44 @@ export default function EntryProductDate({
   //  1. เพิ่มฟังก์ชันสำหรับจัดการการ Toggle สถานะ
   // ==========================================================
   const handleToggleStatus = async (item) => {
+    if (loadingItemId === item.id) return; // 👈 1. ป้องกันการกดซ้ำ (เฉพาะรายการนี้)
+
     const newStatus = item.status === "T" ? "F" : "T";
+    setLoadingItemId(item.id); // 👈 2. เริ่ม Loading (เฉพาะรายการนี้)
+
     try {
       await toggleStatus(item.id, item.status, entryDate);
-
-      //  อัปเดต state ทันทีให้เปลี่ยนสี toggle โดยไม่ต้อง refresh
       setEntries((prev) =>
-        prev.map((x) =>
-          x.id === item.id ? { ...x, status: newStatus } : x
-        )
+        prev.map((x) => (x.id === item.id ? { ...x, status: newStatus } : x))
       );
     } catch (err) {
       console.error("Failed to update status:", err);
       alert("เกิดข้อผิดพลาดในการอัปเดตสถานะ");
+    } finally {
+      setLoadingItemId(null); // 👈 3. หยุด Loading
     }
   };
 
+  // (วางฟังก์ชันนี้ไว้ใกล้ๆ กับ handleToggleStatus)
+  const handleDelete = async (item) => {
+    if (loadingItemId === item.id) return; // 👈 1. ป้องกันการกดซ้ำ
+
+    // (Optional) เพิ่มการยืนยัน
+    if (!window.confirm(`คุณแน่ใจหรือไม่ว่าต้องการลบ "${item.productName}"?`)) {
+      return;
+    }
+
+    setLoadingItemId(item.id); // 👈 2. เริ่ม Loading
+    try {
+      await deleteEntry(item.id, entryDate);
+      await fetchByDate(entryDate);
+    } catch (err) {
+      console.error("Failed to delete:", err);
+      alert("เกิดข้อผิดพลาดในการลบ");
+    } finally {
+      setLoadingItemId(null); // 👈 3. หยุด Loading
+    }
+  };
   // ==========================================================
 
   const openDetail = (item) => {
@@ -186,10 +215,10 @@ export default function EntryProductDate({
                         {item.poNumber || "-"} | {item.supplier || "-"}
                       </p>
                     </div>
-
                     {/* ================================================== */}
                     {/*  2. อัปเดต UI ให้มีปุ่ม Toggle และปุ่มลบ */}
                     {/* ================================================== */}
+                    // ... (Entries.map)
                     <div className="flex items-center gap-3">
                       {/* ปุ่ม Toggle */}
                       <button
@@ -197,33 +226,60 @@ export default function EntryProductDate({
                           e.stopPropagation();
                           handleToggleStatus(item);
                         }}
+                        disabled={loadingItemId === item.id} // 👈 ปิดปุ่ม
                         title={item.status === "T" ? "รับแล้ว" : "ยังไม่ได้รับ"}
                         className={`w-10 h-5 rounded-full p-0.5 flex items-center transition-colors duration-200 ease-in-out ${
                           item.status === "T" ? "bg-green-500" : "bg-red-500"
-                        }`}
+                        } ${
+                          loadingItemId === item.id
+                            ? "opacity-50 cursor-not-allowed"
+                            : ""
+                        }`} // 👈 เพิ่ม style ตอน disable
                       >
+                        {/* ... (span bên trong vẫn như cũ) ... */}
                         <span
                           className={`block w-4 h-4 bg-white rounded-full shadow-md transform transition-transform duration-200 ease-in-out ${
-                            item.status === "T" ? "translate-x-5" : "translate-x-0"
+                            item.status === "T"
+                              ? "translate-x-5"
+                              : "translate-x-0"
                           }`}
                         ></span>
                       </button>
+                      {/* ปุ่มลบ */}
+                      // ... (mode === "detail")
+                      <div className="pt-4 flex gap-2 border-t mt-4">
+                        {/* ... (ปุ่มแก้ไข) ... */}
+                        <button
+                          onClick={async () => {
+                            if (loadingItemId === selectedItem.id) return; // 👈 1. ป้องกัน
 
-
-                      {/* ปุ่มลบ (ของเดิม) */}
-                      <button
-                        onClick={async (e) => {
-                          e.stopPropagation();
-                          await deleteEntry(item.id, entryDate);
-                          await fetchByDate(entryDate); //  รีเฟรชรายการใหม่ทันที
-                        }}
-                        className="text-red-600 hover:text-red-800 transition"
-                      >
-                        <Trash2 size={18} />
-                      </button>
+                            setLoadingItemId(selectedItem.id); // 👈 2. เริ่ม Loading
+                            try {
+                              await deleteEntry(selectedItem.id, entryDate);
+                              await fetchByDate(entryDate);
+                              setMode("list");
+                            } catch (err) {
+                              console.error("Failed to delete:", err);
+                              alert("ลบไม่สำเร็จ");
+                              setLoadingItemId(null); // 👈 3. หยุด Loading (กรณี error)
+                            } finally {
+                              // (ไม่ต้องมี finally ที่นี่ เพราะถ้าสำเร็จ setMode('list') จะทำงาน)
+                              // (แก้ไข: เพิ่ม finally เพื่อความปลอดภัย)
+                              setLoadingItemId(null);
+                            }
+                          }}
+                          disabled={loadingItemId === selectedItem.id} // 👈 4. ปิดปุ่ม
+                          className="flex items-center bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 disabled:opacity-50" // 👈 5. เพิ่ม style
+                        >
+                          <Trash2 size={16} className="mr-1" />
+                          {loadingItemId === selectedItem.id
+                            ? "กำลังลบ..."
+                            : "ลบรายการ"}{" "}
+                          {/* 👈 6. เปลี่ยนข้อความ */}
+                        </button>
+                      </div>
                     </div>
                     {/* ================================================== */}
-
                   </div>
                 );
               })}
@@ -246,7 +302,6 @@ export default function EntryProductDate({
                 ← กลับไปหน้ารายการ
               </button>
             </div>
-
             {/* ฟอร์มเดิมทั้งหมด */}
             <div className="grid grid-cols-2 gap-6">
               <div>
@@ -300,7 +355,6 @@ export default function EntryProductDate({
                 />
               </div>
             </div>
-
             <div>
               <label className="text-sm font-semibold text-gray-700 mb-1 flex items-center">
                 <MessageSquare className="w-4 h-4 mr-2 text-[#640037]" />
@@ -313,7 +367,6 @@ export default function EntryProductDate({
                 className="w-full p-2 border border-gray-300 rounded-lg"
               ></textarea>
             </div>
-
             <div>
               <label className="text-sm font-semibold text-gray-700 mb-2 flex items-center">
                 <UploadCloud className="mr-2 text-[#640037]" />
@@ -357,9 +410,11 @@ export default function EntryProductDate({
             <div className="pt-2 border-t flex justify-end">
               <button
                 type="submit"
-                className="bg-[#640037] text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-opacity-90 transition transform hover:scale-[1.01]"
+                disabled={isSubmitting} // 👈 1. ปิดปุ่ม
+                className="bg-[#640037] text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-opacity-90 transition transform hover:scale-[1.01] disabled:opacity-70 disabled:cursor-not-allowed" // 👈 2. เพิ่ม style
               >
-                บันทึกข้อมูล
+                {isSubmitting ? "กำลังบันทึก..." : "บันทึกข้อมูล"}{" "}
+                {/* 👈 3. เปลี่ยนข้อความ */}
               </button>
             </div>
           </form>
@@ -381,7 +436,7 @@ export default function EntryProductDate({
             </div>
 
             <div className="space-y-2 text-gray-700">
-               {/*  แสดงสถานะในหน้า Detail ด้วย */}
+              {/*  แสดงสถานะในหน้า Detail ด้วย */}
               <p>
                 <strong>สถานะ:</strong>{" "}
                 {selectedItem.status === "T" ? (
@@ -390,11 +445,21 @@ export default function EntryProductDate({
                   <span className="font-bold text-red-600">ยังไม่ได้รับ</span>
                 )}
               </p>
-              <p><strong>ชื่อสินค้า:</strong> {selectedItem.productName}</p>
-              <p><strong>จำนวน:</strong> {selectedItem.quantity} ชิ้น</p>
-              <p><strong>PO:</strong> {selectedItem.poNumber || "-"}</p>
-              <p><strong>ซัพพลายเออร์:</strong> {selectedItem.supplier || "-"}</p>
-              <p><strong>หมายเหตุ:</strong> {selectedItem.comments || "-"}</p>
+              <p>
+                <strong>ชื่อสินค้า:</strong> {selectedItem.productName}
+              </p>
+              <p>
+                <strong>จำนวน:</strong> {selectedItem.quantity} ชิ้น
+              </p>
+              <p>
+                <strong>PO:</strong> {selectedItem.poNumber || "-"}
+              </p>
+              <p>
+                <strong>ซัพพลายเออร์:</strong> {selectedItem.supplier || "-"}
+              </p>
+              <p>
+                <strong>หมายเหตุ:</strong> {selectedItem.comments || "-"}
+              </p>
             </div>
 
             {selectedItem.images?.length > 0 && (
@@ -442,20 +507,20 @@ export default function EntryProductDate({
           </div>
         )}
 
-       
         {mode === "edit" && (
-           <div className="text-center p-10">
-              <h2 className="text-xl font-bold">Edit Mode (TODO)</h2>
-              <p className="text-gray-500">ส่วนของการแก้ไขข้อมูลยังไม่ได้ถูกสร้าง UI</p>
-              <button 
-                onClick={() => setMode("detail")}
-                className="mt-4 text-sm text-blue-600 hover:underline"
-              >
-                ← กลับไปหน้ารายละเอียด
-              </button>
-           </div>
+          <div className="text-center p-10">
+            <h2 className="text-xl font-bold">Edit Mode (TODO)</h2>
+            <p className="text-gray-500">
+              ส่วนของการแก้ไขข้อมูลยังไม่ได้ถูกสร้าง UI
+            </p>
+            <button
+              onClick={() => setMode("detail")}
+              className="mt-4 text-sm text-blue-600 hover:underline"
+            >
+              ← กลับไปหน้ารายละเอียด
+            </button>
+          </div>
         )}
-
       </div>
     </div>
   );
