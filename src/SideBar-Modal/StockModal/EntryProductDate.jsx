@@ -218,64 +218,52 @@ export default function EntryProductDate({
                     {/* ================================================== */}
                     {/*  2. อัปเดต UI ให้มีปุ่ม Toggle และปุ่มลบ */}
                     {/* ================================================== */}
-                    // ... (Entries.map)
                     <div className="flex items-center gap-3">
-                      {/* ปุ่ม Toggle */}
+                      {/* ปุ่ม Toggle สถานะ */}
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleToggleStatus(item);
                         }}
-                        disabled={loadingItemId === item.id} // 👈 ปิดปุ่ม
+                        disabled={loadingItemId === item.id}
                         title={item.status === "T" ? "รับแล้ว" : "ยังไม่ได้รับ"}
                         className={`w-10 h-5 rounded-full p-0.5 flex items-center transition-colors duration-200 ease-in-out ${
                           item.status === "T" ? "bg-green-500" : "bg-red-500"
                         } ${
-                          loadingItemId === item.id
-                            ? "opacity-50 cursor-not-allowed"
-                            : ""
-                        }`} // 👈 เพิ่ม style ตอน disable
+                          loadingItemId === item.id ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
                       >
-                        {/* ... (span bên trong vẫn như cũ) ... */}
                         <span
                           className={`block w-4 h-4 bg-white rounded-full shadow-md transform transition-transform duration-200 ease-in-out ${
-                            item.status === "T"
-                              ? "translate-x-5"
-                              : "translate-x-0"
+                            item.status === "T" ? "translate-x-5" : "translate-x-0"
                           }`}
                         ></span>
                       </button>
-                      {/* ปุ่มลบ */}
-                      // ... (mode === "detail")
-                      <div className="pt-4 flex gap-2 border-t mt-4">
-                        {/* ... (ปุ่มแก้ไข) ... */}
-                        <button
-                          onClick={async () => {
-                            if (loadingItemId === selectedItem.id) return; // 👈 1. ป้องกัน
 
-                            setLoadingItemId(selectedItem.id); // 👈 2. เริ่ม Loading
+                      {/* ปุ่มลบ */}
+                      <div className="flex gap-2">
+                        <button
+                          onClick={async (e) => {
+                            e.stopPropagation();
+                            if (loadingItemId === item.id) return;
+
+                            setLoadingItemId(item.id);
                             try {
-                              await deleteEntry(selectedItem.id, entryDate);
+                              await deleteEntry(item.id, entryDate);
                               await fetchByDate(entryDate);
                               setMode("list");
                             } catch (err) {
                               console.error("Failed to delete:", err);
                               alert("ลบไม่สำเร็จ");
-                              setLoadingItemId(null); // 👈 3. หยุด Loading (กรณี error)
                             } finally {
-                              // (ไม่ต้องมี finally ที่นี่ เพราะถ้าสำเร็จ setMode('list') จะทำงาน)
-                              // (แก้ไข: เพิ่ม finally เพื่อความปลอดภัย)
                               setLoadingItemId(null);
                             }
                           }}
-                          disabled={loadingItemId === selectedItem.id} // 👈 4. ปิดปุ่ม
-                          className="flex items-center bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 disabled:opacity-50" // 👈 5. เพิ่ม style
+                          disabled={loadingItemId === item.id}
+                          className="flex items-center bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 disabled:opacity-50"
                         >
                           <Trash2 size={16} className="mr-1" />
-                          {loadingItemId === selectedItem.id
-                            ? "กำลังลบ..."
-                            : "ลบรายการ"}{" "}
-                          {/* 👈 6. เปลี่ยนข้อความ */}
+                          {loadingItemId === item.id ? "กำลังลบ..." : "ลบรายการ"}
                         </button>
                       </div>
                     </div>
