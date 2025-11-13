@@ -53,7 +53,11 @@ export function useProductEntry() {
     setError(null);
     try {
       const res = await fetch(`${API_BASE_URL}/product-entry/summary`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+            Authorization: `Bearer ${token}`,
+            "Accept": "application/json",
+            "ngrok-skip-browser-warning": "1",
+          }
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.detail || "โหลด summary ไม่สำเร็จ");
@@ -107,7 +111,11 @@ export function useProductEntry() {
       const res = await fetch(
         `${API_BASE_URL}/product-entry/by-month?year=${year}&month=${monthZeroBased + 1}`,
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Accept": "application/json",
+            "ngrok-skip-browser-warning": "1",
+          }
         }
       );
 
@@ -142,7 +150,11 @@ export function useProductEntry() {
 
         const res = await fetch(`${API_BASE_URL}/product-entry/add`, {
           method: "POST",
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Accept": "application/json",
+            "ngrok-skip-browser-warning": "1",
+          },
           body: formData,
         });
         const json = await res.json();
@@ -174,7 +186,11 @@ export function useProductEntry() {
       try {
         const res = await fetch(`${API_BASE_URL}/product-entry/delete?id=${id}`, {
           method: "DELETE",
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Accept": "application/json",
+            "ngrok-skip-browser-warning": "1",
+          },
         });
         const json = await res.json();
         if (!res.ok) throw new Error(json.detail || "ลบข้อมูลไม่สำเร็จ");
@@ -224,7 +240,11 @@ export function useProductEntry() {
 
         const res = await fetch(`${API_BASE_URL}/product-entry/update`, {
           method: "POST",
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Accept": "application/json",
+            "ngrok-skip-browser-warning": "1",
+          },
           body: formData,
         });
 
@@ -265,6 +285,8 @@ export function useProductEntry() {
           method: "PATCH",
           headers: {
             Authorization: `Bearer ${token}`,
+            "Accept": "application/json",
+            "ngrok-skip-browser-warning": "1",
           },
           body: form,
         });

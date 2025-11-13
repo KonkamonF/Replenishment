@@ -31,7 +31,7 @@ export default function Calendar() {
     ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        console.log("📡 Realtime update:", data);
+        // console.log("📡 Realtime update:", data);
 
         // ✅ อัปเดตสถานะใน monthEntries โดยไม่ต้อง reload
         setMonthEntries((prev) =>
