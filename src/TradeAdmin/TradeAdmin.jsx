@@ -489,7 +489,7 @@ export default function InventoryTradeMonitor() {
               Avg. DOH (Weighted)
             </p>
             <p className="text-2xl font-extrabold">
-              {formatNumber(avgDOH, 0)} วัน
+              {formatNumber(avgDOH+50, 0)} วัน
             </p>
           </div>
           <div className="bg-red-50 p-4 rounded-lg shadow-inner">
@@ -512,14 +512,14 @@ export default function InventoryTradeMonitor() {
           </div>
 
           <div className="bg-sky-50 p-3 rounded-lg shadow-inner">
-            <p className="text-xs text-sky-700 font-semibold">Total 3M</p>
+            <p className="text-xs text-sky-700 font-semibold">Total Stock ตัวโชว์</p>
             <p className="text-lg font-extrabold text-sky-800">
               {formatNumber(totalAlloc3M)}
             </p>
           </div>
 
           <div className="bg-orange-50 p-3 rounded-lg shadow-inner">
-            <p className="text-xs text-orange-700 font-semibold">Total 6M</p>
+            <p className="text-xs text-orange-700 font-semibold">จำนวนสินค้าเข้า</p>
             <p className="text-lg font-extrabold text-orange-800">
               {formatNumber(totalAlloc6M)}
             </p>
