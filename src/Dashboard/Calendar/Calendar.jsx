@@ -4,13 +4,13 @@ import EntryProductDate from "../../SideBar-Modal/StockModal/EntryProductDate";
 import { useProductEntry } from "../../hooks/useProductEntry";
 
 export default function Calendar() {
-  // ✅ แยก state ออกเป็นสองชุดที่ถูกต้อง
+  //  แยก state ออกเป็นสองชุดที่ถูกต้อง
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isOpenEntryProductDate, setIsEntryProductDate] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const token = import.meta.env.VITE_API_TOKEN;
 
-  // ✅ ได้ monthEntries มาจาก hook แล้ว
+  //  ได้ monthEntries มาจาก hook แล้ว
   const {
     data,
     monthEntries,
@@ -21,19 +21,19 @@ export default function Calendar() {
     setMonthEntries,
   } = useProductEntry(token);
   useEffect(() => {
-    // ✅ สร้าง WebSocket
+    //  สร้าง WebSocket
     const ws = new WebSocket("ws://127.0.0.1:8000/ws/entry-updates");
 
-    // ws.onopen = () => console.log("✅ WebSocket connected");
-    // ws.onclose = () => console.log("❌ WebSocket disconnected");
+    // ws.onopen = () => console.log(" WebSocket connected");
+    // ws.onclose = () => console.log(" WebSocket disconnected");
 
-    // ✅ เมื่อมีการอัปเดตจากเครื่องอื่น
+    // เมื่อมีการอัปเดตจากเครื่องอื่น
     ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
         // console.log("📡 Realtime update:", data);
 
-        // ✅ อัปเดตสถานะใน monthEntries โดยไม่ต้อง reload
+        // อัปเดตสถานะใน monthEntries โดยไม่ต้อง reload
         setMonthEntries((prev) =>
           prev.map((x) =>
             x.id === data.id ? { ...x, status: data.status } : x
@@ -44,11 +44,11 @@ export default function Calendar() {
       }
     };
 
-    // ✅ ปิดเมื่อ component ถูก unmount
+    // ปิดเมื่อ component ถูก unmount
     return () => ws.close();
   }, []);
 
-  // ✅ โหลดทั้งเดือนทันที และเมื่อเปลี่ยนเดือน
+  // โหลดทั้งเดือนทันที และเมื่อเปลี่ยนเดือน
   useEffect(() => {
     prefetchMonth(currentDate.getFullYear(), currentDate.getMonth());
   }, [currentDate.getFullYear(), currentDate.getMonth(), prefetchMonth]);
@@ -170,7 +170,7 @@ export default function Calendar() {
                 "0"
               )}-${String(day).padStart(2, "0")}`;
 
-              // ✅ ใช้ monthEntries (ดึงทั้งเดือนไว้แล้ว) แสดงผลทันที
+              // ใช้ monthEntries (ดึงทั้งเดือนไว้แล้ว) แสดงผลทันที
               const dayEntries = monthEntries.filter(
                 (e) => e.entryDate === dateKey
               );
