@@ -157,8 +157,10 @@ const ALL_COLUMNS = [
   { key: "Alloc_3M", name: "ตัดจ่ายย้อนหลัง 3 เดือน", isAlwaysVisible: false },
   { key: "Alloc_6M", name: "ตัดจ่ายย้อนหลัง 6 เดือน", isAlwaysVisible: false },
   { key: "OverflowScore", name: "Overflow Score (%)", isAlwaysVisible: false },
+  { key: "SaleInAgingTier", name: "SaleInAgingTier", isAlwaysVisible: false },
   { key: "TradeStatus", name: "สถานะ Trade", isAlwaysVisible: false },
   { key: "TradeRemark", name: "Remark Trade / Action", isAlwaysVisible: false },
+  { key: "InterTrade", name: "InterTrade Owner", isAlwaysVisible: false },
 ];
 
 // --- Column Toggle Dropdown ---
@@ -863,6 +865,15 @@ export default function InventoryTradeMonitor() {
 
                       <td
                         className={colClass(
+                          "OverflowScore",
+                          "p-3 border-r border-gray-200 text-base text-gray-700 font-medium"
+                        )}
+                      >
+                        -
+                      </td>
+
+                      <td
+                        className={colClass(
                           "TradeStatus",
                           "p-3 border-r border-gray-200 text-center"
                         )}
@@ -908,6 +919,15 @@ export default function InventoryTradeMonitor() {
                           {item.KeyRemarks ? item.KeyRemarks.length : 0})
                         </button>
                       </td>
+
+                       <td
+                        className={colClass(
+                          "OverflowScore",
+                          "p-3 border-r border-gray-200 text-base text-gray-700 font-medium"
+                        )}
+                      >
+                        -
+                      </td>
                     </tr>
                   );
                 })
@@ -919,6 +939,7 @@ export default function InventoryTradeMonitor() {
                   >
                     ไม่พบข้อมูลสินค้าที่ตรงกับเงื่อนไขการกรอง
                   </td>
+                   
                 </tr>
               )}
             </tbody>
