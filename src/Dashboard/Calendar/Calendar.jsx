@@ -141,7 +141,7 @@ export default function Calendar() {
       )}
 
       <div className="flex flex-col items-center justify-center p-4 font-['Inter']">
-        <h2 className="text-4xl mb-4">กำหนดสินค้าเข้าจ้า</h2>
+        <h2 className="text-4xl mb-4">กำหนดสินค้าเข้า</h2>
 
         <div className="w-full max-w-6xl bg-white rounded-xl shadow-2xl p-6 border-t-4 border-pink-600">
           {/* Header */}
