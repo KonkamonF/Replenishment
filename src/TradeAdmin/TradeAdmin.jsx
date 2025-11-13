@@ -147,11 +147,7 @@ const ALL_COLUMNS = [
   { key: "Best", name: "Best/BestSet", isAlwaysVisible: false },
   { key: "Forecast", name: "ยอด Forecast", isAlwaysVisible: false },
   { key: "Actual", name: "ยอด Actual", isAlwaysVisible: false },
-  { key: "Target", name: "Target Now", isAlwaysVisible: false },
-  { key: "TargetLast", name: "Target Last Mount", isAlwaysVisible: false },
-
   { key: "DOH", name: "DOH (วัน)", isAlwaysVisible: false },
-  { key: "POH", name: "PO on Hand", isAlwaysVisible: false },
   { key: "SetType", name: "ชุด Set / แตก Set", isAlwaysVisible: false },
   { key: "Stock_Physical", name: "Stock (กายภาพ)", isAlwaysVisible: false },
   { key: "Stock_Show", name: "Stock (ตัวโชว์)", isAlwaysVisible: false },
@@ -161,15 +157,8 @@ const ALL_COLUMNS = [
   { key: "Alloc_3M", name: "ตัดจ่ายย้อนหลัง 3 เดือน", isAlwaysVisible: false },
   { key: "Alloc_6M", name: "ตัดจ่ายย้อนหลัง 6 เดือน", isAlwaysVisible: false },
   { key: "OverflowScore", name: "Overflow Score (%)", isAlwaysVisible: false },
-  { key: "SaleInAgingTier", name: "SaleInAgingTier", isAlwaysVisible: false },
-  {
-    key: "SuggestionPurchasing",
-    name: "SuggestionPurchasing",
-    isAlwaysVisible: false,
-  },
   { key: "TradeStatus", name: "สถานะ Trade", isAlwaysVisible: false },
   { key: "TradeRemark", name: "Remark Trade / Action", isAlwaysVisible: false },
-  { key: "InterTrade", name: "InterTrade Owner", isAlwaysVisible: false },
 ];
 
 // --- Column Toggle Dropdown ---
@@ -257,24 +246,12 @@ export default function InventoryTradeMonitor() {
     tradeStatus: "All",
     set: "All",
   });
-  const statusOptions = ["Normal", "Abnormal"];
   const [hiddenColumns, setHiddenColumns] = useState([]);
   const [modalData, setModalData] = useState({
     comment: "",
     newStatus: "Pending",
   });
   const CURRENT_USER = "Trade Planner (Key)";
-
-  const getStatusStyle = (status) => {
-    if (status === "Abnormal") {
-      return "bg-red-100 text-red-800 border-red-300"; // สีแดง
-    }
-    if (status === "Normal") {
-      return "bg-green-100 text-green-800 border-green-300"; // สีเขียว
-    }
-    // สีเทาสำหรับสถานะอื่นๆ (ถ้ามี)
-    return "bg-gray-100 text-gray-800 border-gray-300";
-  };
 
   const toggleColumnVisibility = (key) =>
     setHiddenColumns((prev) =>
@@ -775,23 +752,6 @@ export default function InventoryTradeMonitor() {
 
                       <td
                         className={colClass(
-                          "TargetNow",
-                          "p-3 border-r border-gray-200 text-base text-gray-700 font-medium"
-                        )}
-                      >
-                        -
-                      </td>
-                      <td
-                        className={colClass(
-                          "TargetLast",
-                          "p-3 border-r border-gray-200 text-base text-gray-700 font-medium"
-                        )}
-                      >
-                        -
-                      </td>
-
-                      <td
-                        className={colClass(
                           "DOH",
                           `p-3 font-extrabold text-lg border-r border-gray-200 ${getDOHStyle(
                             item.DayOnHand_DOH_Stock2
@@ -799,17 +759,6 @@ export default function InventoryTradeMonitor() {
                         )}
                       >
                         {formatNumber(item.DayOnHand_DOH_Stock2, 0)}
-                      </td>
-
-                      <td
-                        className={colClass(
-                          "POH",
-                          `p-3 font-extrabold text-lg border-r border-gray-200 ${getDOHStyle(
-                            item.DayOnHand_DOH_Stock2 + 50
-                          )} text-right`
-                        )}
-                      >
-                        {formatNumber(item.DayOnHand_DOH_Stock2 + 50, 0)}
                       </td>
 
                       <td
@@ -896,6 +845,7 @@ export default function InventoryTradeMonitor() {
                       >
                         {formatNumber(alloc6)}
                       </td>
+
                       <td
                         className={colClass(
                           "OverflowScore",
@@ -913,48 +863,17 @@ export default function InventoryTradeMonitor() {
 
                       <td
                         className={colClass(
-                          "SaleInAgingTier",
-                          "p-3 border-r border-gray-200 text-base text-gray-700 font-medium"
-                        )}
-                      >
-                        -
-                      </td>
-
-                      <td
-                        className={colClass(
-                          "SuggestionPurchasing",
-                          "p-3 border-r border-gray-200 text-base text-gray-700 font-medium"
-                        )}
-                      >
-                        Amount
-                      </td>
-
-                      <td
-                        className={colClass(
                           "TradeStatus",
                           "p-3 border-r border-gray-200 text-center"
                         )}
                       >
-                        {/* --- ⬇️ นี่คือ Dropdown ที่แก้ไขแล้ว --- */}
-                        <select
-                          value={item.สถานะTrade} // 1. แสดงค่าปัจจุบันของ "แถว" นี้
-                          onChange={(e) =>
-                            handleStatusChange(item.id, e.target.value)
-                          } // 2. (ต้องมี) ฟังก์ชันสำหรับบันทึกค่าใหม่
-                          // 3. เปลี่ยนสี Dropdown ตามสถานะปัจจุบันของ item นี้
+                        <span
                           className={`px-3 py-1 text-xs font-semibold rounded-full border ${getStatusStyle(
                             item.สถานะTrade
-                          )} focus:outline-none focus:ring-2 focus:ring-pink-500`}
+                          )}`}
                         >
-                          {/* 4. วนลูปจาก "statusOptions" (ที่เราสร้างไว้) ไม่ใช่ filteredData */}
-                          {statusOptions.map((status) => (
-                            <option key={status} value={status}>
-                              {status}
-                            </option>
-                          ))}
-                        </select>
-
-                        {/* (ส่วนของ DiffPercent ยังอยู่เหมือนเดิม) */}
+                          {item.สถานะTrade}
+                        </span>
                         {item.DiffPercent && (
                           <p
                             className={`text-xs mt-1 font-bold ${
@@ -988,15 +907,6 @@ export default function InventoryTradeMonitor() {
                           บันทึก/ดูการสื่อสาร (
                           {item.KeyRemarks ? item.KeyRemarks.length : 0})
                         </button>
-                      </td>
-
-                      <td
-                        className={colClass(
-                          "OverflowScore",
-                          "p-3 border-r border-gray-200 text-base text-gray-700 font-medium"
-                        )}
-                      >
-                        -
                       </td>
                     </tr>
                   );
