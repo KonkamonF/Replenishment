@@ -54,7 +54,7 @@ export default function EntryProductDate({
     setPreviews((prev) => prev.filter((f) => f.id !== id));
   };
 
-  // ✅ ฟังก์ชันบันทึกข้อมูล
+  //  ฟังก์ชันบันทึกข้อมูล
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -74,7 +74,7 @@ export default function EntryProductDate({
         images: imageFiles.map((f) => f.file),
       });
 
-      alert("✅ บันทึกข้อมูลเรียบร้อยแล้ว!");
+      alert(" บันทึกข้อมูลเรียบร้อยแล้ว!");
 
       // โหลดข้อมูลใหม่
       await fetchByDate(entryDate);
@@ -89,7 +89,7 @@ export default function EntryProductDate({
       setPreviews([]);
       if (fileInputRef.current) fileInputRef.current.value = null;
     } catch (err) {
-      console.error("❌ Error while saving:", err);
+      console.error(" Error while saving:", err);
       alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
     }
   };

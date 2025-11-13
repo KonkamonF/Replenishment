@@ -25,7 +25,7 @@ const Charts = () => {
   if (error)
     return (
       <div className="h-96 flex items-center justify-center text-red-600">
-        ❌ เกิดข้อผิดพลาด: {error}
+         เกิดข้อผิดพลาด: {error}
       </div>
     );
 

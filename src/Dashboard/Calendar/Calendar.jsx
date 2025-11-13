@@ -29,24 +29,41 @@ export default function Calendar() {
 
     // เมื่อมีการอัปเดตจากเครื่องอื่น
     ws.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        // console.log("📡 Realtime update:", data);
+    try {
+      const msg = JSON.parse(event.data);
 
-        // อัปเดตสถานะใน monthEntries โดยไม่ต้อง reload
-        setMonthEntries((prev) =>
-          prev.map((x) =>
-            x.id === data.id ? { ...x, status: data.status } : x
-          )
-        );
-      } catch (err) {
-        console.error("WebSocket message error:", err);
-      }
-    };
+      setMonthEntries((prev) => {
+        // added
+        if (msg.action === "added") {
+          if (!msg.id) return prev.filter(x => x.id);
+          if (prev.some(x => x.id === msg.id)) return prev.filter(x => x.id);
+          return [...prev, msg].filter(x => x.id);
+        }
 
-    // ปิดเมื่อ component ถูก unmount
-    return () => ws.close();
-  }, []);
+        // updated / status changed
+        if (msg.action === "updated" || msg.action === "status-changed") {
+          return prev
+            .map(x => x.id === msg.id ? { ...x, ...msg } : x)
+            .filter(x => x.id);
+        }
+
+        // deleted
+        if (msg.action === "deleted") {
+          return prev.filter(x => x.id !== msg.id).filter(x => x.id);
+        }
+
+        // fallback: รองรับกรณีเก่า ๆ ที่ส่งมาแค่ {id, status}
+        
+
+        return prev.filter(x => x.id);
+      });
+    } catch (err) {
+      console.error("WebSocket message error:", err);
+    }
+  };
+
+  return () => ws.close();
+}, [setMonthEntries]);
 
   // โหลดทั้งเดือนทันที และเมื่อเปลี่ยนเดือน
   useEffect(() => {
@@ -164,7 +181,8 @@ export default function Calendar() {
             ))}
 
             {Array.from({ length: numDays }).map((_, i) => {
-              const day = i;
+              // const day = i;
+              const day = i + 1;
               const dateKey = `${year}-${String(month + 1).padStart(
                 2,
                 "0"
@@ -195,7 +213,8 @@ export default function Calendar() {
                   `}
                 >
                   <span className="w-7 h-7 flex items-center justify-center rounded-full">
-                    {day === 0 ? " " : day}
+                    {/*{day === 0 ? " " : day} */}
+                    {day}
                   </span>
 
                   {dayEntries.length > 0 && (

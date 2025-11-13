@@ -196,7 +196,7 @@ const AcAndFc = ({ classSummaryData }) => {
         if (errorClass)
           return (
             <div className="h-96 flex items-center justify-center text-red-600">
-              ❌ โหลดข้อมูล Class ไม่สำเร็จ: {errorClass}
+               โหลดข้อมูล Class ไม่สำเร็จ: {errorClass}
             </div>
           );
 

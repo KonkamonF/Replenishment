@@ -608,13 +608,13 @@ export default function Test2() {
             return row;
           });
 
-          // ✅ รายชื่อ series (ชื่อสินค้า หรือ class)
+          //  รายชื่อ series (ชื่อสินค้า หรือ class)
           const seriesKeys =
             mode === "total"
               ? activeTableRows.map((r) => `Class ${r.className}`)
               : activeTableRows.map((d) => d.name);
 
-          // ✅ กรองตาม checkbox
+          //  กรองตาม checkbox
           const visibleSeries = seriesKeys.filter((key) =>
             radarIds.includes(
               mode === "total"

@@ -10,7 +10,7 @@ import { API_BASE_URL, API_TOKEN } from "../config/apiConfig.js";
  */
 export function useProductEntry() {
   const [data, setData] = useState([]);            // รายการของ "วันที่เลือก"
-  const [monthEntries, setMonthEntries] = useState([]); // ✅ รายการของ "ทั้งเดือน"
+  const [monthEntries, setMonthEntries] = useState([]); //  รายการของ "ทั้งเดือน"
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -37,7 +37,7 @@ export function useProductEntry() {
         setData(json.entries || []);
         return json.entries || [];
       } catch (err) {
-        console.error("❌ Fetch by date error:", err);
+        console.error(" Fetch by date error:", err);
         setError(err.message);
         return [];
       } finally {
@@ -65,14 +65,14 @@ export function useProductEntry() {
       // ถ้า API นี้มี entries ทั้งเดือน ก็อัปเดต monthEntries ให้ด้วย
       if (Array.isArray(json.entries)) setMonthEntries(json.entries);
     } catch (err) {
-      console.error("❌ Summary error:", err);
+      console.error(" Summary error:", err);
       setError(err.message);
     } finally {
       setLoading(false);
     }
   }, [token]);
 
-  // ✅ ดึงข้อมูลทั้งเดือนด้วยการเรียก by-date ทีละวัน (ไม่ต้องแก้ API)
+  //  ดึงข้อมูลทั้งเดือนด้วยการเรียก by-date ทีละวัน (ไม่ต้องแก้ API)
   // const prefetchMonth = useCallback(
   //   async (year, monthZeroBased) => {
   //     // monthZeroBased: 0..11
@@ -96,7 +96,7 @@ export function useProductEntry() {
   //       }
   //       setMonthEntries(all);
   //     } catch (err) {
-  //       console.error("❌ Prefetch month error:", err);
+  //       console.error(" Prefetch month error:", err);
   //       setError(err.message);
   //     } finally {
   //       setLoading(false);
@@ -122,10 +122,11 @@ export function useProductEntry() {
       const json = await res.json();
       if (!res.ok) throw new Error(json.detail || "โหลดข้อมูลเดือนล้มเหลว");
 
-      // ✅ เซ็ตข้อมูลทั้งหมดของเดือนนี้
-      setMonthEntries(json.entries || []);
+      //  เซ็ตข้อมูลทั้งหมดของเดือนนี้
+      setMonthEntries((json.entries || []).filter(x => x.id));
+
     } catch (err) {
-      console.error("❌ Prefetch month error:", err);
+      console.error(" Prefetch month error:", err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -163,10 +164,13 @@ export function useProductEntry() {
         // รีโหลดวันที่นั้น
         await fetchByDate(entryDate);
         // อัปเดต monthEntries เฉพาะวันที่นั้น (insert เข้าของเดิม)
-        setMonthEntries((prev) => [...prev, ...(json.entries || [{ ...json, entryDate, status }])]);
+        // setMonthEntries((prev) => [...prev, ...(json.entries || [{ ...json, entryDate, status }])]);
+        if (json.entry) {
+          setMonthEntries((prev) => [...prev, json.entry]);
+        }
         return json;
       } catch (err) {
-        console.error("❌ Add Entry Error:", err);
+        console.error(" Add Entry Error:", err);
         setError(err.message);
         throw err;
       } finally {
@@ -199,7 +203,7 @@ export function useProductEntry() {
         setMonthEntries((prev) => prev.filter((x) => x.id !== id));
         return json;
       } catch (err) {
-        console.error("❌ Delete Entry Error:", err);
+        console.error(" Delete Entry Error:", err);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -220,7 +224,7 @@ export function useProductEntry() {
       entryDate,
       keepImages = [],
       newImages = [],
-      status, // ✅ ถ้ามีจะส่งไปด้วย
+      status, //  ถ้ามีจะส่งไปด้วย
     }) => {
       if (!id) throw new Error("ไม่พบ ID สำหรับแก้ไข");
       setLoading(true);
@@ -258,7 +262,7 @@ export function useProductEntry() {
         );
         return json;
       } catch (err) {
-        console.error("❌ Update Entry Error:", err);
+        console.error(" Update Entry Error:", err);
         setError(err.message);
         throw err;
       } finally {
@@ -268,24 +272,20 @@ export function useProductEntry() {
     [token, fetchByDate]
   );
 
-  // ✅ Toggle สถานะ (PATCH ไปที่ /product-entry/status)
+  //  Toggle สถานะ (PATCH ไปที่ /product-entry/status)
   const toggleStatus = useCallback(
-    async (id, currentStatus) => {
+    async (id, currentStatus, entryDate) => {
       try {
-        // 🔁 สลับสถานะ F ↔ T
         const nextStatus = currentStatus === "T" ? "F" : "T";
-
-        // 🔹 เตรียมข้อมูล FormData ตาม backend
         const form = new FormData();
         form.append("id", id);
         form.append("status", nextStatus);
 
-        // 🔹 เรียก PATCH API
         const res = await fetch(`${API_BASE_URL}/product-entry/status`, {
           method: "PATCH",
           headers: {
             Authorization: `Bearer ${token}`,
-            "Accept": "application/json",
+            Accept: "application/json",
             "ngrok-skip-browser-warning": "1",
           },
           body: form,
@@ -294,20 +294,17 @@ export function useProductEntry() {
         const json = await res.json();
         if (!res.ok) throw new Error(json.detail || "อัปเดตสถานะไม่สำเร็จ");
 
-        // 🔹 อัปเดตสถานะใน state ทันที
+        // อัปเดตใน monthEntries (ฝั่ง client นี้)
         setMonthEntries((prev) =>
-          prev.map((x) =>
-            x.id === id ? { ...x, status: nextStatus } : x
-          )
+          prev.map((x) => (x.id === id ? { ...x, status: nextStatus } : x))
         );
 
-        // 🔹 โหลดข้อมูลใหม่ของวันนั้น
-        await fetchByDate(); // ไม่ต้องส่ง entryDate ถ้าไม่ได้ใช้ใน API แล้ว
-
-        console.log("✅ Toggle success:", json);
+        if (entryDate) {
+          await fetchByDate(entryDate); // โหลดรายการของวันใน modal ใหม่
+        }
         return json;
-      } catch (err) {
-        console.error("❌ Toggle Status Error:", err);
+        } catch (err) {
+        console.error(" Toggle Status Error:", err);
         setError(err.message);
         throw err;
       }
@@ -315,16 +312,15 @@ export function useProductEntry() {
     [token, fetchByDate]
   );
 
-
   return {
     data,            // รายการของวัน (เปิด modal)
-    monthEntries,    // ✅ รายการทั้งเดือน (เรนเดอร์ปฏิทิน)
+    monthEntries,    //  รายการทั้งเดือน (เรนเดอร์ปฏิทิน)
     summary,
     loading,
     error,
     fetchByDate,
     fetchSummary,
-    prefetchMonth,   // ✅ ใช้ preload ทั้งเดือน
+    prefetchMonth,   //  ใช้ preload ทั้งเดือน
     addEntry,
     updateEntry,
     deleteEntry,

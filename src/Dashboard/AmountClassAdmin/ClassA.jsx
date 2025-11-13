@@ -5,7 +5,7 @@ import DetailClassA from "../DetailsAdmin/DetailClassA.jsx";
 export default function ClassA() {
   const [isDetailsClassA, setIsDetailsClassA] = useState(false);
 
-  // ✅ ใช้ hook ใหม่ (แยกจากตัวแบ่งหน้า)
+  //  ใช้ hook ใหม่ (แยกจากตัวแบ่งหน้า)
   const { total, loading, error } = useProductTotalByClass({
     classType: "manual",
     className: "A",

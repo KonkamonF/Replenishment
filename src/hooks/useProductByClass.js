@@ -67,9 +67,9 @@ export function useProductByClass({
 
       setAllData(all);
       setTotal(all.length);
-      setData(all.slice(0, pageSize)); // ✅ แสดงหน้าแรกหลังโหลดเสร็จ
+      setData(all.slice(0, pageSize)); //  แสดงหน้าแรกหลังโหลดเสร็จ
     } catch (err) {
-      console.error("❌ Fetch error:", err);
+      console.error(" Fetch error:", err);
       setError(err.message);
     } finally {
       setLoading(false);

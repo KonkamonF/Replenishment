@@ -1,12 +1,12 @@
 // InventoryTradeMonitor.jsx (แก้ไขล่าสุด)
 
 import React, { useState, useMemo, useRef, useEffect } from "react";
-// ✅ ลบ Upload ออกเนื่องจาก TradeRemarkModal ถูกลบแล้ว
+//  ลบ Upload ออกเนื่องจาก TradeRemarkModal ถูกลบแล้ว
 import { Search, Eye, EyeOff, ChevronDown } from "lucide-react"; 
 
 // *** WARNING: ตรวจสอบ Path การ Import เหล่านี้ให้ถูกต้อง ***
 import StockShowModal from "../SideBar-Modal/StockModal/StockShow.jsx"
-// ✅ --- ADDED IMPORT ---
+//  --- ADDED IMPORT ---
 import CommunicationCard from "../SideBar-Modal/StockModal/CommunicateCard.jsx";
 // --------------------------------------------------------
 // --- Mock Data (ชุดข้อมูล Inventory/Trade) ---
@@ -43,7 +43,7 @@ const getStatusStyle = (status) => {
       return "bg-red-100 text-red-800 border-red-300";
     case "Normal":
       return "bg-green-100 text-green-800 border-green-300";
-    // ✅ เพิ่ม Status จากโค้ดตัวอย่างเผื่อ CommunicationCard ใช้
+    //  เพิ่ม Status จากโค้ดตัวอย่างเผื่อ CommunicationCard ใช้
     case "Resolved":
       return "bg-blue-100 text-blue-800 border-blue-300";
     case "Pending":
@@ -58,7 +58,7 @@ const formatNumber = (num, decimals = 0) => {
   return num.toLocaleString("en-US", { maximumFractionDigits: decimals });
 };
 
-// --- ❌ REMOVED Trade Remark Modal Component ---
+// ---  REMOVED Trade Remark Modal Component ---
 // function TradeRemarkModal({ product, onClose, onAddRemark }) { ... }
 // ----------------------------------------------------
 
@@ -159,12 +159,12 @@ function ColumnToggleDropdown({ hiddenColumns, toggleColumnVisibility }) {
 // --- Main Component ---
 export default function KeyAdmin() { 
   const [data, setData] = useState(mockInventoryData);
-  // --- ❌ REMOVED OLD STATE ---
+  // ---  REMOVED OLD STATE ---
   // const [modalRemarkProduct, setModalRemarkProduct] = useState(null); 
   const [selectedItem, setSelectedItem] = useState(null);
   const [isStockShow,setIsStockShow]=useState(false); 
 
-  // --- ✅ ADDED NEW STATE ---
+  // ---  ADDED NEW STATE ---
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalData, setModalData] = useState({ comment: "", newStatus: "Pending" });
 
@@ -206,11 +206,11 @@ export default function KeyAdmin() {
     });
   }, [filters, data]);
 
-  // --- ❌ REMOVED OLD HANDLERS ---
+  // ---  REMOVED OLD HANDLERS ---
   // const handleOpenRemarkModal = (item) => { ... };
   // const handleAddRemark = (productCode, newRemark) => { ... };
 
-  // --- ✅ ADDED NEW MODAL HANDLERS ---
+  // ---  ADDED NEW MODAL HANDLERS ---
   const openTradeModal = (item) => {
     setSelectedItem(item);
     setModalData({ comment: "", newStatus: item.สถานะTrade || "Pending" });
@@ -274,7 +274,7 @@ export default function KeyAdmin() {
      {/* ** StockShowModal Component ** */}
      {isStockShow && <StockShowModal setIsStockShow={setIsStockShow} selectedItem={selectedItem} />} 
      
-     {/* ✅ --- ADDED CommunicationCard MODAL --- */}
+     {/*  --- ADDED CommunicationCard MODAL --- */}
      {isModalOpen && selectedItem && (
         <CommunicationCard
           item={selectedItem}
@@ -454,7 +454,7 @@ export default function KeyAdmin() {
                </td>
                     <td className={colClass("TradeRemark", "p-3 text-sm max-w-xs whitespace-normal text-gray-600 border-r border-gray-200")}>
                       <p className="text-xs mb-1 italic truncate">{item.RemarkTrade || "-"}</p>
-                      {/* ✅ --- UPDATED OnClick --- */}
+                      {/*  --- UPDATED OnClick --- */}
                       <button onClick={() => openTradeModal(item)} className={`px-3 py-1 text-xs rounded-lg cursor-pointer shadow-md transition font-medium ${item.KeyRemarks && item.KeyRemarks.length > 0 ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}>
                         บันทึก/ดูการสื่อสาร ({item.KeyRemarks ? item.KeyRemarks.length : 0})
                       </button>

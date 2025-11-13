@@ -84,10 +84,10 @@ export default function EntryProductDate({
         comments,
         entryDate,
         images: imageFiles.map((f) => f.file),
-        status: "F", // ✅ ตั้งค่าเริ่มต้นสถานะ
+        status: "F", //  ตั้งค่าเริ่มต้นสถานะ
       });
       await fetchByDate(entryDate);
-      alert("✅ บันทึกข้อมูลเรียบร้อยแล้ว");
+      alert(" บันทึกข้อมูลเรียบร้อยแล้ว");
       resetForm();
       setMode("list");
     } catch (err) {
@@ -97,14 +97,14 @@ export default function EntryProductDate({
   };
 
   // ==========================================================
-  // ✅ 1. เพิ่มฟังก์ชันสำหรับจัดการการ Toggle สถานะ
+  //  1. เพิ่มฟังก์ชันสำหรับจัดการการ Toggle สถานะ
   // ==========================================================
   const handleToggleStatus = async (item) => {
     const newStatus = item.status === "T" ? "F" : "T";
     try {
-      await toggleStatus(item.id, item.status);
+      await toggleStatus(item.id, item.status, entryDate);
 
-      // ✅ อัปเดต state ทันทีให้เปลี่ยนสี toggle โดยไม่ต้อง refresh
+      //  อัปเดต state ทันทีให้เปลี่ยนสี toggle โดยไม่ต้อง refresh
       setEntries((prev) =>
         prev.map((x) =>
           x.id === item.id ? { ...x, status: newStatus } : x
@@ -115,7 +115,6 @@ export default function EntryProductDate({
       alert("เกิดข้อผิดพลาดในการอัปเดตสถานะ");
     }
   };
-
 
   // ==========================================================
 
@@ -172,7 +171,7 @@ export default function EntryProductDate({
 
             <div className="space-y-2">
               {Entries.map((item) => {
-                // ✅ ตรวจสอบสถานะ (ค่าเริ่มต้นคือ 'F' = สีแดง)
+                //  ตรวจสอบสถานะ (ค่าเริ่มต้นคือ 'F' = สีแดง)
                 const isT = item.status === "T";
 
                 return (
@@ -189,7 +188,7 @@ export default function EntryProductDate({
                     </div>
 
                     {/* ================================================== */}
-                    {/* ✅ 2. อัปเดต UI ให้มีปุ่ม Toggle และปุ่มลบ */}
+                    {/*  2. อัปเดต UI ให้มีปุ่ม Toggle และปุ่มลบ */}
                     {/* ================================================== */}
                     <div className="flex items-center gap-3">
                       {/* ปุ่ม Toggle */}
@@ -216,7 +215,7 @@ export default function EntryProductDate({
                         onClick={async (e) => {
                           e.stopPropagation();
                           await deleteEntry(item.id, entryDate);
-                          await fetchByDate(entryDate); // ✅ รีเฟรชรายการใหม่ทันที
+                          await fetchByDate(entryDate); //  รีเฟรชรายการใหม่ทันที
                         }}
                         className="text-red-600 hover:text-red-800 transition"
                       >
@@ -382,7 +381,7 @@ export default function EntryProductDate({
             </div>
 
             <div className="space-y-2 text-gray-700">
-               {/* ✅ แสดงสถานะในหน้า Detail ด้วย */}
+               {/*  แสดงสถานะในหน้า Detail ด้วย */}
               <p>
                 <strong>สถานะ:</strong>{" "}
                 {selectedItem.status === "T" ? (
@@ -432,7 +431,7 @@ export default function EntryProductDate({
               <button
                 onClick={async () => {
                   await deleteEntry(selectedItem.id, entryDate);
-                  await fetchByDate(entryDate); // ✅ โหลดใหม่หลังลบ
+                  await fetchByDate(entryDate); //  โหลดใหม่หลังลบ
                   setMode("list");
                 }}
                 className="flex items-center bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"

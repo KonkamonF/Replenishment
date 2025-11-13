@@ -11,7 +11,7 @@ export default function Calendar() {
   const token = import.meta.env.VITE_API_TOKEN;
   const { data, loading, error, fetchByDate } = useProductEntry(token);
 
-  // 🔹 Helper Functions
+  //  Helper Functions
   const getDaysInMonth = (date) =>
     new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
 
@@ -42,7 +42,7 @@ export default function Calendar() {
       (prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1)
     );
 
-  // 🔹 เมื่อคลิกวัน
+  //  เมื่อคลิกวัน
   const handleDateClick = (year, month, day) => {
     const selected = { year, month, day };
     const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(
@@ -149,7 +149,7 @@ export default function Calendar() {
                     {day}
                   </span>
 
-                  {/* 🔹 มีสินค้าของวันนั้น */}
+                  {/*  มีสินค้าของวันนั้น */}
                   {hasEntry && (
                     <div className="mt-1 w-full text-xs text-indigo-700 font-medium truncate">
                       {data.filter((e) => e.entryDate === dateKey).length} รายการ

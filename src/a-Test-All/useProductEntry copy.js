@@ -29,7 +29,7 @@ export function useProductEntry() {
       if (!res.ok) throw new Error(json.detail || "โหลดข้อมูลไม่สำเร็จ");
       setData(json.entries || []);
     } catch (err) {
-      console.error("❌ Fetch by date error:", err);
+      console.error(" Fetch by date error:", err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -50,7 +50,7 @@ export function useProductEntry() {
       if (!res.ok) throw new Error(json.detail || "โหลด summary ไม่สำเร็จ");
       setSummary(json);
     } catch (err) {
-      console.error("❌ Summary error:", err);
+      console.error(" Summary error:", err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -94,7 +94,7 @@ export function useProductEntry() {
         await fetchByDate(entryDate); // โหลดข้อมูลใหม่ทันที
         return json;
       } catch (err) {
-        console.error("❌ Add Entry Error:", err);
+        console.error(" Add Entry Error:", err);
         setError(err.message);
         throw err;
       } finally {
@@ -124,7 +124,7 @@ export function useProductEntry() {
         await fetchByDate(entryDate);
         return json;
       } catch (err) {
-        console.error("❌ Delete Entry Error:", err);
+        console.error(" Delete Entry Error:", err);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -176,7 +176,7 @@ export function useProductEntry() {
         await fetchByDate(entryDate);
         return json;
       } catch (err) {
-        console.error("❌ Update Entry Error:", err);
+        console.error(" Update Entry Error:", err);
         setError(err.message);
         throw err;
       } finally {

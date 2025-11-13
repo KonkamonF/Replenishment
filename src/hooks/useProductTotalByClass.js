@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { API_BASE_URL, API_TOKEN } from "../config/apiConfig.js";
-// ✅ เก็บ cache และสถานะการโหลด (global-level)
+//  เก็บ cache และสถานะการโหลด (global-level)
 let cachedTotals = null;
 let loadingPromise = null;
 
