@@ -183,6 +183,11 @@ export default function EntryProductDate({
 
   const handleEditSubmit = async (e) => {
     e.preventDefault();
+    // ⬇️ *** CHANGED HERE ***
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+    // ⬆️ *** CHANGED HERE ***
 
     const keepImages = selectedItem.images.map(convertUrlToPath);
     const newFiles = imageFiles.map((f) => f.file);
@@ -215,6 +220,10 @@ export default function EntryProductDate({
     } catch (err) {
       console.error(err);
       alert("เกิดข้อผิดพลาดในการแก้ไขข้อมูล");
+    } finally {
+      // ⬇️ *** CHANGED HERE ***
+      setIsSubmitting(false);
+      // ⬆️ *** CHANGED HERE ***
     }
   };
 
@@ -230,7 +239,6 @@ export default function EntryProductDate({
   return (
     <div className="fixed inset-0 bg-[#000000ba] z-50 flex justify-center items-center">
       <div className="bg-white h-[90%] w-[75%] p-6 shadow-2xl z-50 overflow-y-auto rounded-lg">
-
         {/* HEADER */}
         <div className="flex justify-between items-start mb-6 border-b pb-4">
           <h1 className="text-3xl font-extrabold text-[#640037]">
@@ -281,7 +289,6 @@ export default function EntryProductDate({
                   </div>
 
                   <div className="flex items-center gap-3">
-
                     {/* TOGGLE STATUS */}
                     <button
                       onClick={(e) => {
@@ -311,7 +318,6 @@ export default function EntryProductDate({
                     >
                       <Trash2 size={14} />
                     </button>
-
                   </div>
                 </div>
               ))}
@@ -412,8 +418,15 @@ export default function EntryProductDate({
               {previews.length > 0 && (
                 <div className="flex overflow-x-auto gap-3 pb-2">
                   {previews.map((img) => (
-                    <div key={img.id} className="relative flex-shrink-0 border rounded-lg overflow-hidden">
-                      <img src={img.url} alt="preview" className="w-40 h-28 object-cover" />
+                    <div
+                      key={img.id}
+                      className="relative flex-shrink-0 border rounded-lg overflow-hidden"
+                    >
+                      <img
+                        src={img.url}
+                        alt="preview"
+                        className="w-40 h-28 object-cover"
+                      />
                       <button
                         type="button"
                         onClick={() => removeImage(img.id)}
@@ -494,7 +507,12 @@ export default function EntryProductDate({
                 <h3 className="font-semibold mb-2">รูปภาพแนบ:</h3>
                 <div className="flex overflow-x-auto gap-3">
                   {selectedItem.images.map((url, i) => (
-                    <img key={i} src={url} alt="preview" className="w-40 h-28 object-cover rounded border" />
+                    <img
+                      key={i}
+                      src={url}
+                      alt="preview"
+                      className="w-40 h-28 object-cover rounded border"
+                    />
                   ))}
                 </div>
               </div>
@@ -625,8 +643,15 @@ export default function EntryProductDate({
                 </label>
                 <div className="flex overflow-x-auto gap-3 pb-2">
                   {selectedItem.images.map((url, i) => (
-                    <div key={i} className="relative flex-shrink-0 border rounded-lg overflow-hidden">
-                      <img src={url} alt="old" className="w-40 h-28 object-cover" />
+                    <div
+                      key={i}
+                      className="relative flex-shrink-0 border rounded-lg overflow-hidden"
+                    >
+                      <img
+                        src={url}
+                        alt="old"
+                        className="w-40 h-28 object-cover"
+                      />
 
                       <button
                         type="button"
@@ -656,8 +681,15 @@ export default function EntryProductDate({
               {previews.length > 0 && (
                 <div className="flex overflow-x-auto gap-3 pb-2">
                   {previews.map((img) => (
-                    <div key={img.id} className="relative flex-shrink-0 border rounded-lg overflow-hidden">
-                      <img src={img.url} alt="preview" className="w-40 h-28 object-cover" />
+                    <div
+                      key={img.id}
+                      className="relative flex-shrink-0 border rounded-lg overflow-hidden"
+                    >
+                      <img
+                        src={img.url}
+                        alt="preview"
+                        className="w-40 h-28 object-cover"
+                      />
                       <button
                         type="button"
                         onClick={() => removeImage(img.id)}
@@ -681,11 +713,13 @@ export default function EntryProductDate({
             </div>
 
             <div className="pt-2 border-t flex justify-end">
+              {/* ⬇️ *** CHANGED HERE *** */}
               <button
                 type="submit"
-                className="bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-blue-700 transition"
+                disabled={isSubmitting}
+                className="bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-blue-700 transition disabled:opacity-70"
               >
-                บันทึกการแก้ไข
+                {isSubmitting ? "กำลังบันทึก..." : "บันทึกการแก้ไข"}
               </button>
             </div>
           </form>
