@@ -205,7 +205,7 @@ export default function TradeAdmin() {
   });
   const CURRENT_USER = "Trade Planner (Key)";
 
-  // 🔢 Pagination state
+  //  Pagination state
   const [pageSize, setPageSize] = useState(20); // 10 / 20 / 50
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -296,11 +296,11 @@ export default function TradeAdmin() {
     });
   }, [filters, data]);
 
-  // 🔢 สรุปจำนวนสำหรับ pagination
+  //  สรุปจำนวนสำหรับ pagination
   const totalItems = filteredData.length;
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
 
-  // 🔢 ตัดข้อมูลเฉพาะหน้าปัจจุบัน
+  //  ตัดข้อมูลเฉพาะหน้าปัจจุบัน
   const paginatedData = useMemo(() => {
     const start = (currentPage - 1) * pageSize;
     return filteredData.slice(start, start + pageSize);
@@ -1096,7 +1096,7 @@ export default function TradeAdmin() {
               </table>
             </div>
 
-            {/* 🔢 Pagination controls */}
+            {/*  Pagination controls */}
             <div className="flex flex-col md:flex-row items-center justify-between mt-4 text-sm text-gray-700 gap-3">
               {/* เลือก page size */}
               <div className="flex items-center gap-2">

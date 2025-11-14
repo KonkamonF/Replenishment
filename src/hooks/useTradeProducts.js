@@ -23,6 +23,9 @@ const safeText = (v) => {
  */
 export function useTradeProducts({ page = 1, perPage = 20, filters = {} }) {
   const [data, setData] = useState([]);
+  // เก็บข้อมูลทั้งหมดตาม filter (ใช้สำหรับ summary)
+  const [fullData, setFullData] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -32,7 +35,7 @@ export function useTradeProducts({ page = 1, perPage = 20, filters = {} }) {
   const token = API_TOKEN;
 
   // ============================================================
-  // ⭐⭐ ฟังก์ชัน load() — ย้ายออกมาจาก useEffect เดิมแบบไม่แตะของเดิม ⭐⭐
+  //  ฟังก์ชัน load() — ย้ายออกมาจาก useEffect เดิมแบบไม่แตะของเดิม 
   // ============================================================
   const load = async () => {
     try {
@@ -126,7 +129,7 @@ export function useTradeProducts({ page = 1, perPage = 20, filters = {} }) {
   };
 
   // ============================================================
-  // ⭐⭐ useEffect เดิมของคุณ — ไม่แตะ ไม่ลบ ไม่แก้ ⭐⭐
+  //  useEffect เดิมของคุณ — ไม่แตะ ไม่ลบ ไม่แก้ 
   // ============================================================
   useEffect(() => {
     let cancelled = false;
@@ -232,7 +235,7 @@ export function useTradeProducts({ page = 1, perPage = 20, filters = {} }) {
   ]);
 
   // ============================================================
-  // ⭐⭐ ฟังก์ชันใหม่: updateTradeStatus ⭐⭐
+  //  ฟังก์ชันใหม่: updateTradeStatus 
   // ============================================================
   const updateTradeStatus = async (itemCode, newStatus) => {
     const form = new FormData();
@@ -245,12 +248,82 @@ export function useTradeProducts({ page = 1, perPage = 20, filters = {} }) {
       body: form,
     });
 
-    // ⭐ refresh โดยใช้ load() ใหม่ (ไม่ยุ่งกับ useEffect เดิม)
+    //  refresh โดยใช้ load() ใหม่ (ไม่ยุ่งกับ useEffect เดิม)
     await load();
   };
 
+  // โหลดข้อมูลทั้งหมดตาม filter (เพื่อ summary dashboard)
+  const loadFullData = async (filters = {}) => {
+    try {
+      const params = new URLSearchParams();
+      params.set("fields", "*");
+      params.set("per_page", "5000");
+      params.set("page", "1");
+
+      // ---- apply filters ให้เหมือน load() ----
+      const parts = [];
+
+      if (filters.class && filters.class !== "All") {
+        parts.push(`manualClass=${filters.class}`);
+      }
+      if (filters.brand && filters.brand !== "All") {
+        parts.push(`brand=${filters.brand}`);
+      }
+      if (filters.tradeStatus && filters.tradeStatus !== "All") {
+        parts.push(`tradeStatus=${filters.tradeStatus}`);
+      }
+      if (filters.set && filters.set !== "All") {
+        parts.push(`type=${filters.set}`);
+      }
+      if (filters.best2025 && filters.best2025 !== "All") {
+        parts.push(`best2025=${filters.best2025}`);
+      }
+
+      const filtersParam = parts.join(",");
+      if (filtersParam) params.set("filters", filtersParam);
+
+      // ---- call API ----
+      const url = `${API_BASE_URL}/products/query?${params.toString()}`;
+
+      const res = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${API_TOKEN}`,
+          Accept: "application/json",
+          "ngrok-skip-browser-warning": "1",
+        },
+      });
+
+      const json = await res.json();
+      const rows = json.data || [];
+
+      // ---- mapping ----
+      const mapped = rows.map((item) => ({
+        ...item,
+        Code: item.itemCode ?? "NDB",
+        Brand: item.brand ?? "NDB",
+        Description: item.Description ?? item.description ?? "NDB",
+        Class: item.manualClass ?? "NDB",
+        Type: item.type ?? "NDB",
+        Stock_จบเหลือจริง: Number(item.stockReal ?? item.stockAllStore ?? 0),
+        YN_Best_2025: item.best2025 ?? "",
+        สถานะTrade: item.tradeStatus ?? "NDB",
+        RemarkTrade: item.tradeRemark ?? "",
+        SuggestionPurchasing: Number(item.productSuggestion ?? 0),
+        DayOnHand_DOH: Number(item.DOH ?? 0),
+        DayOnHand_DOH_Stock2: Number(item.DOHStock ?? 0),
+        KeyRemarks: item.KeyRemarks || [],
+      }));
+
+      setFullData(mapped);
+    } catch (err) {
+      console.error("❌ loadFullData summary error:", err);
+      setFullData([]);
+    }
+  };
+
+
   // ============================================================
-  // ⭐⭐ return ค่าออกไปใช้ (เพิ่ม updateTradeStatus อย่างเดียว) ⭐⭐
+  //  return ค่าออกไปใช้ (เพิ่ม updateTradeStatus อย่างเดียว) 
   // ============================================================
   return {
     data,
@@ -259,5 +332,7 @@ export function useTradeProducts({ page = 1, perPage = 20, filters = {} }) {
     totalPages,
     totalItems,
     updateTradeStatus, // ← เพิ่มตรงนี้อย่างเดียว
+    fullData,       // เพิ่ม state
+    loadFullData,   // ฟังก์ชันใหม่
   };
 }
