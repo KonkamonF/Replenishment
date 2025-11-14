@@ -195,7 +195,6 @@ export default function TradeAdmin() {
     set: "All",
   });
 
-  const statusOptions = ["Normal", "Abnormal"];
   const [hiddenColumns, setHiddenColumns] = useState([]);
   const [modalData, setModalData] = useState({
     comment: "",
@@ -204,7 +203,7 @@ export default function TradeAdmin() {
   const CURRENT_USER = "Trade Planner (Key)";
 
   // 🔢 Pagination state (ใช้กับ API)
-  const [pageSize, setPageSize] = useState(20); // 10 / 20 / 50
+  const [pageSize, setPageSize] = useState(50); 
   const [currentPage, setCurrentPage] = useState(1);
 
   // ---------- ใช้ hook ดึงข้อมูลจาก API (server-side pagination) ----------
@@ -301,6 +300,8 @@ export default function TradeAdmin() {
       );
     });
   }, [filters, data]);
+
+  // ---------- ใช้ข้อมูลจาก Server-Side Filter โดยตรง ----------
 
   // ถ้า totalPages จาก API เปลี่ยน แล้ว currentPage เกิน ให้ดึงกลับมา
   useEffect(() => {
@@ -902,7 +903,7 @@ export default function TradeAdmin() {
                             </p>
                             <button
                               onClick={() => handleShowStockModal(item)}
-                              className="px-3 py-1 text-xs rounded-lg cursor-pointer shadow-sm bg-green-500 text-white hover:bg-green-600 transition"
+                              className="text-xs rounded-lg cursor-pointer shadow-sm bg-green-500 text-white hover:bg-green-600 transition"
                               title="ดูตำแหน่งจัดเก็บและรายละเอียด Stock (ตัวโชว์)"
                             >
                               Show Location Stock

@@ -21,7 +21,7 @@ const safeText = (v) => {
  * - ส่ง filters ไป API เฉพาะอันที่เลือก (class/brand/tradeStatus/set/best2025)
  * - ไม่ส่ง search ไป API (search ทำฝั่ง UI)
  */
-export function useTradeProducts({ page = 1, perPage = 20, filters = {} }) {
+export function useTradeProducts({ page = 1, perPage= 20, filters = {} }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -230,7 +230,7 @@ export function useTradeProducts({ page = 1, perPage = 20, filters = {} }) {
     filters.set,
     filters.best2025,
   ]);
-
+console.log(data,"5555555555555");
   // ============================================================
   // ⭐⭐ ฟังก์ชันใหม่: updateTradeStatus ⭐⭐
   // ============================================================
@@ -248,7 +248,6 @@ export function useTradeProducts({ page = 1, perPage = 20, filters = {} }) {
     // ⭐ refresh โดยใช้ load() ใหม่ (ไม่ยุ่งกับ useEffect เดิม)
     await load();
   };
-
   // ============================================================
   // ⭐⭐ return ค่าออกไปใช้ (เพิ่ม updateTradeStatus อย่างเดียว) ⭐⭐
   // ============================================================
