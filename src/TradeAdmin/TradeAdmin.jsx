@@ -202,16 +202,17 @@ export default function TradeAdmin() {
   });
   const CURRENT_USER = "Trade Planner (Key)";
 
-  // 🔢 Pagination state (ใช้กับ API)
-  const [pageSize, setPageSize] = useState(50); 
+  //  Pagination state (ใช้กับ API)
+  const [pageSize, setPageSize] = useState(20); // 10 / 20 / 50
   const [currentPage, setCurrentPage] = useState(1);
 
   // ---------- ใช้ hook ดึงข้อมูลจาก API (server-side pagination) ----------
-  const { data, loading, error, totalPages, totalItems, updateTradeStatus, } = useTradeProducts({
-    page: currentPage,
-    perPage: pageSize,
-    filters,
-  });
+  const { data, loading, error, totalPages, totalItems, updateTradeStatus, fullData, loadFullData, } =
+    useTradeProducts({
+      page: currentPage,
+      perPage: pageSize,
+      filters,
+    });
 
   const handleChangeTradeStatus = (item, newStatus) => {
     updateTradeStatus(item.Code, newStatus);
@@ -309,6 +310,10 @@ export default function TradeAdmin() {
       setCurrentPage(totalPages || 1);
     }
   }, [totalPages, currentPage]);
+
+  useEffect(() => {
+    loadFullData(filters);
+  }, [filters]);
 
   const getTargetNow = (item) => {
     const now = new Date();
@@ -440,27 +445,27 @@ export default function TradeAdmin() {
   };
 
   // summary (จากข้อมูลในหน้าปัจจุบันที่ผ่าน filter แล้ว)
-  const totalStock = filteredData.reduce(
+  const totalStock = fullData.reduce(
     (s, it) => s + safeNum(it.Stock_จบเหลือจริง),
     0
   );
-  const totalStockWeightedDOH = filteredData.reduce(
+  const totalStockWeightedDOH = fullData.reduce(
     (s, it) =>
       s + safeNum(it.Stock_จบเหลือจริง) * safeNum(it.DayOnHand_DOH_Stock2),
     0
   );
   const avgDOH = totalStock > 0 ? totalStockWeightedDOH / totalStock : 0;
-  const abnormalCount = filteredData.filter(
+  const abnormalCount = fullData.filter(
     (it) => it.สถานะTrade === "Abnormal"
   ).length;
 
-  const totalAllocCurrent = filteredData.reduce(
+  const totalAllocCurrent = fullData.reduce(
     (s, it) => s + calcAllocCurrent(it),
     0
   );
-  const totalAlloc3M = filteredData.reduce((s, it) => s + calcAlloc3M(it), 0);
-  const totalAlloc6M = filteredData.reduce((s, it) => s + calcAlloc6M(it), 0);
-  const overflowScores = filteredData
+  const totalAlloc3M = fullData.reduce((s, it) => s + calcAlloc3M(it), 0);
+  const totalAlloc6M = fullData.reduce((s, it) => s + calcAlloc6M(it), 0);
+  const overflowScores = fullData
     .map((it) => calcOverflowScore(it))
     .filter((v) => v !== null && !isNaN(v));
   const overflowCount = overflowScores.filter((v) => v > 100).length;
@@ -709,10 +714,9 @@ export default function TradeAdmin() {
 
             <div className="flex justify-between items-center mb-4">
               <p className="text-sm text-gray-600 font-medium">
-                แสดงผล{" "}
-                <strong>{formatNumber(filteredData.length)}</strong> รายการ
-                จากทั้งหมด{" "}
-                <strong>{formatNumber(totalItems)}</strong> รายการ
+                แสดงผล <strong>{formatNumber(filteredData.length)}</strong>{" "}
+                รายการ จากทั้งหมด <strong>{formatNumber(totalItems)}</strong>{" "}
+                รายการ
               </p>
               <ColumnToggleDropdown
                 hiddenColumns={hiddenColumns}
@@ -746,8 +750,7 @@ export default function TradeAdmin() {
                       const alloc3 = calcAlloc3M(item);
                       const alloc6 = calcAlloc6M(item);
                       const overflow = calcOverflowScore(item);
-                      const rowNumber =
-                        (currentPage - 1) * pageSize + idx + 1;
+                      const rowNumber = (currentPage - 1) * pageSize + idx + 1;
 
                       return (
                         <tr
@@ -990,7 +993,7 @@ export default function TradeAdmin() {
                               "p-3 border-r border-gray-200 text-base text-gray-700 font-medium"
                             )}
                           >
-                            {item.SuggestionPurchasing + " Amount" ?? "-"}
+                            {item.SuggestionPurchasing ?? "-"}
                           </td>
 
                           <td
@@ -1001,7 +1004,9 @@ export default function TradeAdmin() {
                           >
                             <select
                               value={item.สถานะTrade ? item.สถานะTrade : "NDB"}
-                              onChange={(e) => handleChangeTradeStatus(item, e.target.value)}
+                              onChange={(e) =>
+                                handleChangeTradeStatus(item, e.target.value)
+                              }
                               className={`px-3 py-1 text-xs font-semibold rounded-full border ${getStatusStyleLocal(
                                 item.สถานะTrade
                               )} focus:outline-none focus:ring-2 focus:ring-pink-500`}
@@ -1070,7 +1075,7 @@ export default function TradeAdmin() {
               </table>
             </div>
 
-            {/* 🔢 Pagination controls */}
+            {/*  Pagination controls */}
             <div className="flex flex-col md:flex-row items-center justify-between mt-4 text-sm text-gray-700 gap-3">
               {/* เลือก page size */}
               <div className="flex items-center gap-2">
@@ -1100,9 +1105,7 @@ export default function TradeAdmin() {
                   ⏮ หน้าแรก
                 </button>
                 <button
-                  onClick={() =>
-                    setCurrentPage((p) => Math.max(1, p - 1))
-                  }
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
                   className="px-3 py-1 border rounded-lg disabled:opacity-40"
                 >
@@ -1150,7 +1153,8 @@ export default function TradeAdmin() {
                 (ปกติ)
               </p>
               <p className="mt-2 text-xs text-gray-600">
-                Overflow Score = (Stock - Alloc_3M) / Alloc_3M * 100. ค่า - คือไม่สามารถคำนวณได้ (Alloc_3M = 0)
+                Overflow Score = (Stock - Alloc_3M) / Alloc_3M * 100. ค่า -
+                คือไม่สามารถคำนวณได้ (Alloc_3M = 0)
               </p>
             </div>
 
