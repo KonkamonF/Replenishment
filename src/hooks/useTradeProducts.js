@@ -21,7 +21,7 @@ const safeText = (v) => {
  * - ส่ง filters ไป API เฉพาะอันที่เลือก (class/brand/tradeStatus/set/best2025)
  * - ไม่ส่ง search ไป API (search ทำฝั่ง UI)
  */
-export function useTradeProducts({ page = 1, perPage= 20, filters = {} }) {
+export function useTradeProducts({ page = 1, perPage = 20, filters = {} }) {
   const [data, setData] = useState([]);
   // เก็บข้อมูลทั้งหมดตาม filter (ใช้สำหรับ summary)
   const [fullData, setFullData] = useState([]);
@@ -35,7 +35,7 @@ export function useTradeProducts({ page = 1, perPage= 20, filters = {} }) {
   const token = API_TOKEN;
 
   // ============================================================
-  //  ฟังก์ชัน load() — ย้ายออกมาจาก useEffect เดิมแบบไม่แตะของเดิม 
+  //  ฟังก์ชัน load() — ย้ายออกมาจาก useEffect เดิมแบบไม่แตะของเดิม
   // ============================================================
   const load = async () => {
     try {
@@ -129,7 +129,7 @@ export function useTradeProducts({ page = 1, perPage= 20, filters = {} }) {
   };
 
   // ============================================================
-  //  useEffect เดิมของคุณ — ไม่แตะ ไม่ลบ ไม่แก้ 
+  //  useEffect เดิมของคุณ — ไม่แตะ ไม่ลบ ไม่แก้
   // ============================================================
   useEffect(() => {
     let cancelled = false;
@@ -233,9 +233,9 @@ export function useTradeProducts({ page = 1, perPage= 20, filters = {} }) {
     filters.set,
     filters.best2025,
   ]);
-  
+
   // ============================================================
-  //  ฟังก์ชันใหม่: updateTradeStatus 
+  //  ฟังก์ชันใหม่: updateTradeStatus
   // ============================================================
   const updateTradeStatus = async (itemCode, newStatus) => {
     const form = new FormData();
@@ -321,9 +321,8 @@ export function useTradeProducts({ page = 1, perPage= 20, filters = {} }) {
     }
   };
 
-
   // ============================================================
-  //  return ค่าออกไปใช้ (เพิ่ม updateTradeStatus อย่างเดียว) 
+  //  return ค่าออกไปใช้ (เพิ่ม updateTradeStatus อย่างเดียว)
   // ============================================================
   return {
     data,
@@ -332,7 +331,7 @@ export function useTradeProducts({ page = 1, perPage= 20, filters = {} }) {
     totalPages,
     totalItems,
     updateTradeStatus, // ← เพิ่มตรงนี้อย่างเดียว
-    fullData,       // เพิ่ม state
-    loadFullData,   // ฟังก์ชันใหม่
+    fullData, // เพิ่ม state
+    loadFullData, // ฟังก์ชันใหม่
   };
 }
