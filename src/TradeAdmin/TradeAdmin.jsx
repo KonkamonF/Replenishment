@@ -498,6 +498,27 @@ export default function TradeAdmin() {
   const colClass = (key, base = "") =>
     isColumnHidden(key) ? `hidden ${base}` : base;
 
+  // ... (ต่อจาก getSaleInAgingTierStyle)
+
+  const getClassStyle = (itemClass) => {
+    switch (itemClass) {
+      case "A":
+        return "bg-orange-500"; // สีเดิมที่คุณใช้อยู่
+      case "B":
+        return "bg-blue-500";
+      case "C":
+        return "bg-[#FF894F]";
+      case "D":
+        return "bg-sky-500";
+      case "MD":
+        return "bg-purple-500";
+      case "N":
+        return "bg-[#78C841]";
+      default:
+        return "bg-pink-500"; // สีเดิมที่เป็น fallback
+    }
+  };
+
   return (
     <div className="min-h-screen">
       {isStockShow && (
@@ -752,7 +773,7 @@ export default function TradeAdmin() {
                         key={col.key}
                         className={colClass(
                           col.key,
-                          "p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap"
+                          "p-3 border-l text-sm border-gray-500/30 first:border-l-0 whitespace-nowrap"
                         )}
                       >
                         {col.name}
@@ -773,7 +794,7 @@ export default function TradeAdmin() {
                       return (
                         <tr
                           key={item.Code}
-                          className="border-b border-gray-200 hover:bg-pink-50 transition duration-150"
+                          className="border-b border-gray-200 hover:bg-pink-50 transition duration-100"
                         >
                           <td
                             className={colClass(
@@ -787,7 +808,7 @@ export default function TradeAdmin() {
                           <td
                             className={colClass(
                               "Code",
-                              "p-3 font-mono text-sm border-r border-gray-200 text-left min-w-[120px]"
+                              "p-3 font-mono text-sm border-r border-gray-200 text-left"
                             )}
                           >
                             <span className="font-bold text-[#640037] block">
@@ -801,17 +822,15 @@ export default function TradeAdmin() {
                           <td
                             className={colClass(
                               "Description",
-                              "p-3 font-semibold text-gray-700 border-r border-gray-200 text-left min-w-[200px]"
+                              "p-3 text-gray-700 border-r border-gray-200 text-left min-w-[250px]"
                             )}
                           >
-                            <span className="block">
+                            <span className="font-bold">
                               {safeText(item.Description || item.description)}
                             </span>
                             <span
                               className={`ml-1 text-xs font-normal text-white px-2 py-0.5 rounded-full inline-block ${
-                                item.Class === "A"
-                                  ? "bg-orange-500"
-                                  : "bg-pink-500"
+                                getClassStyle(item.Class) // ⭐️ เรียกใช้ฟังก์ชันใหม่ตรงนี้
                               }`}
                             >
                               Class {item.Class}
@@ -1131,7 +1150,7 @@ export default function TradeAdmin() {
                 </button>
                 <span className="px-2">
                   หน้า <strong>{currentPage}</strong>
-                  <strong>{" "}/{" "}{totalClientPages}</strong>
+                  <strong> / {totalClientPages}</strong>
                 </span>
                 <button
                   onClick={() =>
