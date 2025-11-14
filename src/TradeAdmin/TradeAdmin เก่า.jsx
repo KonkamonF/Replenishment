@@ -75,7 +75,7 @@ const getSaleInAgingTierStyle = (tier) => {
   }
 };
 
-// --- Columns ---
+// --- Columns (เพิ่ม Overflow Score คอลัมน์) ---
 const ALL_COLUMNS = [
   { key: "No", name: "No.", isAlwaysVisible: true },
   { key: "Code", name: "ItemCode / Brand", isAlwaysVisible: true },
@@ -181,11 +181,14 @@ function ColumnToggleDropdown({ hiddenColumns, toggleColumnVisibility }) {
 
 // --- Main Component ---
 export default function TradeAdmin() {
-  // ---------- State ต่าง ๆ ----------
+  const { data, loading, error } = useTradeProducts({
+    className: "A",
+    classType: "manual",
+  });
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [isStockShow, setIsStockShow] = useState(false);
-
   const [filters, setFilters] = useState({
     search: "",
     brand: "All",
@@ -194,7 +197,6 @@ export default function TradeAdmin() {
     tradeStatus: "All",
     set: "All",
   });
-
   const statusOptions = ["Normal", "Abnormal"];
   const [hiddenColumns, setHiddenColumns] = useState([]);
   const [modalData, setModalData] = useState({
@@ -202,21 +204,6 @@ export default function TradeAdmin() {
     newStatus: "Pending",
   });
   const CURRENT_USER = "Trade Planner (Key)";
-
-  // 🔢 Pagination state (ใช้กับ API)
-  const [pageSize, setPageSize] = useState(20); // 10 / 20 / 50
-  const [currentPage, setCurrentPage] = useState(1);
-
-  // ---------- ใช้ hook ดึงข้อมูลจาก API (server-side pagination) ----------
-  const { data, loading, error, totalPages, totalItems, updateTradeStatus, } = useTradeProducts({
-    page: currentPage,
-    perPage: pageSize,
-    filters,
-  });
-
-  const handleChangeTradeStatus = (item, newStatus) => {
-    updateTradeStatus(item.Code, newStatus);
-  };
 
   const getStatusStyleLocal = (status) => {
     if (status === "Abnormal") {
@@ -234,20 +221,17 @@ export default function TradeAdmin() {
       prev.includes(key) ? prev.filter((c) => c !== key) : [...prev, key]
     );
   const isColumnHidden = (key) => hiddenColumns.includes(key);
-
-  const handleFilterChange = (name, value) => {
+  const handleFilterChange = (name, value) =>
     setFilters((p) => ({ ...p, [name]: value }));
-    // ทุกครั้งที่เปลี่ยน filter → กลับไปหน้าแรก
-    setCurrentPage(1);
-  };
 
-  // ---------- Unique options (จาก data ใน page ปัจจุบัน) ----------
   const uniqueBrands = useMemo(
     () => ["All", ...new Set(data.map((d) => d.Brand))],
     [data]
   );
-  const uniqueClasses = ["All", "A", "B", "C", "D", "MD", "N"];
-
+  const uniqueClasses = useMemo(
+    () => ["All", ...new Set(data.map((d) => d.Class))],
+    [data]
+  );
   const uniqueBest2025 = useMemo(() => ["All", "Yes", ""], []);
   const uniqueTradeStatus = useMemo(
     () => ["All", ...new Set(data.map((d) => d.สถานะTrade))],
@@ -258,56 +242,55 @@ export default function TradeAdmin() {
     [data]
   );
 
-  // ---------- Filter ฝั่ง UI (search + duplicate safety) ----------
   const filteredData = useMemo(() => {
-    return data.filter((item) => {
-      const s = filters.search.trim().toLowerCase();
-      const bestValue = item.YN_Best_2025 || "";
+  return data.filter((item) => {
+    const s = filters.search.trim().toLowerCase();
+    const bestValue = item.YN_Best_2025 || "";
 
-      const code = (item.Code || "").toLowerCase();
-      const desc = (item.Description || item.description || "").toLowerCase();
-      const remark = (item.RemarkTrade || "").toLowerCase();
-      const brand = (item.Brand || "").toLowerCase();
+    // ป้องกัน null/undefined แล้วรวมหลาย field ไว้
+    const code = (item.Code || "").toLowerCase();
+    const desc = (
+      item.Description || 
+      item.description || 
+      ""
+    ).toLowerCase();
+    const remark = (item.RemarkTrade || "").toLowerCase();
+    const brand = (item.Brand || "").toLowerCase();
 
-      const matchesSearch =
-        !s ||
-        code.includes(s) ||
-        desc.includes(s) ||
-        remark.includes(s) ||
-        brand.includes(s);
+    // ถ้า search ว่าง = ผ่านทุกตัว
+    const matchesSearch =
+      !s ||
+      code.includes(s) ||
+      desc.includes(s) ||
+      remark.includes(s) ||
+      brand.includes(s);
 
-      const matchesBrand =
-        filters.brand === "All" || item.Brand === filters.brand;
+    const matchesBrand =
+      filters.brand === "All" || item.Brand === filters.brand;
 
-      const matchesClass =
-        filters.class === "All" || item.Class === filters.class;
+    const matchesClass =
+      filters.class === "All" || item.Class === filters.class;
 
-      const matchesBest2025 =
-        filters.best2025 === "All" || filters.best2025 === bestValue;
+    // อันนี้คุณบอก “ปล่อยไว้ก่อน” เลยไม่ยุ่ง logic เดิม
+    const matchesBest2025 =
+      filters.best2025 === "All" || filters.best2025 === bestValue;
 
-      const matchesTradeStatus =
-        filters.tradeStatus === "All" ||
-        item.สถานะTrade === filters.tradeStatus;
+    const matchesTradeStatus =
+      filters.tradeStatus === "All" ||
+      item.สถานะTrade === filters.tradeStatus;
 
-      const matchesSet = filters.set === "All" || item.Type === filters.set;
+    const matchesSet = filters.set === "All" || item.Type === filters.set;
 
-      return (
-        matchesSearch &&
-        matchesBrand &&
-        matchesClass &&
-        matchesBest2025 &&
-        matchesTradeStatus &&
-        matchesSet
-      );
-    });
-  }, [filters, data]);
-
-  // ถ้า totalPages จาก API เปลี่ยน แล้ว currentPage เกิน ให้ดึงกลับมา
-  useEffect(() => {
-    if (currentPage > totalPages) {
-      setCurrentPage(totalPages || 1);
-    }
-  }, [totalPages, currentPage]);
+    return (
+      matchesSearch &&
+      matchesBrand &&
+      matchesClass &&
+      matchesBest2025 &&
+      matchesTradeStatus &&
+      matchesSet
+    );
+  });
+}, [filters, data]);
 
   const getTargetNow = (item) => {
     const now = new Date();
@@ -331,8 +314,9 @@ export default function TradeAdmin() {
     const key = `targetSale_${year}_${mm}`;
     return item[key] ?? "-";
   };
-
   // --- Allocation helpers (Dynamic) ---
+
+  // ดึง cutoffMonth_YYYY_MM ตาม 3 เดือนล่าสุด โดยอิงจากเดือนปัจจุบัน
   const calcAlloc3M = (item) => {
     const now = new Date();
     let year = now.getFullYear();
@@ -371,6 +355,7 @@ export default function TradeAdmin() {
     return item[key] ?? "-";
   };
 
+  // เดือนปัจจุบัน = cutoff เดือนล่าสุด (1 เดือน)
   const calcAllocCurrent = (item) => {
     const now = new Date();
     const year = now.getFullYear();
@@ -380,10 +365,12 @@ export default function TradeAdmin() {
     return safeNum(item[key]);
   };
 
+  // 6 เดือน = 3 เดือน × 2 (ตามสูตรที่คุณใช้เดิม)
   const calcAlloc6M = (item) => {
     return calcAlloc3M(item) * 2;
   };
 
+  // --- Overflow helpers ---
   const calcOverflowScore = (item) => {
     const stock = safeNum(item.Stock_จบเหลือจริง);
     const alloc3 = calcAlloc3M(item);
@@ -429,6 +416,8 @@ export default function TradeAdmin() {
           }
         : it
     );
+    // NOTE: ตาม requirement เดิมใช้ setData แต่ตอนนี้ data มาจาก hook
+    // ถ้าต้องการเขียนกลับจริง ๆ ต้องให้ hook รองรับ, ตอนนี้จะ log ไว้เฉย ๆ
     console.log("Updated Trade Data (local only):", updated);
     closeTradeModal();
   };
@@ -438,7 +427,7 @@ export default function TradeAdmin() {
     setIsStockShow(true);
   };
 
-  // summary (จากข้อมูลในหน้าปัจจุบันที่ผ่าน filter แล้ว)
+  // summary
   const totalStock = filteredData.reduce(
     (s, it) => s + safeNum(it.Stock_จบเหลือจริง),
     0
@@ -453,6 +442,7 @@ export default function TradeAdmin() {
     (it) => it.สถานะTrade === "Abnormal"
   ).length;
 
+  // totals for allocations and overflow
   const totalAllocCurrent = filteredData.reduce(
     (s, it) => s + calcAllocCurrent(it),
     0
@@ -708,10 +698,9 @@ export default function TradeAdmin() {
 
             <div className="flex justify-between items-center mb-4">
               <p className="text-sm text-gray-600 font-medium">
-                แสดงผล{" "}
-                <strong>{formatNumber(filteredData.length)}</strong> รายการ
-                จากทั้งหมด{" "}
-                <strong>{formatNumber(totalItems)}</strong> รายการ
+                แสดงผล <strong>{formatNumber(filteredData.length)}</strong>{" "}
+                รายการ จากทั้งหมด <strong>{formatNumber(data.length)}</strong>{" "}
+                รายการ
               </p>
               <ColumnToggleDropdown
                 hiddenColumns={hiddenColumns}
@@ -744,10 +733,7 @@ export default function TradeAdmin() {
                       const allocCurrent = calcAllocCurrent(item);
                       const alloc3 = calcAlloc3M(item);
                       const alloc6 = calcAlloc6M(item);
-                      const overflow = calcOverflowScore(item);
-                      const rowNumber =
-                        (currentPage - 1) * pageSize + idx + 1;
-
+                      const overflow = calcOverflowScore(item); // integer % or null
                       return (
                         <tr
                           key={item.Code}
@@ -759,7 +745,7 @@ export default function TradeAdmin() {
                               "p-3 text-sm text-gray-600"
                             )}
                           >
-                            {rowNumber}
+                            {idx + 1}
                           </td>
 
                           <td
@@ -796,6 +782,7 @@ export default function TradeAdmin() {
                             </span>
                             <span className="text-xs text-gray-400 block mt-1">
                               {safeText(item.Type)}
+                              {/* {safeText(item.SubType)} */}
                             </span>
                           </td>
 
@@ -808,6 +795,7 @@ export default function TradeAdmin() {
                               }`}
                             >
                               ยังไม่มีข้อมูล
+                              {/* {item.YN_Best_2025 || "No"} */}
                             </span>
                           </td>
 
@@ -876,6 +864,7 @@ export default function TradeAdmin() {
                             )}
                           >
                             ยังไม่มีข้อมูล
+                            {/* {safeText(item.SubType)} */}
                           </td>
 
                           <td
@@ -974,6 +963,11 @@ export default function TradeAdmin() {
                               "p-3 border-r border-gray-200 text-base text-gray-700 font-medium"
                             )}
                           >
+                            {/*
+                              🏷 ใช้ค่า SaleInAgingTier ที่ backend ส่งมาโดยตรง
+                              - เพิ่มสีตามประเภทด้วย getSaleInAgingTierStyle
+                              - ไม่ต้องคำนวณเองอีกต่อไป
+                            */}
                             <span
                               className={`inline-flex px-2 py-0.5 rounded-full text-xs font-semibold border ${getSaleInAgingTierStyle(
                                 getSaleInAgingTier(item)
@@ -1000,13 +994,22 @@ export default function TradeAdmin() {
                           >
                             <select
                               value={item.สถานะTrade ? item.สถานะTrade : "NDB"}
-                              onChange={(e) => handleChangeTradeStatus(item, e.target.value)}
+                              onChange={(e) =>
+                                console.log(
+                                  "change status (need backend save):",
+                                  item.Code,
+                                  e.target.value
+                                )
+                              }
                               className={`px-3 py-1 text-xs font-semibold rounded-full border ${getStatusStyleLocal(
                                 item.สถานะTrade
                               )} focus:outline-none focus:ring-2 focus:ring-pink-500`}
                             >
-                              <option value="Normal">Normal</option>
-                              <option value="Abnormal">Abnormal</option>
+                              {statusOptions.map((status) => (
+                                <option key={status} value={status}>
+                                  {status}
+                                </option>
+                              ))}
                             </select>
 
                             {item.DiffPercent && (
@@ -1069,69 +1072,6 @@ export default function TradeAdmin() {
               </table>
             </div>
 
-            {/* 🔢 Pagination controls */}
-            <div className="flex flex-col md:flex-row items-center justify-between mt-4 text-sm text-gray-700 gap-3">
-              {/* เลือก page size */}
-              <div className="flex items-center gap-2">
-                <span>แสดงหน้าละ</span>
-                <select
-                  value={pageSize}
-                  onChange={(e) => {
-                    setPageSize(Number(e.target.value));
-                    setCurrentPage(1);
-                  }}
-                  className="border border-gray-300 rounded-lg px-2 py-1 bg-white shadow-sm"
-                >
-                  <option value={10}>10</option>
-                  <option value={20}>20</option>
-                  <option value={50}>50</option>
-                </select>
-                <span>รายการ</span>
-              </div>
-
-              {/* ปุ่มเปลี่ยนหน้า */}
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setCurrentPage(1)}
-                  disabled={currentPage === 1}
-                  className="px-2 py-1 border rounded-lg disabled:opacity-40"
-                >
-                  ⏮ หน้าแรก
-                </button>
-                <button
-                  onClick={() =>
-                    setCurrentPage((p) => Math.max(1, p - 1))
-                  }
-                  disabled={currentPage === 1}
-                  className="px-3 py-1 border rounded-lg disabled:opacity-40"
-                >
-                  ก่อนหน้า
-                </button>
-
-                <span className="px-2">
-                  หน้า <strong>{currentPage}</strong> /{" "}
-                  <strong>{totalPages}</strong>
-                </span>
-
-                <button
-                  onClick={() =>
-                    setCurrentPage((p) => Math.min(totalPages, p + 1))
-                  }
-                  disabled={currentPage === totalPages}
-                  className="px-3 py-1 border rounded-lg disabled:opacity-40"
-                >
-                  ถัดไป
-                </button>
-                <button
-                  onClick={() => setCurrentPage(totalPages)}
-                  disabled={currentPage === totalPages}
-                  className="px-2 py-1 border rounded-lg disabled:opacity-40"
-                >
-                  หน้าสุดท้าย ⏭
-                </button>
-              </div>
-            </div>
-
             <div className="mt-8 p-4 bg-blue-50 rounded-lg text-sm text-gray-700">
               <p>
                 💡 <strong>คำอธิบาย DOH (Days On Hand):</strong>
@@ -1149,7 +1089,8 @@ export default function TradeAdmin() {
                 (ปกติ)
               </p>
               <p className="mt-2 text-xs text-gray-600">
-                Overflow Score = (Stock - Alloc_3M) / Alloc_3M * 100. ค่า - คือไม่สามารถคำนวณได้ (Alloc_3M = 0)
+                Overflow Score = (Stock - Alloc_3M) / Alloc_3M * 100. ค่า -
+                คือไม่สามารถคำนวณได้ (Alloc_3M = 0)
               </p>
             </div>
 
