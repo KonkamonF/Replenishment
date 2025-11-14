@@ -965,20 +965,19 @@ export default function TradeAdmin() {
                             {item.SuggestionPurchasing ?? "-"}
                           </td>
 
-                          <td className={colClass("TradeStatus", "p-3")}>
-                            <select
-                              value={item.สถานะTrade ? item.สถานะTrade : "NDB"}
-                              onChange={(e) =>
-                                handleChangeTradeStatus(item, e.target.value)
-                              }
-                              className={`px-3 py-1 text-xs rounded-full border ${getStatusStyleLocal(
+                          <td
+                            className={colClass(
+                              "TradeStatus",
+                              "p-3 text-center"
+                            )}
+                          >
+                            <p
+                              className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full border ${getStatusStyleLocal(
                                 item.สถานะTrade
-                              )} focus:outline-none focus:ring-2 focus:ring-green-500`}
+                              )}`}
                             >
-                              <option value="Normal">Normal</option>
-                              <option value="Abnormal">Abnormal</option>
-                            </select>
-
+                              {safeText(item.สถานะTrade)}
+                            </p>
                             {item.DiffPercent && (
                               <p
                                 className={`text-xs mt-1 font-bold ${
@@ -991,7 +990,6 @@ export default function TradeAdmin() {
                               </p>
                             )}
                           </td>
-
                           <td
                             className={colClass(
                               "TradeRemark",
