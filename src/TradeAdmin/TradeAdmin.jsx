@@ -702,7 +702,7 @@ export default function TradeAdmin() {
                   onChange={(e) =>
                     handleFilterChange("best2025", e.target.value)
                   }
-                  className="w-full p-2 pr-10 border border-gray-300 rounded-lg shadow-sm bg-white"
+                  className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white"
                 >
                   {uniqueBest2025.map((o) => (
                     <option key={o} value={o}>
@@ -721,7 +721,7 @@ export default function TradeAdmin() {
                   onChange={(e) =>
                     handleFilterChange("tradeStatus", e.target.value)
                   }
-                  className="w-full p-2 pr-10 border border-gray-300 rounded-lg shadow-sm bg-white"
+                  className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white"
                 >
                   {uniqueTradeStatus.map((s) => (
                     <option key={s} value={s}>
@@ -738,7 +738,7 @@ export default function TradeAdmin() {
                 <select
                   value={filters.set}
                   onChange={(e) => handleFilterChange("set", e.target.value)}
-                  className="w-full p-2 pr-10 border border-gray-300 rounded-lg shadow-sm bg-white"
+                  className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white"
                 >
                   {uniqueSets.map((t) => (
                     <option key={t} value={t}>
