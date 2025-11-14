@@ -765,7 +765,13 @@ export default function TradeAdmin() {
 
             {/* --- Data Table --- */}
             <div className="overflow-x-auto shadow-xl rounded-xl border border-gray-200">
-              <table className="min-w-full table-auto bg-white text-center">
+              <table
+                className="min-w-full table-auto bg-white text-center 
+  [&_th]:border-r [&_th]:border-gray-200
+  [&_td]:border-r [&_td]:border-gray-200
+  [&_th:last-child]:border-r-0
+  [&_td:last-child]:border-r-0"
+              >
                 <thead className="bg-[#640037] text-white sticky top-0 text-sm">
                   <tr>
                     {ALL_COLUMNS.map((col) => (
@@ -773,7 +779,7 @@ export default function TradeAdmin() {
                         key={col.key}
                         className={colClass(
                           col.key,
-                          "p-3 border-l text-sm border-gray-500/30 first:border-l-0 whitespace-nowrap"
+                          "p-3 text-sm whitespace-nowrap"
                         )}
                       >
                         {col.name}
@@ -794,7 +800,7 @@ export default function TradeAdmin() {
                       return (
                         <tr
                           key={item.Code}
-                          className="border-b border-r border-gray-200 hover:bg-pink-50 transition duration-100"
+                          className="border-b border-gray-300 hover:bg-pink-50 transition duration-100"
                         >
                           <td
                             className={colClass(
