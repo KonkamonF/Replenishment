@@ -848,9 +848,9 @@ export default function TradeAdmin() {
 
                           <td className={colClass("Best", "p-3 text-center")}>
                             <span
-                              className={`px-2 py-0.5 rounded-full text-xs ${
+                              className={`px-3 py-0.5 block rounded-full text-xs ${
                                 item.YN_Best_2025 === "Yes"
-                                  ? "bg-green-100 text-green-700"
+                                  ? "bg-green-200 text-green-900"
                                   : "bg-gray-100 text-gray-500"
                               }`}
                             >
