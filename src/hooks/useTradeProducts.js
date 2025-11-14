@@ -233,7 +233,7 @@ export function useTradeProducts({ page = 1, perPage= 20, filters = {} }) {
     filters.set,
     filters.best2025,
   ]);
-console.log(data,"5555555555555");
+  
   // ============================================================
   //  ฟังก์ชันใหม่: updateTradeStatus 
   // ============================================================

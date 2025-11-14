@@ -29,20 +29,7 @@ const getDOHStyle = (doh) => {
   if (doh > 180) return "text-orange-600 font-bold";
   return "text-green-600 font-bold";
 };
-const getStatusStyle = (status) => {
-  switch (status) {
-    case "Abnormal":
-      return "bg-red-100 text-red-800 border-red-300";
-    case "Normal":
-      return "bg-green-100 text-green-800 border-green-300";
-    case "Resolved":
-      return "bg-blue-100 text-blue-800 border-blue-300";
-    case "Pending":
-      return "bg-yellow-100 text-yellow-800 border-yellow-300";
-    default:
-      return "bg-gray-100 text-gray-800 border-gray-300";
-  }
-};
+
 // Overflow style by score
 const getOverflowStyle = (score) => {
   if (score === null || score === undefined) return "text-gray-500";
@@ -207,12 +194,20 @@ export default function TradeAdmin() {
   const [currentPage, setCurrentPage] = useState(1);
 
   // ---------- ใช้ hook ดึงข้อมูลจาก API (server-side pagination) ----------
-  const { data, loading, error, totalPages, totalItems, updateTradeStatus, fullData, loadFullData, } =
-    useTradeProducts({
-      page: currentPage,
-      perPage: pageSize,
-      filters,
-    });
+  const {
+    data,
+    loading,
+    error,
+    totalPages,
+    totalItems,
+    updateTradeStatus,
+    fullData,
+    loadFullData,
+  } = useTradeProducts({
+    page: currentPage,
+    perPage: pageSize,
+    filters,
+  });
 
   const handleChangeTradeStatus = (item, newStatus) => {
     updateTradeStatus(item.Code, newStatus);
@@ -258,9 +253,10 @@ export default function TradeAdmin() {
     [data]
   );
 
-  // ---------- Filter ฝั่ง UI (search + duplicate safety) ----------
+  // ---------- Filter ฝั่ง UI (กรองจาก fullData ที่ Server ส่งมา) ----------
   const filteredData = useMemo(() => {
-    return data.filter((item) => {
+    // ⭐️ 1. เปลี่ยนเป้าหมายการกรองเป็น fullData
+    return fullData.filter((item) => {
       const s = filters.search.trim().toLowerCase();
       const bestValue = item.YN_Best_2025 || "";
 
@@ -299,10 +295,30 @@ export default function TradeAdmin() {
         matchesTradeStatus &&
         matchesSet
       );
-    });
-  }, [filters, data]);
+    }); // ⭐️ 2. เปลี่ยน Dependency เป็น fullData
+  }, [filters, fullData]);
 
-  // ---------- ใช้ข้อมูลจาก Server-Side Filter โดยตรง ----------
+  // ---------- ⭐️ 3. คำนวณข้อมูลสำหรับแสดงผลในหน้านี้ (Client-side Pagination) ----------
+  const totalFilteredItems = filteredData.length;
+  // ⭐️ 4. คำนวณจำนวนหน้าทั้งหมดใหม่ โดยอิงจากข้อมูลที่กรองแล้ว
+  const totalClientPages = Math.ceil(totalFilteredItems / pageSize) || 1; // ⭐️ 5. (สำคัญ) ตรวจสอบว่าหน้าปัจจุบันไม่เกินจำนวนหน้าทั้งหมด (กรณีข้อมูลหดเหลือน้อย)
+
+  useEffect(() => {
+    if (currentPage > totalClientPages && totalClientPages > 0) {
+      setCurrentPage(totalClientPages);
+    }
+    // ถ้า totalClientPages เป็น 1 (เช่น ไม่มีข้อมูล) ให้เด้งกลับไปหน้า 1
+    else if (currentPage !== 1 && totalClientPages === 1) {
+      setCurrentPage(1);
+    }
+  }, [currentPage, totalClientPages]);
+
+  // ⭐️ 6. สร้างตัวแปรใหม่สำหรับ .map ในตาราง
+  const paginatedData = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    return filteredData.slice(startIndex, endIndex);
+  }, [filteredData, currentPage, pageSize]);
 
   // ถ้า totalPages จาก API เปลี่ยน แล้ว currentPage เกิน ให้ดึงกลับมา
   useEffect(() => {
@@ -714,9 +730,11 @@ export default function TradeAdmin() {
 
             <div className="flex justify-between items-center mb-4">
               <p className="text-sm text-gray-600 font-medium">
-                แสดงผล <strong>{formatNumber(filteredData.length)}</strong>{" "}
-                รายการ จากทั้งหมด <strong>{formatNumber(totalItems)}</strong>{" "}
-                รายการ
+                                ⭐️ แสดงผล{" "}
+                <strong>{formatNumber(paginatedData.length)}</strong>          
+                      รายการ จากทั้งหมด{" "}
+                <strong>{formatNumber(totalFilteredItems)}</strong>            
+                    รายการ              {" "}
               </p>
               <ColumnToggleDropdown
                 hiddenColumns={hiddenColumns}
@@ -744,8 +762,8 @@ export default function TradeAdmin() {
                 </thead>
 
                 <tbody>
-                  {filteredData.length > 0 ? (
-                    filteredData.map((item, idx) => {
+                  {paginatedData.length > 0 ? (
+                    paginatedData.map((item, idx) => {
                       const allocCurrent = calcAllocCurrent(item);
                       const alloc3 = calcAlloc3M(item);
                       const alloc6 = calcAlloc6M(item);
@@ -1111,24 +1129,22 @@ export default function TradeAdmin() {
                 >
                   ก่อนหน้า
                 </button>
-
                 <span className="px-2">
-                  หน้า <strong>{currentPage}</strong> /{" "}
-                  <strong>{totalPages}</strong>
+                  หน้า <strong>{currentPage}</strong>
+                  <strong>{" "}/{" "}{totalClientPages}</strong>
                 </span>
-
                 <button
                   onClick={() =>
-                    setCurrentPage((p) => Math.min(totalPages, p + 1))
+                    setCurrentPage((p) => Math.min(totalClientPages, p + 1))
                   }
-                  disabled={currentPage === totalPages}
-                  className="px-3 py-1 border rounded-lg disabled:opacity-40"
+                  disabled={currentPage === totalClientPages}
+                  className="px-2 py-1 border rounded-lg disabled:opacity-40"
                 >
                   ถัดไป
                 </button>
                 <button
-                  onClick={() => setCurrentPage(totalPages)}
-                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage(totalClientPages)}
+                  disabled={currentPage === totalClientPages}
                   className="px-2 py-1 border rounded-lg disabled:opacity-40"
                 >
                   หน้าสุดท้าย ⏭
