@@ -258,7 +258,8 @@ export default function TradeAdmin() {
     () => ["All", ...new Set(data.map((d) => d.Type))],
     [data]
   );
-
+  const [tableData, setTableData] = useState([]);
+  
   // ---------- Filter ฝั่ง UI (search + duplicate safety) ----------
   const filteredData = useMemo(() => {
     return data.filter((item) => {
@@ -829,7 +830,7 @@ export default function TradeAdmin() {
                               "p-3 text-right border-r border-gray-200 text-base text-gray-700 font-medium"
                             )}
                           >
-                            {formatNumber(getActual(item))}
+                            รอดึงข้อมูลจริงจากDB{/* {formatNumber(getActual(item))} */}
                           </td>
 
                           <td
