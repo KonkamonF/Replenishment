@@ -870,18 +870,8 @@ export default function TradeAdmin() {
                             รอระบบคีย์
                           </td>
 
-<<<<<<< HEAD
-                          <td
-                            className={colClass(
-                              "Actual",
-                              "p-3 text-right border-r border-gray-200 text-base text-gray-700 font-medium"
-                            )}
-                          >
-                            รอดึงข้อมูลจริงจากDB{/* {formatNumber(getActual(item))} */}
-=======
                           <td className={colClass("Actual", "p-3")}>
                             {formatNumber(getActual(item))}
->>>>>>> 9697d67f2903cf5f142d3a197e028ee9749ea15c
                           </td>
 
                           <td className={colClass("TargetNow", "p-3")}>
