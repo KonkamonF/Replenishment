@@ -252,14 +252,8 @@ export default function TradeAdmin() {
     () => ["All", ...new Set(data.map((d) => d.Type))],
     [data]
   );
-<<<<<<< HEAD
-  const [tableData, setTableData] = useState([]);
-  
-  // ---------- Filter ฝั่ง UI (search + duplicate safety) ----------
-=======
 
   // ---------- Filter ฝั่ง UI (กรองจาก fullData ที่ Server ส่งมา) ----------
->>>>>>> 9697d67f2903cf5f142d3a197e028ee9749ea15c
   const filteredData = useMemo(() => {
     // ⭐️ 1. เปลี่ยนเป้าหมายการกรองเป็น fullData
     return fullData.filter((item) => {
