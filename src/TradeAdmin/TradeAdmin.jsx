@@ -29,20 +29,7 @@ const getDOHStyle = (doh) => {
   if (doh > 180) return "text-orange-600 font-bold";
   return "text-green-600 font-bold";
 };
-const getStatusStyle = (status) => {
-  switch (status) {
-    case "Abnormal":
-      return "bg-red-100 text-red-800 border-red-300";
-    case "Normal":
-      return "bg-green-100 text-green-800 border-green-300";
-    case "Resolved":
-      return "bg-blue-100 text-blue-800 border-blue-300";
-    case "Pending":
-      return "bg-yellow-100 text-yellow-800 border-yellow-300";
-    default:
-      return "bg-gray-100 text-gray-800 border-gray-300";
-  }
-};
+
 // Overflow style by score
 const getOverflowStyle = (score) => {
   if (score === null || score === undefined) return "text-gray-500";
@@ -195,7 +182,6 @@ export default function TradeAdmin() {
     set: "All",
   });
 
-  const statusOptions = ["Normal", "Abnormal"];
   const [hiddenColumns, setHiddenColumns] = useState([]);
   const [modalData, setModalData] = useState({
     comment: "",
@@ -208,12 +194,20 @@ export default function TradeAdmin() {
   const [currentPage, setCurrentPage] = useState(1);
 
   // ---------- ใช้ hook ดึงข้อมูลจาก API (server-side pagination) ----------
-  const { data, loading, error, totalPages, totalItems, updateTradeStatus, fullData, loadFullData, } =
-    useTradeProducts({
-      page: currentPage,
-      perPage: pageSize,
-      filters,
-    });
+  const {
+    data,
+    loading,
+    error,
+    totalPages,
+    totalItems,
+    updateTradeStatus,
+    fullData,
+    loadFullData,
+  } = useTradeProducts({
+    page: currentPage,
+    perPage: pageSize,
+    filters,
+  });
 
   const handleChangeTradeStatus = (item, newStatus) => {
     updateTradeStatus(item.Code, newStatus);
@@ -258,11 +252,17 @@ export default function TradeAdmin() {
     () => ["All", ...new Set(data.map((d) => d.Type))],
     [data]
   );
+<<<<<<< HEAD
   const [tableData, setTableData] = useState([]);
   
   // ---------- Filter ฝั่ง UI (search + duplicate safety) ----------
+=======
+
+  // ---------- Filter ฝั่ง UI (กรองจาก fullData ที่ Server ส่งมา) ----------
+>>>>>>> 9697d67f2903cf5f142d3a197e028ee9749ea15c
   const filteredData = useMemo(() => {
-    return data.filter((item) => {
+    // ⭐️ 1. เปลี่ยนเป้าหมายการกรองเป็น fullData
+    return fullData.filter((item) => {
       const s = filters.search.trim().toLowerCase();
       const bestValue = item.YN_Best_2025 || "";
 
@@ -301,8 +301,30 @@ export default function TradeAdmin() {
         matchesTradeStatus &&
         matchesSet
       );
-    });
-  }, [filters, data]);
+    }); // ⭐️ 2. เปลี่ยน Dependency เป็น fullData
+  }, [filters, fullData]);
+
+  // ---------- ⭐️ 3. คำนวณข้อมูลสำหรับแสดงผลในหน้านี้ (Client-side Pagination) ----------
+  const totalFilteredItems = filteredData.length;
+  // ⭐️ 4. คำนวณจำนวนหน้าทั้งหมดใหม่ โดยอิงจากข้อมูลที่กรองแล้ว
+  const totalClientPages = Math.ceil(totalFilteredItems / pageSize) || 1; // ⭐️ 5. (สำคัญ) ตรวจสอบว่าหน้าปัจจุบันไม่เกินจำนวนหน้าทั้งหมด (กรณีข้อมูลหดเหลือน้อย)
+
+  useEffect(() => {
+    if (currentPage > totalClientPages && totalClientPages > 0) {
+      setCurrentPage(totalClientPages);
+    }
+    // ถ้า totalClientPages เป็น 1 (เช่น ไม่มีข้อมูล) ให้เด้งกลับไปหน้า 1
+    else if (currentPage !== 1 && totalClientPages === 1) {
+      setCurrentPage(1);
+    }
+  }, [currentPage, totalClientPages]);
+
+  // ⭐️ 6. สร้างตัวแปรใหม่สำหรับ .map ในตาราง
+  const paginatedData = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    return filteredData.slice(startIndex, endIndex);
+  }, [filteredData, currentPage, pageSize]);
 
   // ถ้า totalPages จาก API เปลี่ยน แล้ว currentPage เกิน ให้ดึงกลับมา
   useEffect(() => {
@@ -481,6 +503,27 @@ export default function TradeAdmin() {
 
   const colClass = (key, base = "") =>
     isColumnHidden(key) ? `hidden ${base}` : base;
+
+  // ... (ต่อจาก getSaleInAgingTierStyle)
+
+  const getClassStyle = (itemClass) => {
+    switch (itemClass) {
+      case "A":
+        return "bg-orange-500";
+      case "B":
+        return "bg-blue-500";
+      case "C":
+        return "bg-[#FF894F]";
+      case "D":
+        return "bg-sky-500";
+      case "MD":
+        return "bg-purple-500";
+      case "N":
+        return "bg-[#78C841]";
+      default:
+        return "bg-gray-400";
+    }
+  };
 
   return (
     <div className="min-h-screen">
@@ -665,7 +708,7 @@ export default function TradeAdmin() {
                   onChange={(e) =>
                     handleFilterChange("best2025", e.target.value)
                   }
-                  className="w-full p-2 pr-10 border border-gray-300 rounded-lg shadow-sm bg-white"
+                  className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white"
                 >
                   {uniqueBest2025.map((o) => (
                     <option key={o} value={o}>
@@ -684,7 +727,7 @@ export default function TradeAdmin() {
                   onChange={(e) =>
                     handleFilterChange("tradeStatus", e.target.value)
                   }
-                  className="w-full p-2 pr-10 border border-gray-300 rounded-lg shadow-sm bg-white"
+                  className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white"
                 >
                   {uniqueTradeStatus.map((s) => (
                     <option key={s} value={s}>
@@ -701,7 +744,7 @@ export default function TradeAdmin() {
                 <select
                   value={filters.set}
                   onChange={(e) => handleFilterChange("set", e.target.value)}
-                  className="w-full p-2 pr-10 border border-gray-300 rounded-lg shadow-sm bg-white"
+                  className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white"
                 >
                   {uniqueSets.map((t) => (
                     <option key={t} value={t}>
@@ -714,9 +757,11 @@ export default function TradeAdmin() {
 
             <div className="flex justify-between items-center mb-4">
               <p className="text-sm text-gray-600 font-medium">
-                แสดงผล <strong>{formatNumber(filteredData.length)}</strong>{" "}
-                รายการ จากทั้งหมด <strong>{formatNumber(totalItems)}</strong>{" "}
-                รายการ
+                แสดงผล
+                <strong> {formatNumber(paginatedData.length)} </strong>        
+                        รายการ จากทั้งหมด
+                <strong> {formatNumber(totalFilteredItems)} </strong>          
+                      รายการ
               </p>
               <ColumnToggleDropdown
                 hiddenColumns={hiddenColumns}
@@ -726,7 +771,13 @@ export default function TradeAdmin() {
 
             {/* --- Data Table --- */}
             <div className="overflow-x-auto shadow-xl rounded-xl border border-gray-200">
-              <table className="min-w-full table-auto bg-white text-center">
+              <table
+                className="min-w-full table-auto bg-white text-center 
+  [&_th]:border-r [&_th]:border-gray-200
+  [&_td]:border-r [&_td]:border-gray-200
+  [&_th:last-child]:border-r-0
+  [&_td:last-child]:border-r-0"
+              >
                 <thead className="bg-[#640037] text-white sticky top-0 text-sm">
                   <tr>
                     {ALL_COLUMNS.map((col) => (
@@ -734,7 +785,7 @@ export default function TradeAdmin() {
                         key={col.key}
                         className={colClass(
                           col.key,
-                          "p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap"
+                          "p-3 text-sm whitespace-nowrap"
                         )}
                       >
                         {col.name}
@@ -744,8 +795,8 @@ export default function TradeAdmin() {
                 </thead>
 
                 <tbody>
-                  {filteredData.length > 0 ? (
-                    filteredData.map((item, idx) => {
+                  {paginatedData.length > 0 ? (
+                    paginatedData.map((item, idx) => {
                       const allocCurrent = calcAllocCurrent(item);
                       const alloc3 = calcAlloc3M(item);
                       const alloc6 = calcAlloc6M(item);
@@ -755,7 +806,7 @@ export default function TradeAdmin() {
                       return (
                         <tr
                           key={item.Code}
-                          className="border-b border-gray-200 hover:bg-pink-50 transition duration-150"
+                          className="border-b border-gray-300 hover:bg-pink-50 transition duration-100"
                         >
                           <td
                             className={colClass(
@@ -769,13 +820,13 @@ export default function TradeAdmin() {
                           <td
                             className={colClass(
                               "Code",
-                              "p-3 font-mono text-sm border-r border-gray-200 text-left min-w-[120px]"
+                              "p-3 font-mono text-sm text-left"
                             )}
                           >
                             <span className="font-bold text-[#640037] block">
                               {item.Code}
                             </span>
-                            <span className="text-xs text-gray-500">
+                            <span className="text-xs text-gray-600">
                               {safeText(item.Brand)}
                             </span>
                           </td>
@@ -783,47 +834,43 @@ export default function TradeAdmin() {
                           <td
                             className={colClass(
                               "Description",
-                              "p-3 font-semibold text-gray-700 border-r border-gray-200 text-left min-w-[200px]"
+                              "p-3 text-gray-700 text-left min-w-[250px]"
                             )}
                           >
-                            <span className="block">
+                            <span className="font-bold">
                               {safeText(item.Description || item.description)}
                             </span>
                             <span
-                              className={`ml-1 text-xs font-normal text-white px-2 py-0.5 rounded-full inline-block ${
-                                item.Class === "A"
-                                  ? "bg-orange-500"
-                                  : "bg-pink-500"
-                              }`}
+                              className={`ml-1 text-xs text-white px-2 py-0.5 rounded-full inline-block ${getClassStyle(
+                                item.Class
+                              )}`}
                             >
                               Class {item.Class}
                             </span>
-                            <span className="text-xs text-gray-400 block mt-1">
+                            <span className="text-xs text-gray-600 block mt-1">
                               {safeText(item.Type)}
                             </span>
                           </td>
 
                           <td className={colClass("Best", "p-3 text-center")}>
                             <span
-                              className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
+                              className={`px-3 py-0.5 block rounded-full text-xs ${
                                 item.YN_Best_2025 === "Yes"
-                                  ? "bg-green-100 text-green-700"
+                                  ? "bg-green-200 text-green-900"
                                   : "bg-gray-100 text-gray-500"
                               }`}
                             >
-                              ยังไม่มีข้อมูล
+                              {item.YN_Best_2025 === "Yes"
+                                ? "Yes"
+                                : "No Data Best"}
                             </span>
                           </td>
 
-                          <td
-                            className={colClass(
-                              "Forecast",
-                              "p-3 text-right border-r border-gray-200 text-base text-gray-700 font-medium"
-                            )}
-                          >
+                          <td className={colClass("Forecast", "p-3")}>
                             รอระบบคีย์
                           </td>
 
+<<<<<<< HEAD
                           <td
                             className={colClass(
                               "Actual",
@@ -831,32 +878,24 @@ export default function TradeAdmin() {
                             )}
                           >
                             รอดึงข้อมูลจริงจากDB{/* {formatNumber(getActual(item))} */}
+=======
+                          <td className={colClass("Actual", "p-3")}>
+                            {formatNumber(getActual(item))}
+>>>>>>> 9697d67f2903cf5f142d3a197e028ee9749ea15c
                           </td>
 
-                          <td
-                            className={colClass(
-                              "TargetNow",
-                              "p-3 text-right border-r border-gray-200 text-base text-gray-700 font-medium"
-                            )}
-                          >
+                          <td className={colClass("TargetNow", "p-3")}>
                             {formatNumber(getTargetNow(item))}
                           </td>
 
-                          <td
-                            className={colClass(
-                              "TargetLast",
-                              "p-3 text-right border-r border-gray-200 text-base text-gray-700 font-medium"
-                            )}
-                          >
+                          <td className={colClass("TargetLast", "p-3")}>
                             {formatNumber(getTargetLast(item))}
                           </td>
 
                           <td
                             className={colClass(
                               "DOH",
-                              `p-3 font-extrabold text-lg border-r border-gray-200 ${getDOHStyle(
-                                item.DayOnHand_DOH_Stock2
-                              )} text-right`
+                              `p-3${getDOHStyle(item.DayOnHand_DOH_Stock2)}`
                             )}
                           >
                             {formatNumber(item.DayOnHand_DOH_Stock2, 0)}
@@ -865,9 +904,9 @@ export default function TradeAdmin() {
                           <td
                             className={colClass(
                               "POH",
-                              `p-3 font-extrabold text-lg border-r border-gray-200 ${getDOHStyle(
+                              `p-3 ${getDOHStyle(
                                 item.DayOnHand_DOH_Stock2 + 50
-                              )} text-right`
+                              )}`
                             )}
                           >
                             {formatNumber(item.DayOnHand_DOH_Stock2 + 50, 0)}
@@ -882,22 +921,12 @@ export default function TradeAdmin() {
                             ยังไม่มีข้อมูล
                           </td>
 
-                          <td
-                            className={colClass(
-                              "Stock_Physical",
-                              "p-3 text-right border-r border-gray-200 text-base text-gray-700 font-medium"
-                            )}
-                          >
+                          <td className={colClass("Stock_Physical", "p-3")}>
                             {formatNumber(safeNum(item.Stock_จบเหลือจริง))}
                           </td>
 
-                          <td
-                            className={colClass(
-                              "Stock_Show",
-                              "p-3 text-sm text-gray-500 text-center"
-                            )}
-                          >
-                            <p className="font-semibold text-base text-gray-800 mb-1">
+                          <td className={colClass("Stock_Show", "p-3 text-xs")}>
+                            <p className="mb-1">
                               {formatNumber(
                                 Math.round(
                                   (safeNum(item.Stock_จบเหลือจริง) || 0) * 0.1
@@ -906,63 +935,33 @@ export default function TradeAdmin() {
                             </p>
                             <button
                               onClick={() => handleShowStockModal(item)}
-                              className="px-3 py-1 text-xs rounded-lg cursor-pointer shadow-sm bg-green-500 text-white hover:bg-green-600 transition"
+                              className="text-xs rounded-lg cursor-pointer shadow-sm bg-green-500 text-[#114232] hover:bg-green-600 transition"
                               title="ดูตำแหน่งจัดเก็บและรายละเอียด Stock (ตัวโชว์)"
                             >
                               Show Location Stock
                             </button>
                           </td>
 
-                          <td
-                            className={colClass(
-                              "Stock",
-                              "p-3 text-right border-r border-gray-200 text-base text-gray-700 font-medium"
-                            )}
-                          >
+                          <td className={colClass("Stock", "p-3")}>
                             {formatNumber(item.Stock_จบเหลือจริง)}
                           </td>
 
-                          <td
-                            className={colClass(
-                              "Stock_Cl",
-                              "p-3 text-right border-r border-gray-200 text-base text-gray-700 font-medium"
-                            )}
-                          >
+                          <td className={colClass("Stock_Cl", "p-3")}>
                             {formatNumber(item.Stock_จบเหลือจริง)}
                           </td>
 
-                          <td
-                            className={colClass(
-                              "Alloc_Current",
-                              "p-3 text-right border-r border-gray-200 text-base text-gray-700 font-medium"
-                            )}
-                          >
+                          <td className={colClass("Alloc_Current", "p-3")}>
                             {formatNumber(allocCurrent)}
                           </td>
 
-                          <td
-                            className={colClass(
-                              "Alloc_3M",
-                              "p-3 text-right border-r border-gray-200 text-base text-gray-700 font-medium"
-                            )}
-                          >
+                          <td className={colClass("Alloc_3M", "p-3")}>
                             {formatNumber(alloc3)}
                           </td>
 
-                          <td
-                            className={colClass(
-                              "Alloc_6M",
-                              "p-3 text-right border-r border-gray-200 text-base text-gray-700 font-medium"
-                            )}
-                          >
+                          <td className={colClass("Alloc_6M", "p-3")}>
                             {formatNumber(alloc6)}
                           </td>
-                          <td
-                            className={colClass(
-                              "OverflowScore",
-                              "p-3 text-right border-r border-gray-200 text-base text-gray-700 font-medium"
-                            )}
-                          >
+                          <td className={colClass("OverflowScore", "p-3 ")}>
                             {overflow === null ? (
                               <span className="text-gray-400">-</span>
                             ) : (
@@ -972,12 +971,7 @@ export default function TradeAdmin() {
                             )}
                           </td>
 
-                          <td
-                            className={colClass(
-                              "SaleInAgingTier",
-                              "p-3 border-r border-gray-200 text-base text-gray-700 font-medium"
-                            )}
-                          >
+                          <td className={colClass("SaleInAgingTier", "p-3 ")}>
                             <span
                               className={`inline-flex px-2 py-0.5 rounded-full text-xs font-semibold border ${getSaleInAgingTierStyle(
                                 getSaleInAgingTier(item)
@@ -988,10 +982,7 @@ export default function TradeAdmin() {
                           </td>
 
                           <td
-                            className={colClass(
-                              "SuggestionPurchasing",
-                              "p-3 border-r border-gray-200 text-base text-gray-700 font-medium"
-                            )}
+                            className={colClass("SuggestionPurchasing", "p-3")}
                           >
                             {item.SuggestionPurchasing ?? "-"}
                           </td>
@@ -999,22 +990,16 @@ export default function TradeAdmin() {
                           <td
                             className={colClass(
                               "TradeStatus",
-                              "p-3 border-r border-gray-200 text-center"
+                              "p-3 text-center"
                             )}
                           >
-                            <select
-                              value={item.สถานะTrade ? item.สถานะTrade : "NDB"}
-                              onChange={(e) =>
-                                handleChangeTradeStatus(item, e.target.value)
-                              }
-                              className={`px-3 py-1 text-xs font-semibold rounded-full border ${getStatusStyleLocal(
+                            <p
+                              className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full border ${getStatusStyleLocal(
                                 item.สถานะTrade
-                              )} focus:outline-none focus:ring-2 focus:ring-pink-500`}
+                              )}`}
                             >
-                              <option value="Normal">Normal</option>
-                              <option value="Abnormal">Abnormal</option>
-                            </select>
-
+                              {safeText(item.สถานะTrade)}
+                            </p>
                             {item.DiffPercent && (
                               <p
                                 className={`text-xs mt-1 font-bold ${
@@ -1027,11 +1012,10 @@ export default function TradeAdmin() {
                               </p>
                             )}
                           </td>
-
                           <td
                             className={colClass(
                               "TradeRemark",
-                              "p-3 text-sm max-w-xs whitespace-normal text-gray-600 border-r border-gray-200 text-center"
+                              "p-3 text-xs text-gray-400"
                             )}
                           >
                             <p className="text-xs mb-1 italic truncate">
@@ -1086,7 +1070,7 @@ export default function TradeAdmin() {
                     setPageSize(Number(e.target.value));
                     setCurrentPage(1);
                   }}
-                  className="border border-gray-300 rounded-lg px-2 py-1 bg-white shadow-sm"
+                  className="border border-gray-500 rounded-lg px-2 py-1 bg-white shadow-sm"
                 >
                   <option value={10}>10</option>
                   <option value={20}>20</option>
@@ -1111,24 +1095,22 @@ export default function TradeAdmin() {
                 >
                   ก่อนหน้า
                 </button>
-
                 <span className="px-2">
-                  หน้า <strong>{currentPage}</strong> /{" "}
-                  <strong>{totalPages}</strong>
+                  หน้า <strong>{currentPage}</strong>
+                  <strong> / {totalClientPages}</strong>
                 </span>
-
                 <button
                   onClick={() =>
-                    setCurrentPage((p) => Math.min(totalPages, p + 1))
+                    setCurrentPage((p) => Math.min(totalClientPages, p + 1))
                   }
-                  disabled={currentPage === totalPages}
-                  className="px-3 py-1 border rounded-lg disabled:opacity-40"
+                  disabled={currentPage === totalClientPages}
+                  className="px-2 py-1 border rounded-lg disabled:opacity-40"
                 >
                   ถัดไป
                 </button>
                 <button
-                  onClick={() => setCurrentPage(totalPages)}
-                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage(totalClientPages)}
+                  disabled={currentPage === totalClientPages}
                   className="px-2 py-1 border rounded-lg disabled:opacity-40"
                 >
                   หน้าสุดท้าย ⏭
