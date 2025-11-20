@@ -4,11 +4,13 @@ import TradeAdmin from "../TradeAdmin/TradeAdmin";
 import KeyAdmin from "../KeyAdmin/KeyAdmin";
 import Appp from "../Appp";
 import KeyFC from "../KeyAdmin/KeyFC.jsx";
+// import Login from "../SideBar-Modal/Login.jsx";
 
 const route = createBrowserRouter([
   {
     path: "/",
-    element: <Appp />,
+    // element: <Login/>,
+    element: <Appp/>,
     children: [
       { index: true, element: <SupperAdmin /> },
       { path: "super-admin", element: <SupperAdmin /> },

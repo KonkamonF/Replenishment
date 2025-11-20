@@ -72,6 +72,8 @@ const ALL_COLUMNS = [
   { key: "Actual", name: "ยอด Actual", isAlwaysVisible: false },
   { key: "Target", name: "Target Now", isAlwaysVisible: false },
   { key: "TargetLast", name: "Target Last Mount", isAlwaysVisible: false },
+  { key: "Price", name: "ราคากลางต่อหน่วย", isAlwaysVisible: false },
+  { key: "Promotion", name: "Promotion ต่ำสุด", isAlwaysVisible: false },
 
   { key: "DOH", name: "DOH (วัน)", isAlwaysVisible: false },
   { key: "POH", name: "PO on Hand", isAlwaysVisible: false },
@@ -252,14 +254,8 @@ export default function TradeAdmin() {
     () => ["All", ...new Set(data.map((d) => d.Type))],
     [data]
   );
-<<<<<<< HEAD
-  const [tableData, setTableData] = useState([]);
-  
-  // ---------- Filter ฝั่ง UI (search + duplicate safety) ----------
-=======
 
   // ---------- Filter ฝั่ง UI (กรองจาก fullData ที่ Server ส่งมา) ----------
->>>>>>> 9697d67f2903cf5f142d3a197e028ee9749ea15c
   const filteredData = useMemo(() => {
     // ⭐️ 1. เปลี่ยนเป้าหมายการกรองเป็น fullData
     return fullData.filter((item) => {

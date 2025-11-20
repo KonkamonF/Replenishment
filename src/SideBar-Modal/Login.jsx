@@ -39,7 +39,7 @@ export default function Login() {
         
         {/* Email Input */}
         <input
-          type="email"
+          type="text"
           placeholder="Email or Username"
           
           style={inputStyle}
