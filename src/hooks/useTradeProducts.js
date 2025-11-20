@@ -252,7 +252,7 @@ export function useTradeProducts({ page = 1, perPage = 20, filters = {} }) {
     await load();
   };
 
-  // โหลดข้อมูลทั้งหมดตาม filter (เพื่อ summary dashboard)
+  // // โหลดข้อมูลทั้งหมดตาม filter (เพื่อ summary dashboard)
   const loadFullData = async (filters = {}) => {
     try {
       const params = new URLSearchParams();
@@ -320,6 +320,51 @@ export function useTradeProducts({ page = 1, perPage = 20, filters = {} }) {
       setFullData([]);
     }
   };
+  const loadSummary = async (filters = {}) => {
+    try {
+      const params = new URLSearchParams();
+
+      const parts = [];
+
+      if (filters.class && filters.class !== "All") {
+        parts.push(`manualClass=${filters.class}`);
+      }
+      if (filters.brand && filters.brand !== "All") {
+        parts.push(`brand=${filters.brand}`);
+      }
+      if (filters.tradeStatus && filters.tradeStatus !== "All") {
+        parts.push(`tradeStatus=${filters.tradeStatus}`);
+      }
+      if (filters.set && filters.set !== "All") {
+        parts.push(`type=${filters.set}`);
+      }
+      if (filters.best2025 && filters.best2025 !== "All") {
+        parts.push(`best2025=${filters.best2025}`);
+      }
+
+      const filtersParam = parts.join(",");
+      if (filtersParam) params.set("filters", filtersParam);
+
+      const url = `${API_BASE_URL}/products/summary?${params.toString()}`;
+
+      const res = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${API_TOKEN}`,
+          Accept: "application/json",
+          "ngrok-skip-browser-warning": "1",
+        },
+      });
+
+      const json = await res.json();
+
+      setSummary(json.summary);
+
+    } catch (err) {
+      console.error("❌ loadSummary error:", err);
+      setSummary({});
+    }
+  };
+
 
   // ============================================================
   //  return ค่าออกไปใช้ (เพิ่ม updateTradeStatus อย่างเดียว)
@@ -333,5 +378,6 @@ export function useTradeProducts({ page = 1, perPage = 20, filters = {} }) {
     updateTradeStatus, // ← เพิ่มตรงนี้อย่างเดียว
     fullData, // เพิ่ม state
     loadFullData, // ฟังก์ชันใหม่
+    loadSummary,
   };
 }
