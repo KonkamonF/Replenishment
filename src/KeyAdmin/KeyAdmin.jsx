@@ -189,19 +189,22 @@ const formatNumber = (num, decimals = 0) => {
 
 const ALL_COLUMNS = [
   { key: "No", name: "No.", isAlwaysVisible: true },
-  { key: "Code", name: "ItemCode / Brand", isAlwaysVisible: true },
+  { key: "Code", name: "ItemCode / Brand / Categories", isAlwaysVisible: true },
   {
     key: "Description",
     name: "Description / Class / Department",
     isAlwaysVisible: true,
   },
   { key: "Best", name: "Best/BestSet", isAlwaysVisible: false },
-  { key: "Categories", name: "Categories", isAlwaysVisible: false },
   { key: "Forecast", name: "ยอด Forecast", isAlwaysVisible: false },
   { key: "Actual", name: "ยอด Actual", isAlwaysVisible: false },
   { key: "DOH", name: "DOH (วัน)", isAlwaysVisible: false },
   { key: "Price", name: "ราคากลางต่อหน่วย", isAlwaysVisible: false },
-  { key: "PriceOnline", name: "ราคาขาย Online ต่อหน่วย", isAlwaysVisible: false },
+  {
+    key: "PriceOnline",
+    name: "ราคาขาย Online ต่อหน่วย",
+    isAlwaysVisible: false,
+  },
   { key: "PromotionGood", name: "ของแถม", isAlwaysVisible: false },
   { key: "SetType", name: "ชุด Set / แตก Set", isAlwaysVisible: false },
   { key: "Stock_Show", name: "Stock (ตัวโชว์)", isAlwaysVisible: false },
@@ -650,16 +653,16 @@ background-color: transparent !important;
                         {idx + 1}
                       </td>
                       <td
-                        className={colClass(
-                          "Code",
-                          "p-3 text-left text-sm "
-                        )}
+                        className={colClass("Code", "p-3 text-left text-sm ")}
                       >
                         <span className="font-bold text-[#640037] block">
                           {item.Code}
                         </span>
                         <span className="text-xs text-gray-500">
                           {item.Brand}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          // Categories
                         </span>
                       </td>
                       <td
@@ -691,21 +694,10 @@ background-color: transparent !important;
                           {item.YN_Best_2025 || "No"}
                         </span>
                       </td>
-                      <td className={colClass("Categories", "p-3")}>-</td>
-                      <td
-                        className={colClass(
-                          "Forecast",
-                          "p-3 font-bold"
-                        )}
-                      >
+                      <td className={colClass("Forecast", "p-3 font-bold")}>
                         {formatNumber(item.TargetSaleUnit_1)}
                       </td>
-                      <td
-                        className={colClass(
-                          "Actual",
-                          "p-3 text-blue-600"
-                        )}
-                      >
+                      <td className={colClass("Actual", "p-3 text-blue-600")}>
                         {formatNumber(item.SaleOut_เมย68)}
                       </td>
                       <td
@@ -747,31 +739,18 @@ background-color: transparent !important;
                         </button>
                       </td>
                       <td
-                        className={colClass(
-                          "Stock_Physical",
-                          "p-3 text-lg "
-                        )}
+                        className={colClass("Stock_Physical", "p-3 text-lg ")}
                       >
                         {formatNumber(item.Stock_จบเหลือจริง)}
                       </td>
                       <td className={colClass("Stock", "p-3")}>-</td>
                       <td className={colClass("Stock_Cl", "p-3")}>-</td>
                       <td className={colClass("Forecash", "p-3")}>-</td>
-                      
-                      <td
-                        className={colClass(
-                          "Actual",
-                          "p-3 text-blue-600"
-                        )}
-                      >
+
+                      <td className={colClass("Actual", "p-3 text-blue-600")}>
                         {formatNumber(item.SaleOut_เมย68)}
                       </td>
-                      <td
-                        className={colClass(
-                          "TradeStatus",
-                          "p-3 "
-                        )}
-                      >
+                      <td className={colClass("TradeStatus", "p-3 ")}>
                         <span
                           className={`px-3 py-1 text-xs font-semibold rounded-full border ${getStatusStyle(
                             item.สถานะTrade

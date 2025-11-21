@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { Search, Eye, EyeOff, ChevronDown } from "lucide-react";
+import { SummaryMetrics } from "../SideBar-Modal/StockModal/SummaryMetrics.jsx";
 
 // --- Mock Data (คงเดิม) ---
 const initialKeyFCData = [
@@ -186,90 +187,6 @@ const ColumnToggleDropdown = ({
   );
 };
 
-import { Chart as ChartJS, ArcElement, Tooltip, Legend, Title } from "chart.js";
-import { Pie } from "react-chartjs-2";
-
-ChartJS.register(ArcElement, Tooltip, Legend, Title);
-
-export function SummaryMetrics({ grandTotals, dataAC }) {
-  const totalAC = Array.isArray(dataAC)
-    ? dataAC.reduce((sum, item) => sum + (Number(item.AC) || 0), 0)
-    : 0;
-
-  const totalFC = grandTotals?.Total || 0;
-
-  // เตรียมข้อมูลสำหรับ Pie Chart
-  const chartData = {
-    labels: [
-      `Total FC ${totalFC.toLocaleString("en-US", {
-        style: "currency",
-        currency: "THB",
-      })}`,
-      `Total AC ${totalAC.toLocaleString("en-US", {
-        style: "currency",
-        currency: "THB",
-      })}`,
-    ],
-    datasets: [
-      {
-        data: [totalFC, totalAC],
-        backgroundColor: [
-          "rgba(255, 99, 132, 0.6)", // สีชมพูสำหรับ FC
-          "rgba(54, 162, 235, 0.6)", // สีฟ้าสำหรับ AC
-        ],
-        borderColor: ["rgba(255, 99, 132, 1)", "rgba(54, 162, 235, 1)"],
-        borderWidth: 1,
-      },
-    ],
-  };
-
-  const centerTextPlugin = {
-    id: "centerTotalText", // Unique ID for the plugin
-    beforeDraw(chart) {
-      // Only run this for Doughnut or Pie charts
-      if (chart.config.type !== "doughnut" && chart.config.type !== "pie") {
-        return;
-      }
-
-      // Get the canvas context
-      const { ctx, chartArea } = chart;
-      ctx.save(); // Save the current canvas state
-
-      // **Calculate the center coordinates**
-      const centerY = (chartArea.top + chartArea.bottom) / 2;
-      const centerX = (chartArea.left + chartArea.right) / 2;
-
-      ctx.restore(); // Restore the canvas state
-    },
-  };
-
-  const options = {
-    plugins: {
-      legend: {
-        position: "bottom",
-      },
-    },
-  };
-
-  return (
-    <div className="bg-pink-50 border border-pink-200 rounded-lg p-4 mb-6 shadow-inner w-80">
-      <p className="text-center text-lg font-bold text-pink-900 mb-4">
-        แสดงผลเทียบยอด <br />
-        Actual Forecast
-      </p>
-      <div className=" flex justify-center">
-        <div className="w-69 h-52 gap-2 flex flex-col items-center">
-          <Pie
-            options={options}
-            data={chartData}
-            plugins={[centerTextPlugin]}
-          />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // --- Main Component ---
 export default function KeyFC() {
   const [data, setData] = useState(initialKeyFCData);
@@ -410,45 +327,42 @@ export default function KeyFC() {
           <h1 className="text-3xl font-extrabold text-[#640037] mb-2">
             Key Product Forecast (FC)
           </h1>
-          <p className="text-gray-500">
+          <p className="text-gray-500 ">
             ปรับปรุงยอดพยากรณ์การขายแยกตามช่องทางจำหน่าย (Channels) และแก้ไข
             Class สินค้า
           </p>
         </header>
 
         {/* --- 1. GRAND TOTAL SUMMARY (ย้ายมาอยู่บนสุด) --- */}
-        <div className="flex flex-wrap gap-4">
-          <SummaryMetrics grandTotals={grandTotals} dataAC={filteredData} />
-          <SummaryMetrics grandTotals={grandTotals} dataAC={filteredData} />
-          <SummaryMetrics grandTotals={grandTotals} dataAC={filteredData} />
-        </div>
+        <div className="flex flex-col lg:flex-row gap-6 mb-6">
+          {/* 1.1 Summary Chart (Fixed Width) */}
+          <div className="lg:w-96 flex-shrink-0">
+            <SummaryMetrics grandTotals={grandTotals} dataAC={filteredData} />
+          </div>
 
-        {/* --- END GRAND TOTAL SUMMARY --- */}
+          {/* 1.2 Filter Bar (Uses remaining space) */}
+          <div className="flex-grow p-4 bg-pink-50 rounded-xl shadow-lg border border-gray-200">
+            <h2 className="text-xl font-bold text-pink-900 mb-4 border-b pb-2">
+              Filter Options
+            </h2>
 
-        {/* --- Filter Bar --- */}
-        <div className="p-4 bg-pink-50 rounded-lg shadow-inner mb-6 border border-pink-200">
-          <div className="grid grid-cols-1 md:grid-cols-6 gap-4 items-end ">
-            {/* 1. ค้นหาสินค้า (Code/Desc) - Real-time filtering */}
-            <div className="md:col-span-2">
+            {/* Search Input (Full Width Row) */}
+            <div className="mb-4">
               <label className="block text-sm font-bold text-gray-700 mb-1">
                 ค้นหาสินค้า (Code/Desc)
               </label>
-
               <div className="relative">
                 <input
                   type="text"
-                  placeholder="ค้นหา..."
+                  placeholder="ค้นหารหัสสินค้า หรือคำอธิบายสินค้า..."
                   value={filters.search}
                   onChange={(e) => handleFilterChange("search", e.target.value)}
-                  className="p-1.5 pl-9 pr-8 border border-gray-300 rounded-lg shadow-sm focus:ring-pink-500 focus:border-pink-500 bg-white w-full"
-                  // ^^^^^^ เพิ่ม w-full ที่นี่
+                  className="p-2.5 pl-10 pr-8 border border-gray-300 rounded-xl shadow-sm focus:ring-pink-500 focus:border-pink-500 bg-white w-full transition"
                 />
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                 {filters.search && (
                   <button
-                    onClick={() => {
-                      handleFilterChange("search", "");
-                    }}
+                    onClick={() => handleFilterChange("search", "")}
                     className="absolute right-2 top-1/2 transform -translate-y-1/2 text-lg text-gray-500 hover:text-red-500 font-bold p-1 leading-none"
                     title="ล้างการค้นหา"
                   >
@@ -458,59 +372,50 @@ export default function KeyFC() {
               </div>
             </div>
 
-            {/* 2. Brand (Mock Filter) */}
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">
-                Brand
-              </label>
-              <div className="relative w-full">
+            {/* Dropdowns (Grid 2 Columns per row on medium screens, 4 on large) */}
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* 2. Brand Filter */}
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-1">
+                  Brand
+                </label>
                 <select
-                  value={filters.brand} // ผูกกับ filters.brand
-                  onChange={(e) => handleFilterChange("brand", e.target.value)} // กรองทันที
-                  // *** เพิ่ม w-full ที่นี่ ***
-                  className="p-2 pr-10 text-gray-500 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm w-full"
+                  value={filters.brand}
+                  onChange={(e) => handleFilterChange("brand", e.target.value)}
+                  className="p-2.5 pr-10 text-gray-700 border border-gray-300 rounded-xl focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm w-full"
                 >
-                  <option value="All">All</option>
+                  <option value="All">All Brands</option>
                   <option value="TNP">TNP</option>
                   <option value="TNS">TNS</option>
                 </select>
-                {/* เพิ่มไอคอนลูกศร */}
               </div>
-            </div>
-
-            {/* 3. Type Filter */}
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">
-                Type
-              </label>
-              <div className="relative">
+              {/* 3. Type Filter */}
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-1">
+                  Type
+                </label>
                 <select
                   value={filters.type}
                   onChange={(e) => handleFilterChange("type", e.target.value)}
-                  // *** เพิ่ม w-full ที่นี่ ***
-                  className="p-2 pr-10 text-gray-500 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm w-full"
+                  className="p-2.5 pr-10 text-gray-700 border border-gray-300 rounded-xl focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm w-full"
                 >
-                  <option value="All">All</option>
+                  <option value="All">All Types</option>
                   <option value="ACC">ACC</option>
                   <option value="Sink">Sink</option>
                   <option value="Hood">Hood</option>
                 </select>
               </div>
-            </div>
-
-            {/* 4. Class Filter */}
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">
-                Class
-              </label>
-              <div className="relative ">
+              {/* 4. Class Filter */}
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-1">
+                  Class
+                </label>
                 <select
-                  value={filters.class} // ผูกกับ filters.class
-                  onChange={(e) => handleFilterChange("class", e.target.value)} // กรองทันที
-                  // *** เพิ่ม w-full ที่นี่ ***
-                  className="p-2 pr-10 text-gray-500 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm w-full"
+                  value={filters.class}
+                  onChange={(e) => handleFilterChange("class", e.target.value)}
+                  className="p-2.5 pr-10 text-gray-700 border border-gray-300 rounded-xl focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm w-full"
                 >
-                  <option value="All">All</option>
+                  <option value="All">All Classes</option>
                   {availableClasses.map((c) => (
                     <option key={c} value={c}>
                       {c}
@@ -518,19 +423,15 @@ export default function KeyFC() {
                   ))}
                 </select>
               </div>
-            </div>
-
-            {/* 5. YN Best 2025 (Mock Filter) */}
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">
-                YN Best 2025 (Mock)
-              </label>
-              <div className="relative ">
+              {/* 5. YN Best 2025 (Mock Filter) */}
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-1">
+                  YN Best 2025
+                </label>
                 <select
                   value={filters.ynBest}
                   onChange={(e) => handleFilterChange("ynBest", e.target.value)}
-                  // *** เพิ่ม w-full ที่นี่ ***
-                  className="p-2 pr-10 text-gray-500 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm w-full"
+                  className="p-2.5 pr-10 text-gray-700 border border-gray-300 rounded-xl focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm w-full"
                 >
                   <option value="All">All</option>
                   <option value="Y">Yes</option>
@@ -538,12 +439,9 @@ export default function KeyFC() {
                 </select>
               </div>
             </div>
-          </div>
-        </div>
-        {/* --- End Filter Bar --- */}
-
+            {/* --- End Filter Bar --- */}
         {/* --- Column Toggle Bar & Save Button --- */}
-        <div className="flex justify-end items-end  mb-4  gap-4">
+        <div className="flex justify-end items-end  mt-12  gap-4">
           <div className="flex gap-4">
             <ColumnToggleDropdown
               hiddenColumnsList={hiddenColumnsList}
@@ -566,6 +464,12 @@ export default function KeyFC() {
             </button>
           </div>
         </div>
+          </div>
+
+
+        </div>
+
+        
 
         {/* --- Data Table --- */}
         <div className="relative overflow-x-scroll border-2 border-gray-300 rounded-lg shadow-xl ">
@@ -589,7 +493,10 @@ export default function KeyFC() {
                 {/* Editable Channel Headers */}
                 {editableChannels.map((channel) =>
                   !isColumnHidden(channel) ? (
-                    <th key={channel} className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap ">
+                    <th
+                      key={channel}
+                      className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap "
+                    >
                       {channel}
                     </th>
                   ) : null
