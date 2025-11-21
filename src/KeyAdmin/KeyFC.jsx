@@ -441,7 +441,7 @@ export default function KeyFC() {
             </div>
             {/* --- End Filter Bar --- */}
         {/* --- Column Toggle Bar & Save Button --- */}
-        <div className="flex justify-end items-end  mt-12  gap-4">
+        <div className="flex justify-end items-end  mt-12 gap-4">
           <div className="flex gap-4">
             <ColumnToggleDropdown
               hiddenColumnsList={hiddenColumnsList}
@@ -465,12 +465,7 @@ export default function KeyFC() {
           </div>
         </div>
           </div>
-
-
         </div>
-
-        
-
         {/* --- Data Table --- */}
         <div className="relative overflow-x-scroll border-2 border-gray-300 rounded-lg shadow-xl ">
           <table className="table-auto text-sm ">
