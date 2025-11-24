@@ -35,14 +35,14 @@ export default function SuperAdmin() {
 
   return (
     // Main container, using 'min-h-screen' for full height and a light background
-    <div className="h-full bg-white rounded-xl p-6">
+    <div className=" bg-white shadow-2xl rounded-xl p-6">
       {/* --- Header Section (Unchanged) --- */}
       <header className="flex justify-between items-center mb-8 pb-4 border-b border-pink-200">
         <h1 className="text-xl font-extrabold text-[#640037]">
           Super Admin Dashboard
         </h1>
 
-        <div className="space-x-4 ">
+        {/* <div className="space-x-4 ">
           <button
             onClick={handleImport}
             className="text-sm px-4 py-2 bg-[#640037] cursor-pointer text-white rounded-lg shadow-md hover:shadow-xl hover:bg-pink-600"
@@ -55,7 +55,7 @@ export default function SuperAdmin() {
           >
             Export Excel
           </button>
-        </div>
+        </div> */}
       </header>
 
       {/* --- Main Content Layout (Unchanged) --- */}
@@ -95,18 +95,17 @@ export default function SuperAdmin() {
           </div>
         </div>
         <hr />
+        <Calendar />
+        <hr />
         {/* --- Right Column: Primary Component (AcAndFc) - FOCUS OF CHANGE --- */}
         <div className="">
-          <h2 className="text-xl font-bold mb-6 text-[#640037]">
+          <h2 className="text-xl text-center font-bold mb-6 text-[#640037]">
             Analysis & Forecast (Interactive Charts)
           </h2>
-
-          <div className="bg-white p-6 rounded-xl shadow-2xl border-4  border-[#640037]">
+          <div className="bg-white p-6 rounded-xl shadow-lg border-4  border-[#640037]">
             {/* The chart component itself */}
             <AcAndFc />
-
             <Charts />
-
             {/* Button to view the data behind the chart */}
             <div className="mt-4 flex justify-end">
               <button
@@ -133,10 +132,7 @@ export default function SuperAdmin() {
             </div>
           </div>
         </div>
-        <hr />
-        <Calendar />
-        <hr />
-        <Test2 />
+        {/* <Test2 /> */}
       </div>
     </div>
   );

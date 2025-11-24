@@ -3,6 +3,7 @@ import { Search, Eye, EyeOff, ChevronDown } from "lucide-react";
 import StockShowModal from "../SideBar-Modal/StockModal/StockShow.jsx";
 import CommunicationCard from "../SideBar-Modal/StockModal/CommunicateCard.jsx";
 import { useTradeProducts } from "../hooks/useTradeProducts.js";
+import { p } from "motion/react-client";
 
 // --- Helpers ---
 const safeNum = (v) => {
@@ -455,618 +456,597 @@ export default function TradeAdmin() {
         />
       )}
 
+      {loading || error ? (
+        <div className="absolute  text-center text-lg text-gray-600">
+          {loading ? "กำลังโหลดข้อมูล..." : `เกิดข้อผิดพลาด: ${error}`}
+        </div>
+      ) : (
+        <>
+          <p></p>
+        </>
+      )}
       <div className="p-8 bg-white shadow-2xl rounded-xl">
         {/* แสดงสถานะโหลด/ผิดพลาดแบบไม่เปลี่ยน layout หลัก */}
-        {loading || error ? (
-          <div className="py-10 text-center text-lg text-gray-500">
-            {loading ? "กำลังโหลดข้อมูล..." : `เกิดข้อผิดพลาด: ${error}`}
+
+        <header className="mb-6 border-b pb-4">
+          <h1 className="text-3xl font-extrabold text-[#640037] mb-2">
+            Inventory & Trade Monitor
+          </h1>
+          <p className="text-gray-500">
+            ข้อมูลคงคลัง (Stock) และยอดขาย (Sale Out)
+            พร้อมช่องทางการบันทึกและติดตาม Action/Communication
+          </p>
+        </header>
+
+        {/* --- Key Metrics (Condensed Summary) --- */}
+        <div className="grid grid-cols-2 md:grid-cols-6 lg:grid-cols-8 gap-4 mb-6">
+          <div className="bg-pink-50 p-4 rounded-lg shadow-inner">
+            <p className="text-sm text-pink-600 font-semibold">Total SKUs</p>
+            <p className="text-2xl font-extrabold text-[#640037]">
+              {formatNumber(totalSKUs)}
+            </p>
           </div>
-        ) : (
-          <>
-            <header className="mb-6 border-b pb-4">
-              <h1 className="text-3xl font-extrabold text-[#640037] mb-2">
-                Inventory & Trade Monitor
-              </h1>
-              <p className="text-gray-500">
-                ข้อมูลคงคลัง (Stock) และยอดขาย (Sale Out)
-                พร้อมช่องทางการบันทึกและติดตาม Action/Communication
-              </p>
-            </header>
 
-            {/* --- Key Metrics (Condensed Summary) --- */}
-            <div className="grid grid-cols-2 md:grid-cols-6 lg:grid-cols-8 gap-4 mb-6">
-              <div className="bg-pink-50 p-4 rounded-lg shadow-inner">
-                <p className="text-sm text-pink-600 font-semibold">
-                  Total SKUs
-                </p>
-                <p className="text-2xl font-extrabold text-[#640037]">
-                  {formatNumber(totalSKUs)}
-                </p>
-              </div>
+          <div className="bg-blue-50 p-4 rounded-lg shadow-inner">
+            <p className="text-sm text-blue-600 font-semibold">Total Stock</p>
+            <p className="text-2xl font-extrabold">
+              {formatNumber(totalStock)}
+            </p>
+          </div>
 
-              <div className="bg-blue-50 p-4 rounded-lg shadow-inner">
-                <p className="text-sm text-blue-600 font-semibold">
-                  Total Stock
-                </p>
-                <p className="text-2xl font-extrabold">
-                  {formatNumber(totalStock)}
-                </p>
-              </div>
+          <div className="bg-yellow-50 p-4 rounded-lg shadow-inner">
+            <p className="text-sm text-yellow-600 font-semibold">
+              Avg. DOH (Weighted)
+            </p>
+            <p className="text-2xl font-extrabold">
+              {formatNumber(avgDOH, 0)} วัน
+            </p>
+          </div>
 
-              <div className="bg-yellow-50 p-4 rounded-lg shadow-inner">
-                <p className="text-sm text-yellow-600 font-semibold">
-                  Avg. DOH (Weighted)
-                </p>
-                <p className="text-2xl font-extrabold">
-                  {formatNumber(avgDOH, 0)} วัน
-                </p>
-              </div>
+          <div className="bg-red-50 p-4 rounded-lg shadow-inner">
+            <p className="text-sm text-red-600 font-semibold">Abnormal Count</p>
+            <p className="text-2xl font-extrabold">
+              {formatNumber(abnormalCount)}
+            </p>
+          </div>
 
-              <div className="bg-red-50 p-4 rounded-lg shadow-inner">
-                <p className="text-sm text-red-600 font-semibold">
-                  Abnormal Count
-                </p>
-                <p className="text-2xl font-extrabold">
-                  {formatNumber(abnormalCount)}
-                </p>
-              </div>
+          <div className="bg-green-50 p-3 rounded-lg shadow-inner col-span-2 md:col-span-2">
+            <p className="text-xs text-green-700 font-semibold">
+              Total Alloc Current
+            </p>
+            <p className="text-lg font-extrabold text-green-800">
+              {formatNumber(totalAllocCurrent)}
+            </p>
+            <p className="text-xs text-gray-500 mt-1">
+              รวมตัดจ่ายปัจจุบันของรายการที่แสดง
+            </p>
+          </div>
 
-              <div className="bg-green-50 p-3 rounded-lg shadow-inner col-span-2 md:col-span-2">
-                <p className="text-xs text-green-700 font-semibold">
-                  Total Alloc Current
-                </p>
-                <p className="text-lg font-extrabold text-green-800">
-                  {formatNumber(totalAllocCurrent)}
-                </p>
-                <p className="text-xs text-gray-500 mt-1">
-                  รวมตัดจ่ายปัจจุบันของรายการที่แสดง
-                </p>
-              </div>
+          <div className="bg-sky-50 p-3 rounded-lg shadow-inner">
+            <p className="text-xs text-sky-700 font-semibold">Total 3M</p>
+            <p className="text-lg font-extrabold text-sky-800">
+              {formatNumber(totalAlloc3M)}
+            </p>
+          </div>
 
-              <div className="bg-sky-50 p-3 rounded-lg shadow-inner">
-                <p className="text-xs text-sky-700 font-semibold">Total 3M</p>
-                <p className="text-lg font-extrabold text-sky-800">
-                  {formatNumber(totalAlloc3M)}
-                </p>
-              </div>
+          <div className="bg-orange-50 p-3 rounded-lg shadow-inner">
+            <p className="text-xs text-orange-700 font-semibold">Total 6M</p>
+            <p className="text-lg font-extrabold text-orange-800">
+              {formatNumber(totalAlloc6M)}
+            </p>
+          </div>
 
-              <div className="bg-orange-50 p-3 rounded-lg shadow-inner">
-                <p className="text-xs text-orange-700 font-semibold">
-                  Total 6M
-                </p>
-                <p className="text-lg font-extrabold text-orange-800">
-                  {formatNumber(totalAlloc6M)}
-                </p>
-              </div>
+          <div className="bg-purple-50 p-3 rounded-lg shadow-inner hidden lg:block">
+            <p className="text-xs text-purple-700 font-semibold">
+              Overflow Count (&gt;100%)
+            </p>
+            <p className="text-lg font-extrabold text-purple-800">
+              {formatNumber(overflowCount)}
+            </p>
+            <p className="text-xs text-gray-500 mt-1">
+              จำนวนรายการที่ Stock มากกว่า 3M alloc 100%
+            </p>
+          </div>
 
-              <div className="bg-purple-50 p-3 rounded-lg shadow-inner hidden lg:block">
-                <p className="text-xs text-purple-700 font-semibold">
-                  Overflow Count (&gt;100%)
-                </p>
-                <p className="text-lg font-extrabold text-purple-800">
-                  {formatNumber(overflowCount)}
-                </p>
-                <p className="text-xs text-gray-500 mt-1">
-                  จำนวนรายการที่ Stock มากกว่า 3M alloc 100%
-                </p>
-              </div>
+          <div className="bg-gray-50 p-3 rounded-lg shadow-inner hidden lg:block">
+            <p className="text-xs text-gray-700 font-semibold">
+              Avg Overflow Score
+            </p>
+            <p className="text-lg font-extrabold text-gray-800">
+              {formatNumber(avgOverflowScore)}%
+            </p>
+          </div>
+        </div>
 
-              <div className="bg-gray-50 p-3 rounded-lg shadow-inner hidden lg:block">
-                <p className="text-xs text-gray-700 font-semibold">
-                  Avg Overflow Score
-                </p>
-                <p className="text-lg font-extrabold text-gray-800">
-                  {formatNumber(avgOverflowScore)}%
-                </p>
-              </div>
-            </div>
-
-            {/* --- Filters --- */}
-            <div className="grid grid-cols-2 md:grid-cols-7 gap-4 mb-4 items-end p-4 bg-pink-50 rounded-lg border border-pink-200">
-              <div className="col-span-2 md:col-span-2">
-                <label className="block text-sm font-bold text-gray-700 mb-1">
-                  ค้นหาสินค้า (Code/Brand/Desc)
-                </label>
-                <div className="relative w-full">
-                  <input
-                    type="text"
-                    placeholder="ค้นหา..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        setSearch(searchTerm);
-                        setCurrentPage(1);
-                      }
-                    }}
-                    className="w-full p-2 pl-9 pr-8 border border-gray-300 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
-                  />
-
-                  {searchTerm && (
-                    <button
-                      onClick={() => {
-                        setSearchTerm("");
-                        setSearch(""); // ← ล้างค่าใน API ด้วย
-                        setCurrentPage(1);
-                      }}
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 text-lg text-gray-500 hover:text-red-500 font-bold p-1 leading-none"
-                      title="ล้างการค้นหา"
-                    >
-                      &times;
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">
-                  Brand
-                </label>
-                <select
-                  value={filters.brand}
-                  onChange={(e) => handleFilterChange("brand", e.target.value)}
-                  className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white"
-                >
-                  {uniqueBrands.map((b) => (
-                    <option key={b} value={b}>
-                      {b}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">
-                  Class
-                </label>
-                <select
-                  value={filters.class}
-                  onChange={(e) => handleFilterChange("class", e.target.value)}
-                  className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white"
-                >
-                  {uniqueClasses.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">
-                  YN Best 2025
-                </label>
-                <select
-                  value={filters.best2025}
-                  onChange={(e) =>
-                    handleFilterChange("best2025", e.target.value)
+        {/* --- Filters --- */}
+        <div className="grid grid-cols-2 md:grid-cols-7 gap-4 mb-4 items-end p-4 bg-pink-50 rounded-lg border border-pink-200">
+          <div className="col-span-2 md:col-span-2">
+            <label className="block text-sm font-bold text-gray-700 mb-1">
+              ค้นหาสินค้า (Code/Brand/Desc)
+            </label>
+            <div className="relative w-full">
+              <input
+                type="text"
+                placeholder="ค้นหา..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    setSearch(searchTerm);
+                    setCurrentPage(1);
                   }
-                  className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white"
-                >
-                  {uniqueBest2025.map((o) => (
-                    <option key={o} value={o}>
-                      {o === "" ? "(Blank)" : o}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">
-                  สถานะ Trade
-                </label>
-                <select
-                  value={filters.tradeStatus}
-                  onChange={(e) =>
-                    handleFilterChange("tradeStatus", e.target.value)
-                  }
-                  className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white"
-                >
-                  {uniqueTradeStatus.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">
-                  ชุด Set / แตก Set
-                </label>
-                <select
-                  value={filters.set}
-                  onChange={(e) => handleFilterChange("set", e.target.value)}
-                  className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white"
-                >
-                  {uniqueSets.map((t) => (
-                    <option key={t} value={t}>
-                      {t}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="flex justify-between items-center mb-4">
-              <p className="text-sm text-gray-600 font-medium">
-                แสดงผล
-                <strong> {formatNumber(pageItemCount)} </strong> รายการในหน้านี้
-                จากทั้งหมด
-                <strong> {formatNumber(totalItems)} </strong> รายการ (ตาม filter
-                + search)
-              </p>
-              <ColumnToggleDropdown
-                hiddenColumns={hiddenColumns}
-                toggleColumnVisibility={toggleColumnVisibility}
+                }}
+                className="w-full p-2 pl-9 pr-8 border border-gray-300 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
               />
-            </div>
 
-            {/* --- Data Table --- */}
-            <div className="overflow-x-auto shadow-xl rounded-xl border border-gray-200">
-              <table
-                className="min-w-full table-auto bg-white text-center 
+              {searchTerm && (
+                <button
+                  onClick={() => {
+                    setSearchTerm("");
+                    setSearch(""); // ← ล้างค่าใน API ด้วย
+                    setCurrentPage(1);
+                  }}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-lg text-gray-500 hover:text-red-500 font-bold p-1 leading-none"
+                  title="ล้างการค้นหา"
+                >
+                  &times;
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Brand
+            </label>
+            <select
+              value={filters.brand}
+              onChange={(e) => handleFilterChange("brand", e.target.value)}
+              className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white"
+            >
+              {uniqueBrands.map((b) => (
+                <option key={b} value={b}>
+                  {b}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Class
+            </label>
+            <select
+              value={filters.class}
+              onChange={(e) => handleFilterChange("class", e.target.value)}
+              className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white"
+            >
+              {uniqueClasses.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              YN Best 2025
+            </label>
+            <select
+              value={filters.best2025}
+              onChange={(e) => handleFilterChange("best2025", e.target.value)}
+              className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white"
+            >
+              {uniqueBest2025.map((o) => (
+                <option key={o} value={o}>
+                  {o === "" ? "(Blank)" : o}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              สถานะ Trade
+            </label>
+            <select
+              value={filters.tradeStatus}
+              onChange={(e) =>
+                handleFilterChange("tradeStatus", e.target.value)
+              }
+              className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white"
+            >
+              {uniqueTradeStatus.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              ชุด Set / แตก Set
+            </label>
+            <select
+              value={filters.set}
+              onChange={(e) => handleFilterChange("set", e.target.value)}
+              className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white"
+            >
+              {uniqueSets.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="flex justify-between items-center mb-4">
+          <p className="text-sm text-gray-600 font-medium">
+            แสดงผล
+            <strong> {formatNumber(pageItemCount)} </strong> รายการในหน้านี้
+            จากทั้งหมด
+            <strong> {formatNumber(totalItems)} </strong> รายการ (ตาม filter +
+            search)
+          </p>
+          <ColumnToggleDropdown
+            hiddenColumns={hiddenColumns}
+            toggleColumnVisibility={toggleColumnVisibility}
+          />
+        </div>
+
+        {/* --- Data Table --- */}
+        <div className="overflow-x-auto shadow-xl rounded-xl border border-gray-200">
+          <table
+            className="min-w-full table-auto bg-white text-center 
                 [&_th]:border-r [&_th]:border-gray-200
                 [&_td]:border-r [&_td]:border-gray-200
                 [&_th:last-child]:border-r-0
                 [&_td:last-child]:border-r-0"
-              >
-                <thead className="bg-[#640037] text-white sticky top-0 text-sm">
-                  <tr>
-                    {ALL_COLUMNS.map((col) => (
-                      <th
-                        key={col.key}
+          >
+            <thead className="bg-[#640037] text-white sticky top-0 text-sm">
+              <tr>
+                {ALL_COLUMNS.map((col) => (
+                  <th
+                    key={col.key}
+                    className={colClass(
+                      col.key,
+                      "p-3 text-sm whitespace-nowrap"
+                    )}
+                  >
+                    {col.name}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+
+            <tbody>
+              {paginatedData.length > 0 ? (
+                paginatedData.map((item, idx) => {
+                  const allocCurrent = calcAllocCurrent(item);
+                  const alloc3 = calcAlloc3M(item);
+                  const alloc6 = calcAlloc6M(item);
+                  const overflow = calcOverflowScore(item);
+                  const rowNumber = (currentPage - 1) * pageSize + idx + 1;
+
+                  return (
+                    <tr
+                      key={item.Code}
+                      className="border-b border-gray-300 hover:bg-pink-50 transition duration-100"
+                    >
+                      <td
+                        className={colClass("No", "p-3 text-sm text-gray-600")}
+                      >
+                        {rowNumber}
+                      </td>
+                      <td
                         className={colClass(
-                          col.key,
-                          "p-3 text-sm whitespace-nowrap"
+                          "Code",
+                          "p-3 font-mono text-sm text-left"
                         )}
                       >
-                        {col.name}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {paginatedData.length > 0 ? (
-                    paginatedData.map((item, idx) => {
-                      const allocCurrent = calcAllocCurrent(item);
-                      const alloc3 = calcAlloc3M(item);
-                      const alloc6 = calcAlloc6M(item);
-                      const overflow = calcOverflowScore(item);
-                      const rowNumber = (currentPage - 1) * pageSize + idx + 1;
-
-                      return (
-                        <tr
-                          key={item.Code}
-                          className="border-b border-gray-300 hover:bg-pink-50 transition duration-100"
-                        >
-                          <td
-                            className={colClass(
-                              "No",
-                              "p-3 text-sm text-gray-600"
-                            )}
-                          >
-                            {rowNumber}
-                          </td>
-                          <td
-                            className={colClass(
-                              "Code",
-                              "p-3 font-mono text-sm text-left"
-                            )}
-                          >
-                            <span className="font-bold text-[#640037] block">
-                              {item.Code}
-                            </span>
-                            <span className="text-xs text-gray-600">
-                              {safeText(item.Brand)}
-                            </span>
-                          </td>
-                          <td
-                            className={colClass(
-                              "Description",
-                              "p-3 text-gray-700 text-left min-w-[250px]"
-                            )}
-                          >
-                            <span className="font-bold">
-                              {safeText(item.Description || item.description)}
-                            </span>
-                            <span
-                              className={`ml-1 text-xs text-white px-2 py-0.5 rounded-full inline-block ${getClassStyle(
-                                item.Class
-                              )}`}
-                            >
-                              Class {item.Class}
-                            </span>
-                            <span className="text-xs text-gray-600 block mt-1">
-                              {safeText(item.brand)}
-                            </span>
-                          </td>
-                          <td className={colClass("pricePerUnit", "p-3")}>
-                            {formatNumber(item.pricePerUnit, 0)}
-                          </td>
-                          <td className={colClass("minPricePerUnit", "p-3")}>
-                            {formatNumber(item.minPricePerUnit, 0)}
-                          </td>
-                          <td className={colClass("minPromotionPrice", "p-3")}>
-                            {formatNumber(item.minPromotionPrice, 0)}
-                          </td>
-                          <td className={colClass("Best", "p-3 text-center")}>
-                            <span
-                              className={`px-3 py-0.5 block rounded-full text-xs ${
-                                item.YN_Best_2025 === "Yes"
-                                  ? "bg-green-200 text-green-900"
-                                  : "bg-gray-100 text-gray-500"
-                              }`}
-                            >
-                              {item.YN_Best_2025 === "Yes"
-                                ? "Yes"
-                                : "No Data Best"}
-                            </span>
-                          </td>
-                          <td className={colClass("Forecast", "p-3")}>
-                            รอระบบคีย์
-                          </td>
-                          <td className={colClass("Actual", "p-3")}>
-                            {formatNumber(getActual(item))}
-                          </td>
-                          <td className={colClass("Target", "p-3")}>
-                            {formatNumber(getTargetNow(item))}
-                          </td>
-                          <td className={colClass("TargetLast", "p-3")}>
-                            {formatNumber(getTargetLast(item))}
-                          </td>
-                          <td
-                            className={colClass(
-                              "DOH",
-                              `p-3 ${getDOHStyle(item.DayOnHand_DOH_Stock2)}`
-                            )}
-                          >
-                            {formatNumber(item.DayOnHand_DOH_Stock2, 0)}
-                          </td>
-                          <td
-                            className={colClass(
-                              "POH",
-                              `p-3 ${getDOHStyle(
-                                safeNum(item.DayOnHand_DOH_Stock2) + 50
-                              )}`
-                            )}
-                          >
-                            {formatNumber(
-                              safeNum(item.DayOnHand_DOH_Stock2) + 50,
-                              0
-                            )}
-                          </td>
-                          <td className={colClass("Forecast", "p-3")}>
-                            รอระบบคีย์
-                          </td>{" "}
-                          <td className={colClass("Forecast", "p-3")}>
-                            รอระบบคีย์
-                          </td>
-                          <td
-                            className={colClass(
-                              "SetType",
-                              "p-3 text-sm text-gray-600"
-                            )}
-                          >
-                            
-                            ยังไม่มีข้อมูล
-                          </td>
-                          <td className={colClass("Stock_Physical", "p-3")}>
-                            {formatNumber(safeNum(item.stockReal))}
-                          </td>
-                          <td className={colClass("Stock_Show", "p-3 text-xs")}>
-                            <p className="mb-1">
-                              {formatNumber(safeNum(item.location))}
-                            </p>
-                            <button
-                              onClick={() => handleShowStockModal(item)}
-                              className="text-xs rounded-lg cursor-pointer shadow-sm bg-green-500 text-[#114232] hover:bg-green-600 transition"
-                              title="ดูตำแหน่งจัดเก็บและรายละเอียด Stock (ตัวโชว์)"
-                            >
-                              Show Location Stock
-                            </button>
-                          </td>
-                          <td className={colClass("Stock", "p-3")}>
-                            {formatNumber(item.stock_หักจอง)}
-                          </td>
-                          <td className={colClass("Stock_Cl", "p-3")}>
-                            {formatNumber(item.stockClearance)}
-                          </td>
-                          <td className={colClass("Alloc_Current", "p-3")}>
-                            {formatNumber(allocCurrent)}
-                          </td>
-                          <td className={colClass("Alloc_3M", "p-3")}>
-                            {formatNumber(alloc3)}
-                          </td>
-                          <td className={colClass("Alloc_6M", "p-3")}>
-                            {formatNumber(alloc6)}
-                          </td>
-                          <td className={colClass("OverflowScore", "p-3")}>
-                            {overflow === null ? (
-                              <span className="text-gray-400">-</span>
-                            ) : (
-                              <span className={getOverflowStyle(overflow)}>
-                                {overflow}%
-                              </span>
-                            )}
-                          </td>
-                          <td className={colClass("SaleInAgingTier", "p-3")}>
-                            <span
-                              className={`inline-flex px-2 py-0.5 rounded-full text-xs font-semibold border ${getSaleInAgingTierStyle(
-                                getSaleInAgingTier(item)
-                              )}`}
-                            >
-                              {getSaleInAgingTier(item)}
-                            </span>
-                          </td>
-                          <td
-                            className={colClass("SuggestionPurchasing", "p-3")}
-                          >
-                            {item.SuggestionPurchasing ?? "-"}
-                          </td>
-                          <td
-                            className={colClass(
-                              "TradeStatus",
-                              "p-3 text-center"
-                            )}
-                          >
-                            <p
-                              className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full border ${getStatusStyleLocal(
-                                item.สถานะTrade
-                              )}`}
-                            >
-                              {safeText(item.สถานะTrade)}
-                            </p>
-                            {item.DiffPercent && (
-                              <p
-                                className={`text-xs mt-1 font-bold ${
-                                  String(item.DiffPercent).startsWith("-")
-                                    ? "text-red-500"
-                                    : "text-green-500"
-                                }`}
-                              >
-                                {item.DiffPercent}
-                              </p>
-                            )}
-                          </td>
-                          <td
-                            className={colClass(
-                              "TradeRemark",
-                              "p-3 text-xs text-gray-400"
-                            )}
-                          >
-                            <p className="text-xs mb-1 italic truncate">
-                              {safeText(item.RemarkTrade)}
-                            </p>
-
-                            <button
-                              onClick={() => openTradeModal(item)}
-                              className={`px-3 py-1 text-xs rounded-lg cursor-pointer shadow-md transition font-medium ${
-                                item.RemarkCount > 0
-                                  ? "bg-green-600 text-white hover:bg-green-700"
-                                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                              }`}
-                            >
-                              บันทึก/ดูการสื่อสาร ({item.RemarkCount || 0})
-                            </button>
-                          </td>
-                          <td
-                            className={colClass(
-                              "InterTrade",
-                              "p-3 border-r border-gray-200 text-base text-gray-700 font-medium"
-                            )}
-                          >
-                            {safeText(item.interTrade ?? item.InterTrade)}
-                          </td>
-                        </tr>
-                      );
-                    })
-                  ) : (
-                    <tr>
+                        <span className="font-bold text-[#640037] block">
+                          {item.Code}
+                        </span>
+                        <span className="text-xs text-gray-600">
+                          {safeText(item.Brand)}
+                        </span>
+                      </td>
                       <td
-                        colSpan={visibleColumnCount}
-                        className="p-6 text-center text-lg text-gray-500"
+                        className={colClass(
+                          "Description",
+                          "p-3 text-gray-700 text-left min-w-[250px]"
+                        )}
                       >
-                        ไม่พบข้อมูลสินค้าที่ตรงกับเงื่อนไขการกรอง
+                        <span className="font-bold">
+                          {safeText(item.Description || item.description)}
+                        </span>
+                        <span
+                          className={`ml-1 text-xs text-white px-2 py-0.5 rounded-full inline-block ${getClassStyle(
+                            item.Class
+                          )}`}
+                        >
+                          Class {item.Class}
+                        </span>
+                        <span className="text-xs text-gray-600 block mt-1">
+                          {safeText(item.brand)}
+                        </span>
+                      </td>
+                      <td className={colClass("pricePerUnit", "p-3")}>
+                        {formatNumber(item.pricePerUnit, 0)}
+                      </td>
+                      <td className={colClass("minPricePerUnit", "p-3")}>
+                        {formatNumber(item.minPricePerUnit, 0)}
+                      </td>
+                      <td className={colClass("minPromotionPrice", "p-3")}>
+                        {formatNumber(item.minPromotionPrice, 0)}
+                      </td>
+                      <td className={colClass("Best", "p-3 text-center")}>
+                        <span
+                          className={`px-3 py-0.5 block rounded-full text-xs ${
+                            item.YN_Best_2025 === "Yes"
+                              ? "bg-green-200 text-green-900"
+                              : "bg-gray-100 text-gray-500"
+                          }`}
+                        >
+                          {item.YN_Best_2025 === "Yes" ? "Yes" : "No Data Best"}
+                        </span>
+                      </td>
+                      <td className={colClass("Forecast", "p-3")}>
+                        รอระบบคีย์
+                      </td>
+                      <td className={colClass("Actual", "p-3")}>
+                        {formatNumber(getActual(item))}
+                      </td>
+                      <td className={colClass("Target", "p-3")}>
+                        {formatNumber(getTargetNow(item))}
+                      </td>
+                      <td className={colClass("TargetLast", "p-3")}>
+                        {formatNumber(getTargetLast(item))}
+                      </td>
+                      <td
+                        className={colClass(
+                          "DOH",
+                          `p-3 ${getDOHStyle(item.DayOnHand_DOH_Stock2)}`
+                        )}
+                      >
+                        {formatNumber(item.DayOnHand_DOH_Stock2, 0)}
+                      </td>
+                      <td
+                        className={colClass(
+                          "POH",
+                          `p-3 ${getDOHStyle(
+                            safeNum(item.DayOnHand_DOH_Stock2) + 50
+                          )}`
+                        )}
+                      >
+                        {formatNumber(
+                          safeNum(item.DayOnHand_DOH_Stock2) + 50,
+                          0
+                        )}
+                      </td>
+                      <td className={colClass("Forecast", "p-3")}>
+                        รอระบบคีย์
+                      </td>{" "}
+                      <td className={colClass("Forecast", "p-3")}>
+                        รอระบบคีย์
+                      </td>
+                      <td
+                        className={colClass(
+                          "SetType",
+                          "p-3 text-sm text-gray-600"
+                        )}
+                      >
+                        ยังไม่มีข้อมูล
+                      </td>
+                      <td className={colClass("Stock_Physical", "p-3")}>
+                        {formatNumber(safeNum(item.stockReal))}
+                      </td>
+                      <td className={colClass("Stock_Show", "p-3 text-xs")}>
+                        <p className="mb-1">
+                          {formatNumber(safeNum(item.location))}
+                        </p>
+                        <button
+                          onClick={() => handleShowStockModal(item)}
+                          className="text-xs rounded-lg cursor-pointer shadow-sm bg-green-500 text-[#114232] hover:bg-green-600 transition"
+                          title="ดูตำแหน่งจัดเก็บและรายละเอียด Stock (ตัวโชว์)"
+                        >
+                          Show Location Stock
+                        </button>
+                      </td>
+                      <td className={colClass("Stock", "p-3")}>
+                        {formatNumber(item.stock_หักจอง)}
+                      </td>
+                      <td className={colClass("Stock_Cl", "p-3")}>
+                        {formatNumber(item.stockClearance)}
+                      </td>
+                      <td className={colClass("Alloc_Current", "p-3")}>
+                        {formatNumber(allocCurrent)}
+                      </td>
+                      <td className={colClass("Alloc_3M", "p-3")}>
+                        {formatNumber(alloc3)}
+                      </td>
+                      <td className={colClass("Alloc_6M", "p-3")}>
+                        {formatNumber(alloc6)}
+                      </td>
+                      <td className={colClass("OverflowScore", "p-3")}>
+                        {overflow === null ? (
+                          <span className="text-gray-400">-</span>
+                        ) : (
+                          <span className={getOverflowStyle(overflow)}>
+                            {overflow}%
+                          </span>
+                        )}
+                      </td>
+                      <td className={colClass("SaleInAgingTier", "p-3")}>
+                        <span
+                          className={`inline-flex px-2 py-0.5 rounded-full text-xs font-semibold border ${getSaleInAgingTierStyle(
+                            getSaleInAgingTier(item)
+                          )}`}
+                        >
+                          {getSaleInAgingTier(item)}
+                        </span>
+                      </td>
+                      <td className={colClass("SuggestionPurchasing", "p-3")}>
+                        {item.SuggestionPurchasing ?? "-"}
+                      </td>
+                      <td
+                        className={colClass("TradeStatus", "p-3 text-center")}
+                      >
+                        <p
+                          className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full border ${getStatusStyleLocal(
+                            item.สถานะTrade
+                          )}`}
+                        >
+                          {safeText(item.สถานะTrade)}
+                        </p>
+                        {item.DiffPercent && (
+                          <p
+                            className={`text-xs mt-1 font-bold ${
+                              String(item.DiffPercent).startsWith("-")
+                                ? "text-red-500"
+                                : "text-green-500"
+                            }`}
+                          >
+                            {item.DiffPercent}
+                          </p>
+                        )}
+                      </td>
+                      <td
+                        className={colClass(
+                          "TradeRemark",
+                          "p-3 text-xs text-gray-400"
+                        )}
+                      >
+                        <p className="text-xs mb-1 italic truncate">
+                          {safeText(item.RemarkTrade)}
+                        </p>
+
+                        <button
+                          onClick={() => openTradeModal(item)}
+                          className={`px-3 py-1 text-xs rounded-lg cursor-pointer shadow-md transition font-medium ${
+                            item.RemarkCount > 0
+                              ? "bg-green-600 text-white hover:bg-green-700"
+                              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                          }`}
+                        >
+                          บันทึก/ดูการสื่อสาร ({item.RemarkCount || 0})
+                        </button>
+                      </td>
+                      <td
+                        className={colClass(
+                          "InterTrade",
+                          "p-3 border-r border-gray-200 text-base text-gray-700 font-medium"
+                        )}
+                      >
+                        {safeText(item.interTrade ?? item.InterTrade)}
                       </td>
                     </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td
+                    colSpan={visibleColumnCount}
+                    className="p-6 text-center text-lg text-gray-500"
+                  >
+                    ไม่พบข้อมูลสินค้าที่ตรงกับเงื่อนไขการกรอง
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
 
-            {/* Pagination controls */}
-            <div className="flex flex-col md:flex-row items-center justify-between mt-4 text-sm text-gray-700 gap-3">
-              {/* เลือก page size */}
-              <div className="flex items-center gap-2">
-                <span>แสดงหน้าละ</span>
-                <select
-                  value={pageSize}
-                  onChange={(e) => {
-                    setPageSize(Number(e.target.value));
-                    setCurrentPage(1);
-                  }}
-                  className="border border-gray-500 rounded-lg px-2 py-1 bg-white shadow-sm"
-                >
-                  <option value={10}>10</option>
-                  <option value={20}>20</option>
-                  <option value={50}>50</option>
-                </select>
-                <span>รายการ</span>
-              </div>
+        {/* Pagination controls */}
+        <div className="flex flex-col md:flex-row items-center justify-between mt-4 text-sm text-gray-700 gap-3">
+          {/* เลือก page size */}
+          <div className="flex items-center gap-2">
+            <span>แสดงหน้าละ</span>
+            <select
+              value={pageSize}
+              onChange={(e) => {
+                setPageSize(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+              className="border border-gray-500 rounded-lg px-2 py-1 bg-white shadow-sm"
+            >
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+            </select>
+            <span>รายการ</span>
+          </div>
 
-              {/* ปุ่มเปลี่ยนหน้า */}
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setCurrentPage(1)}
-                  disabled={currentPage === 1}
-                  className="px-2 py-1 border rounded-lg disabled:opacity-40"
-                >
-                  ⏮ หน้าแรก
-                </button>
-                <button
-                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  disabled={currentPage === 1}
-                  className="px-3 py-1 border rounded-lg disabled:opacity-40"
-                >
-                  ก่อนหน้า
-                </button>
-                <span className="px-2">
-                  หน้า <strong>{currentPage}</strong> /{" "}
-                  <strong>{totalPages}</strong>
-                </span>
-                <button
-                  onClick={() =>
-                    setCurrentPage((p) => Math.min(totalPages, p + 1))
-                  }
-                  disabled={currentPage === totalPages}
-                  className="px-2 py-1 border rounded-lg disabled:opacity-40"
-                >
-                  ถัดไป
-                </button>
-                <button
-                  onClick={() => setCurrentPage(totalPages)}
-                  disabled={currentPage === totalPages}
-                  className="px-2 py-1 border rounded-lg disabled:opacity-40"
-                >
-                  หน้าสุดท้าย ⏭
-                </button>
-              </div>
-            </div>
+          {/* ปุ่มเปลี่ยนหน้า */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setCurrentPage(1)}
+              disabled={currentPage === 1}
+              className="px-2 py-1 border rounded-lg disabled:opacity-40"
+            >
+              ⏮ หน้าแรก
+            </button>
+            <button
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1 border rounded-lg disabled:opacity-40"
+            >
+              ก่อนหน้า
+            </button>
+            <span className="px-2">
+              หน้า <strong>{currentPage}</strong> /{" "}
+              <strong>{totalPages}</strong>
+            </span>
+            <button
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="px-2 py-1 border rounded-lg disabled:opacity-40"
+            >
+              ถัดไป
+            </button>
+            <button
+              onClick={() => setCurrentPage(totalPages)}
+              disabled={currentPage === totalPages}
+              className="px-2 py-1 border rounded-lg disabled:opacity-40"
+            >
+              หน้าสุดท้าย ⏭
+            </button>
+          </div>
+        </div>
 
-            <div className="mt-8 p-4 bg-blue-50 rounded-lg text-sm text-gray-700">
-              <p>
-                💡 <strong>คำอธิบาย DOH (Days On Hand):</strong>
-                <span className="text-red-600 font-extrabold ml-2">
-                  DOH &gt; 365 วัน
-                </span>{" "}
-                (Stock ล้นมาก) |
-                <span className="text-orange-600 font-bold ml-2">
-                  180 &lt; DOH &lt; 365 วัน
-                </span>{" "}
-                (ควรระวัง) |
-                <span className="text-green-600 font-bold ml-2">
-                  DOH &lt; 180 วัน
-                </span>{" "}
-                (ปกติ)
-              </p>
-              <p className="mt-2 text-xs text-gray-600">
-                Overflow Score = (Stock - Alloc_3M) / Alloc_3M * 100. ค่า "-"
-                คือ ไม่สามารถคำนวณได้ (Alloc_3M = 0)
-              </p>
-            </div>
+        <div className="mt-8 p-4 bg-blue-50 rounded-lg text-sm text-gray-700">
+          <p>
+            💡 <strong>คำอธิบาย DOH (Days On Hand):</strong>
+            <span className="text-red-600 font-extrabold ml-2">
+              DOH &gt; 365 วัน
+            </span>{" "}
+            (Stock ล้นมาก) |
+            <span className="text-orange-600 font-bold ml-2">
+              180 &lt; DOH &lt; 365 วัน
+            </span>{" "}
+            (ควรระวัง) |
+            <span className="text-green-600 font-bold ml-2">
+              DOH &lt; 180 วัน
+            </span>{" "}
+            (ปกติ)
+          </p>
+          <p className="mt-2 text-xs text-gray-600">
+            Overflow Score = (Stock - Alloc_3M) / Alloc_3M * 100. ค่า "-" คือ
+            ไม่สามารถคำนวณได้ (Alloc_3M = 0)
+          </p>
+        </div>
 
-            {isModalOpen && selectedItem && (
-              <CommunicationCard
-                item={selectedItem}
-                onClose={closeTradeModal}
-                onSubmit={handleSubmitAction}
-                currentData={modalData}
-                onDataChange={handleModalDataChange}
-              />
-            )}
-          </>
+        {isModalOpen && selectedItem && (
+          <CommunicationCard
+            item={selectedItem}
+            onClose={closeTradeModal}
+            onSubmit={handleSubmitAction}
+            currentData={modalData}
+            onDataChange={handleModalDataChange}
+          />
         )}
       </div>
     </div>
