@@ -3,7 +3,6 @@ import { Search, Eye, EyeOff, ChevronDown } from "lucide-react";
 
 import StockShowModal from "../SideBar-Modal/StockModal/StockShow.jsx";
 import CommunicationCard from "../SideBar-Modal/StockModal/CommunicateCard.jsx";
-import {SummaryMetrics} from "../SideBar-Modal/StockModal/SummaryMetrics.jsx";
 
 import { useKeyProducts } from "../hooks/useKeyProducts.js";
 
@@ -144,7 +143,7 @@ const ALL_COLUMNS = [
   { key: "TradeRemark", name: "Remark Trade / Action" },
 ];
 
-export default function KeyAdmin({grandTotals,filteredData}) {
+export default function KeyAdmin() {
   const roleFromStorage =
     typeof window !== "undefined" ? localStorage.getItem("role") || "" : "";
   const isSuperAdmin = roleFromStorage === "SuperAdmin";
@@ -411,11 +410,6 @@ export default function KeyAdmin({grandTotals,filteredData}) {
 
              <div className="flex flex-col lg:flex-row gap-6 mb-8 items-start">
             
-            {/* 1.1 Summary Chart (Fixed Width) */}
-            <div className="lg:w-96 flex-shrink-0">
-                <SummaryMetrics grandTotals={grandTotals} dataAC={filteredData} />
-            </div>
-
             {/* 1.2 Filter Bar (Uses remaining space) */}
             {/* *** START: New Filter Layout *** */}
             <div className="flex-grow p-4 bg-gray-50 rounded-xl shadow-lg border border-gray-200">
