@@ -2,6 +2,7 @@ import React, { useState, useMemo, useRef, useEffect } from "react";
 import { Search, Eye, EyeOff, ChevronDown } from "lucide-react";
 
 import StockShowModal from "../SideBar-Modal/StockModal/StockShow.jsx";
+import { SummaryMetrics } from "../SideBar-Modal/StockModal/SummaryMetrics.jsx";
 import CommunicationCard from "../SideBar-Modal/StockModal/CommunicateCard.jsx";
 
 import { useKeyProducts } from "../hooks/useKeyProducts.js";
@@ -407,6 +408,16 @@ export default function KeyAdmin() {
           </p>
                  {" "}
         </header>
+<div class="flex flex-col lg:flex-row gap-6 mb-6">
+        {/* 🔥 SummaryMetrics ด้านบน Dashboard */}
+        <div className="mb-8">
+          <SummaryMetrics 
+            grandTotals={{
+              Total: summary.totalStock || 0   // FC
+            }}
+            dataAC={data.map(d => ({ AC: d.Stock_จบเหลือจริง }))}  // ดึง AC จาก data
+          />
+        </div>
 
         <div className="flex flex-col lg:flex-row gap-6 mb-8 items-start">
           {/* 1.2 Filter Bar (Uses remaining space) */}
@@ -595,7 +606,7 @@ export default function KeyAdmin() {
             </div>
           </div>
         </div>
-
+</div>
         {/* Column toggle + page size (บนตาราง) */}
 
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-2">
