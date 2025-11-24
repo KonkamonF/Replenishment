@@ -1,13 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { API_BASE_URL, API_TOKEN } from "../config/apiConfig.js";
-import { getToken } from "../utils/auth";
-import { authFetch } from "../utils/authFetch";
 
 export function useProductByClass({
   classType = "manual",
   className = "A",
   initialPageSize = 50,
-  token = getToken(),
+  token = API_TOKEN,
 }) {
   const [data, setData] = useState([]);
   const [allData, setAllData] = useState([]);
@@ -32,7 +30,7 @@ export function useProductByClass({
       while (keepGoing) {
         const url = `${API_BASE_URL}/products/query?page=${currentPage}&per_page=${pageSize}&filters=${classType}Class=${className}`;
 
-        const res = await authFetch(url, {
+        const res = await fetch(url, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",

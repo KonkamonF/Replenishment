@@ -1,25 +1,22 @@
 // src/hooks/useMonthlySalesSummary.js
 import { useState, useEffect } from "react";
 import { API_BASE_URL, API_TOKEN } from "../config/apiConfig.js";
-import { getToken } from "../utils/auth";
-import { authFetch } from "../utils/authFetch";
+
 // Hook ดึงข้อมูลยอดขายรายเดือนจาก API
 export function useMonthlySalesSummary() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const token = getToken();
 
   useEffect(() => {
     let active = true;
 
     const fetchData = async () => {
       try {
-        const res = await authFetch(`${API_BASE_URL}/sales/monthly-summary`, {
+        const res = await fetch(`${API_BASE_URL}/sales/monthly-summary`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
-            "ngrok-skip-browser-warning": "1",
           },
         });
 

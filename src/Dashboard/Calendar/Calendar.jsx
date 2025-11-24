@@ -23,8 +23,8 @@ export default function Calendar() {
   } = useProductEntry(token);
   useEffect(() => {
     //  สร้าง WebSocket
-    // const ws = new WebSocket("ws://127.0.0.1:8000/ws/entry-updates");
-    const ws = new WebSocket("wss://syble-intelligential-patiently.ngrok-free.dev/ws/entry-updates?ngrok-skip-browser-warning=true");
+    const ws = new WebSocket("ws://127.0.0.1:8000/ws/entry-updates");
+    // const ws = new WebSocket("wss://syble-intelligential-patiently.ngrok-free.dev/ws/entry-updates?ngrok-skip-browser-warning=true");
     // ws.onopen = () => console.log(" WebSocket connected");
     // ws.onclose = () => console.log(" WebSocket disconnected");
 

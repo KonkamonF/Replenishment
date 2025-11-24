@@ -16,6 +16,13 @@ export default function Appp() {
   // กำหนดความกว้างของ Sidebar
   const sidebarWidth = "200px";
 
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("role");
+    window.location.href = "/login"; // หรือ navigate("/login")
+  };
+  const username = localStorage.getItem("username") || "User";
+  const role = localStorage.getItem("role") || "";
   return (
     <>
       <div className="bg-gray-200 min-h-screen">
@@ -74,10 +81,16 @@ export default function Appp() {
 
           {/* User Profile / Notifications */}
           <div className="flex items-center space-x-4 ml-auto">
-            <div className="text-sm text-gray-500 ">Welcome, Admin User</div>
+            <div className="text-sm text-gray-500 ">Welcome, {role} {username}</div>
             <div className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center text-[#640037] font-semibold cursor-pointer border-2 border-pink-900">
               AD
             </div>
+            <button
+              onClick={handleLogout}
+              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
+            >
+              Logout
+            </button>
           </div>
         </header>
 

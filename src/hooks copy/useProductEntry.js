@@ -1,7 +1,5 @@
 import { useState, useCallback } from "react";
 import { API_BASE_URL, API_TOKEN } from "../config/apiConfig.js";
-import { getToken } from "../utils/auth";
-import { authFetch } from "../utils/authFetch";
 
 /**
  * useProductEntry Hook — จัดการข้อมูลสินค้าจะเข้าคลัง
@@ -16,7 +14,7 @@ export function useProductEntry() {
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const token = getToken();
+  const token = API_TOKEN;
 
   // ดึงข้อมูลรายวัน (ใช้ตอนกดวันเพื่อเปิด modal)
   const fetchByDate = useCallback(
@@ -25,7 +23,7 @@ export function useProductEntry() {
       setLoading(true);
       setError(null);
       try {
-        const res = await authFetch(`${API_BASE_URL}/product-entry/by-date?date=${date}`, {
+        const res = await fetch(`${API_BASE_URL}/product-entry/by-date?date=${date}`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Accept": "application/json",
@@ -54,7 +52,7 @@ export function useProductEntry() {
     setLoading(true);
     setError(null);
     try {
-      const res = await authFetch(`${API_BASE_URL}/product-entry/summary`, {
+      const res = await fetch(`${API_BASE_URL}/product-entry/summary`, {
         headers: {
             Authorization: `Bearer ${token}`,
             "Accept": "application/json",
@@ -110,7 +108,7 @@ export function useProductEntry() {
     setLoading(true);
     setError(null);
     try {
-      const res = await authFetch(
+      const res = await fetch(
         `${API_BASE_URL}/product-entry/by-month?year=${year}&month=${monthZeroBased + 1}`,
         {
           headers: {
@@ -151,7 +149,7 @@ export function useProductEntry() {
         formData.append("status", status);
         images.forEach((f) => formData.append("images", f));
 
-        const res = await authFetch(`${API_BASE_URL}/product-entry/add`, {
+        const res = await fetch(`${API_BASE_URL}/product-entry/add`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -190,7 +188,7 @@ export function useProductEntry() {
       setLoading(true);
       setError(null);
       try {
-        const res = await authFetch(`${API_BASE_URL}/product-entry/delete?id=${id}`, {
+        const res = await fetch(`${API_BASE_URL}/product-entry/delete?id=${id}`, {
           method: "DELETE",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -244,7 +242,7 @@ export function useProductEntry() {
         formData.append("keepImages", (keepImages || []).join("|"));
         (newImages || []).forEach((f) => formData.append("newImages", f));
 
-        const res = await authFetch(`${API_BASE_URL}/product-entry/update`, {
+        const res = await fetch(`${API_BASE_URL}/product-entry/update`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -286,7 +284,7 @@ export function useProductEntry() {
         form.append("id", id);
         form.append("status", nextStatus);
 
-        const res = await authFetch(`${API_BASE_URL}/product-entry/status`, {
+        const res = await fetch(`${API_BASE_URL}/product-entry/status`, {
           method: "PATCH",
           headers: {
             Authorization: `Bearer ${token}`,
