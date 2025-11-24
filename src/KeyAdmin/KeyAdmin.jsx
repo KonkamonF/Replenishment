@@ -1,13 +1,9 @@
-import React, {
-  useState,
-  useMemo,
-  useRef,
-  useEffect,
-} from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import { Search, Eye, EyeOff, ChevronDown } from "lucide-react";
 
 import StockShowModal from "../SideBar-Modal/StockModal/StockShow.jsx";
 import CommunicationCard from "../SideBar-Modal/StockModal/CommunicateCard.jsx";
+import {SummaryMetrics} from "../SideBar-Modal/StockModal/SummaryMetrics.jsx";
 
 import { useKeyProducts } from "../hooks/useKeyProducts.js";
 
@@ -15,12 +11,9 @@ const getDOHStyle = (doh) => {
   if (doh === null || doh === undefined) return "text-gray-500";
   const n = Number(doh);
   if (!Number.isFinite(n)) return "text-gray-500";
-  if (n > 365)
-    return "text-red-600 font-extrabold bg-red-50";
-  if (n > 180)
-    return "text-orange-600 font-bold";
-  if (n >= 0)
-    return "text-green-600 font-bold";
+  if (n > 365) return "text-red-600 font-extrabold bg-red-50";
+  if (n > 180) return "text-orange-600 font-bold";
+  if (n >= 0) return "text-green-600 font-bold";
   return "text-gray-500";
 };
 
@@ -145,13 +138,13 @@ const ALL_COLUMNS = [
   { key: "Stock_Physical", label: "Stock (กายภาพ)" },
   { key: "Stock", label: "Stock หักจอง" },
   { key: "Stock_Cl", label: "Stock Clearance" },
-  { key: "Forecash_Now", label: "Forecash Now" },
-  { key: "Actual_Now", label: "Actual Now" },
+  { key: "Forecash_Now", label: "Forecash 3m" },
+  { key: "Actual_Now", label: "Actual 3m" },
   { key: "TradeStatus", name: "สถานะ Trade" },
   { key: "TradeRemark", name: "Remark Trade / Action" },
 ];
 
-export default function KeyAdmin() {
+export default function KeyAdmin({grandTotals,filteredData}) {
   const roleFromStorage =
     typeof window !== "undefined" ? localStorage.getItem("role") || "" : "";
   const isSuperAdmin = roleFromStorage === "SuperAdmin";
@@ -315,10 +308,7 @@ export default function KeyAdmin() {
   const totalSKUs = summary.totalSkus ?? filteredData.length;
   const totalStock =
     summary.totalStock ??
-    filteredData.reduce(
-      (sum, item) => sum + (item.Stock_จบเหลือจริง || 0),
-      0
-    );
+    filteredData.reduce((sum, item) => sum + (item.Stock_จบเหลือจริง || 0), 0);
   const avgDOH = summary.avgDohWeighted ?? 0;
   const abnormalCount =
     summary.abnormalCount ??
@@ -407,211 +397,221 @@ export default function KeyAdmin() {
       <div className="p-8 bg-white shadow-2xl rounded-xl">
         {/* Header */}
         <header className="mb-6 border-b pb-4">
-          <h1 className="text-3xl font-extrabold text-[#640037] mb-2">Key Account Monitor</h1>
-          <p className="text-gray-500">ข้อมูลคงคลัง (Stock) และยอดขาย (Sale Out) พร้อมช่องทางการบันทึกและติดตาม **Action/Communication**</p>
-        </header>
+                   {" "}
+          <h1 className="text-3xl font-extrabold text-[#640037] mb-2">
+            Key Account Monitor
+          </h1>
+                   {" "}
+          <p className="text-gray-500">
+            ข้อมูลคงคลัง (Stock) และยอดขาย (Sale Out)
+            พร้อมช่องทางการบันทึกและติดตาม **Action/Communication**
+          </p>
+                 {" "}
+        </header>
 
-        {/* Summary cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-8">
-          <div className="bg-pink-50 p-4 rounded-lg shadow-inner">
-            <p className="text-sm text-pink-600 font-semibold">Total SKUs</p>
-            <p className="text-2xl font-extrabold text-[#640037]">
-              {formatNumber(totalSKUs)}
-            </p>
-          </div>
-          <div className="bg-blue-50 p-4 rounded-lg shadow-inner">
-            <p className="text-sm text-blue-600 font-semibold">Total Stock</p>
-            <p className="text-2xl font-extrabold">
-              {formatNumber(totalStock)}
-            </p>
-          </div>
-          <div className="bg-yellow-50 p-4 rounded-lg shadow-inner">
-            <p className="text-sm text-yellow-600 font-semibold">Avg. DOH (Weighted)</p>
-            <p className="text-2xl font-extrabold text-yellow-700">
-              {avgDOH.toFixed(1)}
-            </p>
-          </div>
-          <div className="bg-red-50 p-4 rounded-lg shadow-inner">
-            <p className="text-sm text-red-600 font-semibold">Abnormal Count</p>
-            <p className="text-2xl font-extrabold text-red-700">
-              {formatNumber(abnormalCount)}
-            </p>
-          </div>
-          <div className="bg-gray-50 p-4 rounded-lg shadow-inner hidden lg:block">
-            <p className="text-sm text-gray-600 font-semibold">Total Data</p>
-            <p className="text-2xl font-extrabold text-gray-700">
-              {formatNumber(totalItems || data.length)}
-            </p>
-          </div>
-        </div>
-
-        {/* Filter bar (แถวบน) */}
-        <div className="grid grid-cols-2 md:grid-cols-7 gap-4 mb-4 items-end p-4 bg-pink-50 rounded-lg border border-pink-200">
-          <div className="col-span-2 md:col-span-2">
-            <label className="block text-sm font-bold text-gray-700 mb-1">ค้นหาสินค้า (Code/Desc/Remark)</label>
-            <div className="relative w-full">
-              <input
-                type="text"
-                placeholder="ค้นหา..."
-                value={filters.search}
-                onChange={handleSearchChange}
-                className="w-full p-2 pl-9 pr-8 border border-gray-300 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500" />
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-              {filters.search && (
-                <button
-                  onClick={() => handleFilterChange("search", "")}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 text-lg font-bold p-1 leading-none"
-                  title="ล้างการค้นหา"
-                >
-                  &times;
-                </button>
-              )}
+             <div className="flex flex-col lg:flex-row gap-6 mb-8 items-start">
+            
+            {/* 1.1 Summary Chart (Fixed Width) */}
+            <div className="lg:w-96 flex-shrink-0">
+                <SummaryMetrics grandTotals={grandTotals} dataAC={filteredData} />
             </div>
-          </div>
 
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Brand</label>
-            <select
-              value={filters.brand}
-              onChange={(e) => handleFilterChange("brand", e.target.value)}
-              className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500">
-              {uniqueBrands.map((brand) => (
-                <option key={brand} value={brand}>
-                  {brand}
-                </option>
-              ))}
-            </select>
-          </div>
+            {/* 1.2 Filter Bar (Uses remaining space) */}
+            {/* *** START: New Filter Layout *** */}
+            <div className="flex-grow p-4 bg-gray-50 rounded-xl shadow-lg border border-gray-200">
+                <h2 className="text-xl font-bold text-gray-700 mb-4 border-b pb-2">
+                    Filter Options
+                </h2>
 
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
-              Class
-            </label>
-            <select
-              value={filters.class}
-              onChange={(e) => handleFilterChange("class", e.target.value)}
-              className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500">
-              {uniqueClasses.map((cls) => (
-                <option key={cls} value={cls}>
-                  {cls}
-                </option>
-              ))}
-            </select>
-          </div>
+                <div className="grid grid-cols-2 md:grid-cols-7 gap-4 items-end p-4 bg-pink-50 rounded-lg border border-pink-200">
+                    {/* Search Input */}
+                    <div className="col-span-2 md:col-span-2">
+                        <label className="block text-sm font-bold text-gray-700 mb-1">
+                            ค้นหาสินค้า (Code/Desc/Remark)
+                        </label>
+                        <div className="relative w-full">
+                            <input
+                                type="text"
+                                placeholder="ค้นหา..."
+                                value={filters.search}
+                                onChange={handleSearchChange}
+                                className="w-full p-2 pl-9 pr-8 border border-gray-300 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
+                            />
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                            {filters.search && (
+                                <button
+                                    onClick={() => handleFilterChange("search", "")}
+                                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 text-lg font-bold p-1 leading-none"
+                                    title="ล้างการค้นหา"
+                                >
+                                    &times;
+                                </button>
+                            )}
+                        </div>
+                    </div>
 
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
-              YN Best 2025
-            </label>
-            <select
-              value={filters.best2025}
-              onChange={(e) => handleFilterChange("best2025", e.target.value)}
-              className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500">
-              {uniqueBest2025.map((b) => (
-                <option key={b} value={b}>
-                  {b === "" ? "(ว่าง)" : b}
-                </option>
-              ))}
-            </select>
-          </div>
+                    {/* Brand Filter */}
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">
+                            Brand
+                        </label>
+                        <select
+                            value={filters.brand}
+                            onChange={(e) => handleFilterChange("brand", e.target.value)}
+                            className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
+                        >
+                            {uniqueBrands.map((brand) => (
+                                <option key={brand} value={brand}>
+                                    {brand}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
 
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
-              สถานะ Trade
-            </label>
-            <select
-              value={filters.tradeStatus}
-              onChange={(e) =>
-                handleFilterChange("tradeStatus", e.target.value)
-              }
-              className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500">
-              {uniqueTradeStatus.map((st) => (
-                <option key={st} value={st}>
-                  {st}
-                </option>
-              ))}
-            </select>
-          </div>
+                    {/* Class Filter */}
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">
+                            Class
+                        </label>
+                        <select
+                            value={filters.class}
+                            onChange={(e) => handleFilterChange("class", e.target.value)}
+                            className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
+                        >
+                            {uniqueClasses.map((cls) => (
+                                <option key={cls} value={cls}>
+                                    {cls}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
 
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
-              ชุด Set / แตก Set
-            </label>
-            <select
-              value={filters.set}
-              onChange={(e) => handleFilterChange("set", e.target.value)}
-              className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500">
-              {uniqueSets.map((setV) => (
-                <option key={setV} value={setV}>
-                  {setV}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
+                    {/* YN Best 2025 Filter */}
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">
+                            YN Best 2025
+                        </label>
+                        <select
+                            value={filters.best2025}
+                            onChange={(e) => handleFilterChange("best2025", e.target.value)}
+                            className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
+                        >
+                            {uniqueBest2025.map((b) => (
+                                <option key={b} value={b}>
+                                    {b === "" ? "N/A" : b}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
 
-        {/* Filter แถวล่าง: ห้าง + Key + checkbox */}
-        <div className="flex flex-wrap items-center gap-3 mb-4 text-sm bg-white/70 rounded-lg px-3 py-2 border border-gray-200 shadow-sm">
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-gray-700">ห้าง:</span>
-            <select
-              value={filters.salesChannelId}
-              onChange={(e) =>
-                handleFilterChange("salesChannelId", e.target.value)
-              }
-              className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
-              disabled={filters.showUnassigned}
-            >
-              <option value="All">ทุกห้าง</option>
-              {channels.map((ch) => (
-                <option key={ch.id} value={ch.id}>
-                  {ch.name}
-                </option>
-              ))}
-            </select>
-          </div>
+                    {/* Trade Status Filter */}
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">
+                            สถานะ Trade
+                        </label>
+                        <select
+                            value={filters.tradeStatus}
+                            onChange={(e) =>
+                                handleFilterChange("tradeStatus", e.target.value)
+                            }
+                            className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
+                        >
+                            {uniqueTradeStatus.map((st) => (
+                                <option key={st} value={st}>
+                                    {st}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
 
-          {isSuperAdmin && (
-            <div className="flex items-center gap-2">
-              <span className="font-semibold text-gray-700">Key:</span>
-              <select
-                value={filters.keyUsername}
-                onChange={(e) =>
-                  handleFilterChange("keyUsername", e.target.value)
-                }
-                className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
-                disabled={filters.showUnassigned}
-              >
-                <option value="All">ทุก Key</option>
-                {keyUsers.map((u) => (
-                  <option key={u.username} value={u.username}>
-                    {u.username}
-                  </option>
-                ))}
-              </select>
+                    {/* Set / แตก Set Filter */}
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">
+                            ชุด Set / แตก Set
+                        </label>
+                        <select
+                            value={filters.set}
+                            onChange={(e) => handleFilterChange("set", e.target.value)}
+                            className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
+                        >
+                            {uniqueSets.map((setV) => (
+                                <option key={setV} value={setV}>
+                                    {setV}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* Sales Channel (ห้าง) Filter */}
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">
+                            ห้าง
+                        </label>
+                        <select
+                            value={filters.salesChannelId}
+                            onChange={(e) =>
+                                handleFilterChange("salesChannelId", e.target.value)
+                            }
+                            className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
+                            disabled={filters.showUnassigned}
+                        >
+                            <option value="All">ทุกห้าง</option>
+                            {channels.map((ch) => (
+                                <option key={ch.id} value={ch.id}>
+                                    {ch.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* Key User Filter (Visible only to Admin/SuperAdmin) */}
+                    {isSuperAdmin && (
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                Key User
+                            </label>
+                            <select
+                                value={filters.keyUsername}
+                                onChange={(e) =>
+                                    handleFilterChange("keyUsername", e.target.value)
+                                }
+                                className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
+                                disabled={filters.showUnassigned}
+                            >
+                                <option value="All">ทุก Key</option>
+                                {keyUsers.map((u) => (
+                                    <option key={u.username} value={u.username}>
+                                        {u.username}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
+
+                    {/* Show Unassigned Checkbox (แยกออกมาเป็นช่องสุดท้าย) */}
+                    <div className="col-span-2 md:col-span-1 flex items-end h-full">
+                        <label className="flex items-center gap-2 cursor-pointer p-2.5 rounded-lg bg-white shadow-md border border-gray-300 w-full">
+                            <input
+                                type="checkbox"
+                                checked={filters.showUnassigned}
+                                onChange={(e) =>
+                                    handleFilterChange("showUnassigned", e.target.checked)
+                                }
+                                className="rounded text-pink-500 focus:ring-pink-500"
+                            />
+                            <span className="text-gray-700 text-sm font-medium whitespace-nowrap">
+                                แสดงเฉพาะสินค้าที่ไม่มี Key ดูแล
+                            </span>
+                        </label>
+                    </div>
+
+                </div>
             </div>
-          )}
-
-          <label className="flex items-center gap-1 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={filters.showUnassigned}
-              onChange={(e) =>
-                handleFilterChange("showUnassigned", e.target.checked)
-              }
-              className="rounded"
-            />
-            <span className="text-gray-700">
-              แสดงเฉพาะสินค้าที่ไม่มี Key ดูแล
-            </span>
-          </label>
         </div>
 
         {/* Column toggle + page size (บนตาราง) */}
-        
+
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-2">
-          
-                
           <div className="flex items-center gap-2 text-sm text-gray-700">
             <span>แสดงหน้าละ</span>
             <select
@@ -624,7 +624,6 @@ export default function KeyAdmin() {
               <option value={100}>100</option>
             </select>
             <span>รายการ</span>
-
           </div>
           <div className="flex items-center gap-2">
             <p className="text-xs text-gray-500">
@@ -635,7 +634,6 @@ export default function KeyAdmin() {
               hiddenColumns={hiddenColumns}
               toggleColumnVisibility={toggleColumnVisibility}
             />
-            
           </div>
         </div>
 
@@ -711,12 +709,12 @@ export default function KeyAdmin() {
                 )}
                 {!isColumnHidden("Forecash_Now") && (
                   <th className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
-                    Forecash Now
+                    Forecash 3m
                   </th>
                 )}
                 {!isColumnHidden("Actual_Now") && (
                   <th className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
-                    Actual Now
+                    Actual 3m
                   </th>
                 )}
                 {!isColumnHidden("TradeStatus") && (
@@ -742,9 +740,7 @@ export default function KeyAdmin() {
                       className="border-b border-gray-200 hover:bg-pink-50 transition duration-150"
                     >
                       {!isColumnHidden("No") && (
-                        <td className="p-3 min-w-50px">
-                          {rowNo}
-                        </td>
+                        <td className="p-3 min-w-50px">{rowNo}</td>
                       )}
 
                       {!isColumnHidden("Code") && (
@@ -796,32 +792,34 @@ export default function KeyAdmin() {
 
                       {!isColumnHidden("Categories") && (
                         <td className="p-3">
-                            {formatNumber(item.Stock_จบเหลือจริง)}
+                          {formatNumber(item.Stock_จบเหลือจริง)}
                         </td>
                       )}
 
                       {!isColumnHidden("Forecast") && (
                         <td className="p-3 font-bold text-lg border-r border-gray-200 text-right">
-                            {formatNumber(item.Stock_จบเหลือจริง)}
+                          {formatNumber(item.Stock_จบเหลือจริง)}
                         </td>
                       )}
 
                       {!isColumnHidden("Actual") && (
                         <td className="p-3 font-semibold text-lg border-r border-gray-200 text-right text-blue-600">
-                            {formatNumber(item.Stock_จบเหลือจริง)}
+                          {formatNumber(item.Stock_จบเหลือจริง)}
                         </td>
                       )}
 
                       {!isColumnHidden("DOH") && (
-                        <td className={`p-3 font-extrabold text-lg border-r border-gray-200 ${getDOHStyle(item.DayOnHand_DOH_Stock2)} text-right`}>
-                            {formatNumber(item.Stock_จบเหลือจริง)}
+                        <td
+                          className={`p-3 font-extrabold text-lg border-r border-gray-200 ${getDOHStyle(
+                            item.DayOnHand_DOH_Stock2
+                          )} text-right`}
+                        >
+                          {formatNumber(item.Stock_จบเหลือจริง)}
                         </td>
                       )}
 
                       {!isColumnHidden("SetType") && (
-                        <td className="p-3 text-sm text-gray-600">
-                            {"-"}
-                        </td>
+                        <td className="p-3 text-sm text-gray-600">{"-"}</td>
                       )}
 
                       {!isColumnHidden("StockShow") && (
@@ -841,31 +839,31 @@ export default function KeyAdmin() {
 
                       {!isColumnHidden("Stock_Physical") && (
                         <td className="p-3 font-bold text-lg border-r border-gray-200 text-right">
-                            {formatNumber(item.Stock_จบเหลือจริง)}
+                          {formatNumber(item.Stock_จบเหลือจริง)}
                         </td>
                       )}
 
                       {!isColumnHidden("Stock") && (
                         <td className="p-3 font-bold text-lg border-r border-gray-200 text-right">
-                            {formatNumber(item.Stock_จบเหลือจริง)}
+                          {formatNumber(item.Stock_จบเหลือจริง)}
                         </td>
                       )}
 
                       {!isColumnHidden("Stock_Cl") && (
                         <td className="p-3 font-bold text-lg border-r border-gray-200 text-right">
-                            {formatNumber(item.Stock_จบเหลือจริง)}
+                          {formatNumber(item.Stock_จบเหลือจริง)}
                         </td>
                       )}
 
                       {!isColumnHidden("Forecash") && (
                         <td className="p-3 font-bold border-r border-gray-200">
-                            {"-"}
+                          {"-"}
                         </td>
                       )}
 
                       {!isColumnHidden("Actual") && (
                         <td className="p-3 font-bold border-r border-gray-200">
-                            {"-"}
+                          {"-"}
                         </td>
                       )}
 
