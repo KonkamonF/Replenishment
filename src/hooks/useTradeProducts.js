@@ -73,8 +73,9 @@ const mapTradeRow = (item) => ({
 
   DayOnHand_DOH: safeNum(item.DOH),
   DayOnHand_DOH_Stock2: safeNum(item.DOHStock),
-
+  
   KeyRemarks: item.KeyRemarks || [],
+  location: safeText(item.location),
 });
 
 /**
@@ -103,6 +104,7 @@ export function useTradeProducts({
 
   const token = getToken();
 
+  
   // ============================================================
   //  ดึงข้อมูลตามหน้า (server-side pagination + filters + search)
   // ============================================================
@@ -176,11 +178,11 @@ export function useTradeProducts({
     filters.tradeStatus,
     filters.set,
     filters.best2025,
+    filters.location,
     search,
     reloadKey,
     token,
   ]);
-
   // ============================================================
   //  ฟังก์ชัน: updateTradeStatus → ยิง API แล้ว reload หน้า
   // ============================================================

@@ -749,7 +749,6 @@ export default function TradeAdmin() {
                           >
                             {rowNumber}
                           </td>
-
                           <td
                             className={colClass(
                               "Code",
@@ -763,7 +762,6 @@ export default function TradeAdmin() {
                               {safeText(item.Brand)}
                             </span>
                           </td>
-
                           <td
                             className={colClass(
                               "Description",
@@ -784,19 +782,15 @@ export default function TradeAdmin() {
                               {safeText(item.brand)}
                             </span>
                           </td>
-
                           <td className={colClass("pricePerUnit", "p-3")}>
                             {formatNumber(item.pricePerUnit, 0)}
                           </td>
-
                           <td className={colClass("minPricePerUnit", "p-3")}>
                             {formatNumber(item.minPricePerUnit, 0)}
                           </td>
-
                           <td className={colClass("minPromotionPrice", "p-3")}>
                             {formatNumber(item.minPromotionPrice, 0)}
                           </td>
-
                           <td className={colClass("Best", "p-3 text-center")}>
                             <span
                               className={`px-3 py-0.5 block rounded-full text-xs ${
@@ -810,23 +804,18 @@ export default function TradeAdmin() {
                                 : "No Data Best"}
                             </span>
                           </td>
-
                           <td className={colClass("Forecast", "p-3")}>
                             รอระบบคีย์
                           </td>
-
                           <td className={colClass("Actual", "p-3")}>
                             {formatNumber(getActual(item))}
                           </td>
-
                           <td className={colClass("Target", "p-3")}>
                             {formatNumber(getTargetNow(item))}
                           </td>
-
                           <td className={colClass("TargetLast", "p-3")}>
                             {formatNumber(getTargetLast(item))}
                           </td>
-
                           <td
                             className={colClass(
                               "DOH",
@@ -835,7 +824,6 @@ export default function TradeAdmin() {
                           >
                             {formatNumber(item.DayOnHand_DOH_Stock2, 0)}
                           </td>
-
                           <td
                             className={colClass(
                               "POH",
@@ -849,23 +837,27 @@ export default function TradeAdmin() {
                               0
                             )}
                           </td>
-
+                          <td className={colClass("Forecast", "p-3")}>
+                            รอระบบคีย์
+                          </td>{" "}
+                          <td className={colClass("Forecast", "p-3")}>
+                            รอระบบคีย์
+                          </td>
                           <td
                             className={colClass(
                               "SetType",
                               "p-3 text-sm text-gray-600"
                             )}
                           >
+                            
                             ยังไม่มีข้อมูล
                           </td>
-
                           <td className={colClass("Stock_Physical", "p-3")}>
                             {formatNumber(safeNum(item.stockReal))}
                           </td>
-
                           <td className={colClass("Stock_Show", "p-3 text-xs")}>
                             <p className="mb-1">
-                              {formatNumber(safeNum(item.stockShow))}
+                              {formatNumber(safeNum(item.location))}
                             </p>
                             <button
                               onClick={() => handleShowStockModal(item)}
@@ -875,27 +867,21 @@ export default function TradeAdmin() {
                               Show Location Stock
                             </button>
                           </td>
-
                           <td className={colClass("Stock", "p-3")}>
                             {formatNumber(item.stock_หักจอง)}
                           </td>
-
                           <td className={colClass("Stock_Cl", "p-3")}>
                             {formatNumber(item.stockClearance)}
                           </td>
-
                           <td className={colClass("Alloc_Current", "p-3")}>
                             {formatNumber(allocCurrent)}
                           </td>
-
                           <td className={colClass("Alloc_3M", "p-3")}>
                             {formatNumber(alloc3)}
                           </td>
-
                           <td className={colClass("Alloc_6M", "p-3")}>
                             {formatNumber(alloc6)}
                           </td>
-
                           <td className={colClass("OverflowScore", "p-3")}>
                             {overflow === null ? (
                               <span className="text-gray-400">-</span>
@@ -905,7 +891,6 @@ export default function TradeAdmin() {
                               </span>
                             )}
                           </td>
-
                           <td className={colClass("SaleInAgingTier", "p-3")}>
                             <span
                               className={`inline-flex px-2 py-0.5 rounded-full text-xs font-semibold border ${getSaleInAgingTierStyle(
@@ -915,13 +900,11 @@ export default function TradeAdmin() {
                               {getSaleInAgingTier(item)}
                             </span>
                           </td>
-
                           <td
                             className={colClass("SuggestionPurchasing", "p-3")}
                           >
                             {item.SuggestionPurchasing ?? "-"}
                           </td>
-
                           <td
                             className={colClass(
                               "TradeStatus",
@@ -947,7 +930,6 @@ export default function TradeAdmin() {
                               </p>
                             )}
                           </td>
-
                           <td
                             className={colClass(
                               "TradeRemark",
@@ -969,7 +951,6 @@ export default function TradeAdmin() {
                               บันทึก/ดูการสื่อสาร ({item.RemarkCount || 0})
                             </button>
                           </td>
-
                           <td
                             className={colClass(
                               "InterTrade",
