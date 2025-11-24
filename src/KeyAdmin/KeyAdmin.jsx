@@ -383,12 +383,12 @@ export default function KeyAdmin() {
       )}
 
       {loading && (
-        <div className="text-center text-blue-500 font-semibold mt-4">
+        <div className="text-center absolute z-50 text-blue-500 font-semibold mt-4">
           กำลังโหลดข้อมูล...
         </div>
       )}
       {error && (
-        <div className="text-center text-red-500 font-semibold mt-4">
+        <div className="text-center absolute z-50 text-red-500 font-semibold mt-4">
           เกิดข้อผิดพลาด: {String(error)}
         </div>
       )}
@@ -408,199 +408,192 @@ export default function KeyAdmin() {
                  {" "}
         </header>
 
-             <div className="flex flex-col lg:flex-row gap-6 mb-8 items-start">
-            
-            {/* 1.2 Filter Bar (Uses remaining space) */}
-            {/* *** START: New Filter Layout *** */}
-            <div className="flex-grow p-4 bg-gray-50 rounded-xl shadow-lg border border-gray-200">
-                <h2 className="text-xl font-bold text-gray-700 mb-4 border-b pb-2">
-                    Filter Options
-                </h2>
+        <div className="flex flex-col lg:flex-row gap-6 mb-8 items-start">
+          {/* 1.2 Filter Bar (Uses remaining space) */}
+          {/* *** START: New Filter Layout *** */}
 
-                <div className="grid grid-cols-2 md:grid-cols-7 gap-4 items-end p-4 bg-pink-50 rounded-lg border border-pink-200">
-                    {/* Search Input */}
-                    <div className="col-span-2 md:col-span-2">
-                        <label className="block text-sm font-bold text-gray-700 mb-1">
-                            ค้นหาสินค้า (Code/Desc/Remark)
-                        </label>
-                        <div className="relative w-full">
-                            <input
-                                type="text"
-                                placeholder="ค้นหา..."
-                                value={filters.search}
-                                onChange={handleSearchChange}
-                                className="w-full p-2 pl-9 pr-8 border border-gray-300 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
-                            />
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-                            {filters.search && (
-                                <button
-                                    onClick={() => handleFilterChange("search", "")}
-                                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 text-lg font-bold p-1 leading-none"
-                                    title="ล้างการค้นหา"
-                                >
-                                    &times;
-                                </button>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Brand Filter */}
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">
-                            Brand
-                        </label>
-                        <select
-                            value={filters.brand}
-                            onChange={(e) => handleFilterChange("brand", e.target.value)}
-                            className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
-                        >
-                            {uniqueBrands.map((brand) => (
-                                <option key={brand} value={brand}>
-                                    {brand}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    {/* Class Filter */}
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">
-                            Class
-                        </label>
-                        <select
-                            value={filters.class}
-                            onChange={(e) => handleFilterChange("class", e.target.value)}
-                            className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
-                        >
-                            {uniqueClasses.map((cls) => (
-                                <option key={cls} value={cls}>
-                                    {cls}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    {/* YN Best 2025 Filter */}
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">
-                            YN Best 2025
-                        </label>
-                        <select
-                            value={filters.best2025}
-                            onChange={(e) => handleFilterChange("best2025", e.target.value)}
-                            className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
-                        >
-                            {uniqueBest2025.map((b) => (
-                                <option key={b} value={b}>
-                                    {b === "" ? "N/A" : b}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    {/* Trade Status Filter */}
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">
-                            สถานะ Trade
-                        </label>
-                        <select
-                            value={filters.tradeStatus}
-                            onChange={(e) =>
-                                handleFilterChange("tradeStatus", e.target.value)
-                            }
-                            className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
-                        >
-                            {uniqueTradeStatus.map((st) => (
-                                <option key={st} value={st}>
-                                    {st}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    {/* Set / แตก Set Filter */}
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">
-                            ชุด Set / แตก Set
-                        </label>
-                        <select
-                            value={filters.set}
-                            onChange={(e) => handleFilterChange("set", e.target.value)}
-                            className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
-                        >
-                            {uniqueSets.map((setV) => (
-                                <option key={setV} value={setV}>
-                                    {setV}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    {/* Sales Channel (ห้าง) Filter */}
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">
-                            ห้าง
-                        </label>
-                        <select
-                            value={filters.salesChannelId}
-                            onChange={(e) =>
-                                handleFilterChange("salesChannelId", e.target.value)
-                            }
-                            className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
-                            disabled={filters.showUnassigned}
-                        >
-                            <option value="All">ทุกห้าง</option>
-                            {channels.map((ch) => (
-                                <option key={ch.id} value={ch.id}>
-                                    {ch.name}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    {/* Key User Filter (Visible only to Admin/SuperAdmin) */}
-                    {isSuperAdmin && (
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">
-                                Key User
-                            </label>
-                            <select
-                                value={filters.keyUsername}
-                                onChange={(e) =>
-                                    handleFilterChange("keyUsername", e.target.value)
-                                }
-                                className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
-                                disabled={filters.showUnassigned}
-                            >
-                                <option value="All">ทุก Key</option>
-                                {keyUsers.map((u) => (
-                                    <option key={u.username} value={u.username}>
-                                        {u.username}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                    )}
-
-                    {/* Show Unassigned Checkbox (แยกออกมาเป็นช่องสุดท้าย) */}
-                    <div className="col-span-2 md:col-span-1 flex items-end h-full">
-                        <label className="flex items-center gap-2 cursor-pointer p-2.5 rounded-lg bg-white shadow-md border border-gray-300 w-full">
-                            <input
-                                type="checkbox"
-                                checked={filters.showUnassigned}
-                                onChange={(e) =>
-                                    handleFilterChange("showUnassigned", e.target.checked)
-                                }
-                                className="rounded text-pink-500 focus:ring-pink-500"
-                            />
-                            <span className="text-gray-700 text-sm font-medium whitespace-nowrap">
-                                แสดงเฉพาะสินค้าที่ไม่มี Key ดูแล
-                            </span>
-                        </label>
-                    </div>
-
-                </div>
+          <div className="grid grid-cols-2 md:grid-cols-7 gap-4 items-end p-4 bg-pink-50 rounded-lg border border-pink-200">
+            {/* Search Input */}
+            <div className="col-span-2 md:col-span-2">
+              <label className="block text-sm font-bold text-gray-700 mb-1">
+                ค้นหาสินค้า (Code/Desc/Remark)
+              </label>
+              <div className="relative w-full">
+                <input
+                  type="text"
+                  placeholder="ค้นหา..."
+                  value={filters.search}
+                  onChange={handleSearchChange}
+                  className="w-full p-2 pl-9 pr-8 border border-gray-300 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
+                />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                {filters.search && (
+                  <button
+                    onClick={() => handleFilterChange("search", "")}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 text-lg font-bold p-1 leading-none"
+                    title="ล้างการค้นหา"
+                  >
+                    &times;
+                  </button>
+                )}
+              </div>
             </div>
+
+            {/* Brand Filter */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Brand
+              </label>
+              <select
+                value={filters.brand}
+                onChange={(e) => handleFilterChange("brand", e.target.value)}
+                className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
+              >
+                {uniqueBrands.map((brand) => (
+                  <option key={brand} value={brand}>
+                    {brand}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Class Filter */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Class
+              </label>
+              <select
+                value={filters.class}
+                onChange={(e) => handleFilterChange("class", e.target.value)}
+                className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
+              >
+                {uniqueClasses.map((cls) => (
+                  <option key={cls} value={cls}>
+                    {cls}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* YN Best 2025 Filter */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                YN Best 2025
+              </label>
+              <select
+                value={filters.best2025}
+                onChange={(e) => handleFilterChange("best2025", e.target.value)}
+                className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
+              >
+                {uniqueBest2025.map((b) => (
+                  <option key={b} value={b}>
+                    {b === "" ? "N/A" : b}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Trade Status Filter */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                สถานะ Trade
+              </label>
+              <select
+                value={filters.tradeStatus}
+                onChange={(e) =>
+                  handleFilterChange("tradeStatus", e.target.value)
+                }
+                className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
+              >
+                {uniqueTradeStatus.map((st) => (
+                  <option key={st} value={st}>
+                    {st}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Set / แตก Set Filter */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                ชุด Set / แตก Set
+              </label>
+              <select
+                value={filters.set}
+                onChange={(e) => handleFilterChange("set", e.target.value)}
+                className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
+              >
+                {uniqueSets.map((setV) => (
+                  <option key={setV} value={setV}>
+                    {setV}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Sales Channel (ห้าง) Filter */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                ห้าง
+              </label>
+              <select
+                value={filters.salesChannelId}
+                onChange={(e) =>
+                  handleFilterChange("salesChannelId", e.target.value)
+                }
+                className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
+                disabled={filters.showUnassigned}
+              >
+                <option value="All">ทุกห้าง</option>
+                {channels.map((ch) => (
+                  <option key={ch.id} value={ch.id}>
+                    {ch.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Key User Filter (Visible only to Admin/SuperAdmin) */}
+            {isSuperAdmin && (
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Key User
+                </label>
+                <select
+                  value={filters.keyUsername}
+                  onChange={(e) =>
+                    handleFilterChange("keyUsername", e.target.value)
+                  }
+                  className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
+                  disabled={filters.showUnassigned}
+                >
+                  <option value="All">ทุก Key</option>
+                  {keyUsers.map((u) => (
+                    <option key={u.username} value={u.username}>
+                      {u.username}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Show Unassigned Checkbox (แยกออกมาเป็นช่องสุดท้าย) */}
+            <div className="col-span-2 md:col-span-1 flex items-end h-full">
+              <label className="flex items-center gap-2 cursor-pointer p-2.5 bg-white border border-gray-300 rounded-lg shadow-sm">
+                <input
+                  type="checkbox"
+                  checked={filters.showUnassigned}
+                  onChange={(e) =>
+                    handleFilterChange("showUnassigned", e.target.checked)
+                  }
+                  className="rounded text-pink-500 focus:ring-pink-500"
+                />
+                <span className="text-gray-700 text-sm font-medium whitespace-nowrap">
+                  แสดงเฉพาะสินค้าที่ไม่มี Key ดูแล
+                </span>
+              </label>
+            </div>
+          </div>
         </div>
 
         {/* Column toggle + page size (บนตาราง) */}
