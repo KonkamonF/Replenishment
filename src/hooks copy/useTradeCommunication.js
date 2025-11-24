@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
 import { API_BASE_URL, API_TOKEN } from "../config/apiConfig";
-import { getToken } from "../utils/auth";
-import { authFetch } from "../utils/authFetch";
 
 export function useTradeCommunication(itemCode) {
   const [history, setHistory] = useState([]);
@@ -9,7 +7,7 @@ export function useTradeCommunication(itemCode) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
-  const token = getToken();
+  const token = API_TOKEN;
 
   // โหลดประวัติ
   const fetchHistory = async () => {
@@ -17,7 +15,7 @@ export function useTradeCommunication(itemCode) {
     setLoading(true);
 
     try {
-      const res = await authFetch(`${API_BASE_URL}/trade/action/${itemCode}`, {
+      const res = await fetch(`${API_BASE_URL}/trade/action/${itemCode}`, {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: "application/json",
@@ -48,7 +46,7 @@ export function useTradeCommunication(itemCode) {
     form.append("itemCode", itemCode);
     form.append("tradeStatus", newStatus);
 
-    const res = await authFetch(`${API_BASE_URL}/products/update-trade-status`, {
+    const res = await fetch(`${API_BASE_URL}/products/update-trade-status`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -77,7 +75,7 @@ export function useTradeCommunication(itemCode) {
         images.forEach((file) => form.append("images", file));
       }
 
-      const res = await authFetch(`${API_BASE_URL}/trade/action`, {
+      const res = await fetch(`${API_BASE_URL}/trade/action`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

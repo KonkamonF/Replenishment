@@ -1,8 +1,6 @@
 // src/hooks/useTradeProducts.js
 import { useState, useEffect } from "react";
 import { API_BASE_URL, API_TOKEN } from "../config/apiConfig";
-import { getToken } from "../utils/auth";
-import { authFetch } from "../utils/authFetch";
 
 // ---------- Helpers ----------
 const safeNum = (v) => {
@@ -12,11 +10,7 @@ const safeNum = (v) => {
 };
 
 const safeText = (v) => {
-  if (v === null || v === undefined) return "NDB";
-  if (typeof v === "string") {
-    const trimmed = v.trim();
-    return trimmed === "" ? "NDB" : trimmed;
-  }
+  if (v === null || v === undefined || v === "") return "NDB";
   return v;
 };
 
@@ -57,18 +51,11 @@ const mapTradeRow = (item) => ({
   Class: safeText(item.manualClass),
   Type: safeText(item.type),
 
-  pricePerUnit: safeNum(item.pricePerUnit),
-  minPricePerUnit: safeNum(item.minPricePerUnit),
-  minPromotionPrice: safeNum(item.minPromotionPrice),
-
-  StockReal: safeNum(item.stockReal),
-  StockShow: safeNum(item.stockShow),
-  stock_หักจอง: "ยังไม่รู้",
-  StockClearance: safeNum(item.stockClearance),
+  Stock_จบเหลือจริง: safeNum(item.stockReal ?? item.stockAllStore),
 
   YN_Best_2025: safeText(item.best2025),
   สถานะTrade: safeText(item.tradeStatus),
-  RemarkTrade: safeText(item.RemarkTrade),
+  RemarkTrade: safeText(item.tradeRemark),
   SuggestionPurchasing: safeNum(item.productSuggestion),
 
   DayOnHand_DOH: safeNum(item.DOH),
@@ -92,7 +79,7 @@ export function useTradeProducts({
 } = {}) {
   const [data, setData] = useState([]);
   const [summary, setSummary] = useState(null);
-  const [uniqueBrands, setUniqueBrands] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -101,7 +88,7 @@ export function useTradeProducts({
 
   const [reloadKey, setReloadKey] = useState(0); // ใช้ trigger reload หลังอัปเดตสถานะ
 
-  const token = getToken();
+  const token = API_TOKEN;
 
   // ============================================================
   //  ดึงข้อมูลตามหน้า (server-side pagination + filters + search)
@@ -131,7 +118,7 @@ export function useTradeProducts({
 
         const url = `${API_BASE_URL}/products/query?${params.toString()}`;
 
-        const res = await authFetch(url, {
+        const res = await fetch(url, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -189,7 +176,7 @@ export function useTradeProducts({
     form.append("itemCode", itemCode);
     form.append("tradeStatus", newStatus);
 
-    await authFetch(`${API_BASE_URL}/products/update-trade-status`, {
+    await fetch(`${API_BASE_URL}/products/update-trade-status`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -222,7 +209,7 @@ export function useTradeProducts({
 
       const url = `${API_BASE_URL}/products/summary?${params.toString()}`;
 
-      const res = await authFetch(url, {
+      const res = await fetch(url, {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: "application/json",
@@ -239,85 +226,6 @@ export function useTradeProducts({
       setSummary(null);
     }
   };
-  useEffect(() => {
-    const loadBrands = async () => {
-      try {
-        const res = await authFetch(`${API_BASE_URL}/products/brands`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "ngrok-skip-browser-warning": "1",
-          },
-        });
-
-        const json = await res.json();
-        setUniqueBrands(json.brands || []);
-      } catch (err) {
-        console.error("Load brands failed:", err);
-        setUniqueBrands([]);
-      }
-    };
-
-    loadBrands();
-  }, []);
-
-  useEffect(() => {
-    const ws = new WebSocket("ws://127.0.0.1:8000/ws/trade-status");
-
-    ws.onmessage = (event) => {
-      const msg = JSON.parse(event.data);
-
-      if (msg.action === "trade-status-updated") {
-        setData((prev) =>
-          prev.map((it) =>
-            it.Code === msg.itemCode
-              ? { ...it, สถานะTrade: msg.tradeStatus }
-              : it
-          )
-        );
-      }
-    };
-
-    ws.onclose = () => console.log("TradeStatus WS closed");
-    ws.onerror = (e) => console.log("TradeStatus WS error", e);
-
-    return () => ws.close();
-  }, []);
-
-  useEffect(() => {
-    const ws = new WebSocket("ws://127.0.0.1:8000/ws/trade-status");
-
-    ws.onmessage = (event) => {
-      const msg = JSON.parse(event.data);
-
-      // 1) อัปเดตสถานะ Trade
-      if (msg.action === "trade-status-updated") {
-        setData((prev) =>
-          prev.map((it) =>
-            it.Code === msg.itemCode
-              ? { ...it, สถานะTrade: msg.tradeStatus }
-              : it
-          )
-        );
-      }
-
-      // 2) อัปเดต Remark ล่าสุด + จำนวนทั้งหมด
-      if (msg.action === "trade-remark-updated") {
-        setData((prev) =>
-          prev.map((it) =>
-            it.Code === msg.itemCode
-              ? {
-                  ...it,
-                  RemarkTrade: msg.lastRemark,
-                  RemarkCount: msg.totalRemarks,
-                }
-              : it
-          )
-        );
-      }
-    };
-
-    return () => ws.close();
-  }, []);
 
   return {
     data,
@@ -328,6 +236,5 @@ export function useTradeProducts({
     updateTradeStatus,
     summary,
     loadSummary,
-    uniqueBrands,
   };
 }

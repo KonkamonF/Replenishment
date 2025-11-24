@@ -67,20 +67,11 @@ const ALL_COLUMNS = [
   { key: "No", name: "No.", isAlwaysVisible: true },
   { key: "Code", name: "ItemCode / Brand", isAlwaysVisible: true },
   { key: "Description", name: "Description / Class", isAlwaysVisible: true },
-  { key: "pricePerUnit", name: "ราคาต่อ/ชิ้น", isAlwaysVisible: false },
-  { key: "minPricePerUnit", name: "ราคาต่ำสุด/ชิ้น", isAlwaysVisible: false },
-  {
-    key: "minPromotionPrice",
-    name: "ราคาโปรโมชั่นต่ำสุด",
-    isAlwaysVisible: false,
-  },
   { key: "Best", name: "Best/BestSet", isAlwaysVisible: false },
   { key: "Forecast", name: "ยอด Forecast", isAlwaysVisible: false },
   { key: "Actual", name: "ยอด Actual", isAlwaysVisible: false },
   { key: "Target", name: "Target Now", isAlwaysVisible: false },
   { key: "TargetLast", name: "Target Last Mount", isAlwaysVisible: false },
-  { key: "Price", name: "ราคากลางต่อหน่วย", isAlwaysVisible: false },
-  { key: "Promotion", name: "Promotion ต่ำสุด", isAlwaysVisible: false },
 
   { key: "DOH", name: "DOH (วัน)", isAlwaysVisible: false },
   { key: "POH", name: "PO on Hand", isAlwaysVisible: false },
@@ -183,8 +174,8 @@ export default function TradeAdmin() {
   const [isStockShow, setIsStockShow] = useState(false);
 
   // search แยกออกจาก filters (ใช้ server-side search)
-  const [searchTerm, setSearchTerm] = useState(""); // สิ่งที่ผู้ใช้พิมพ์
-  const [search, setSearch] = useState(""); // ค่าที่ใช้ยิง API (กด Enter)
+  const [searchTerm, setSearchTerm] = useState("");   // สิ่งที่ผู้ใช้พิมพ์
+  const [search, setSearch] = useState("");           // ค่าที่ใช้ยิง API (กด Enter)
 
   const [filters, setFilters] = useState({
     brand: "All",
@@ -215,7 +206,6 @@ export default function TradeAdmin() {
     updateTradeStatus,
     summary,
     loadSummary,
-    uniqueBrands: uniqueBrandsFromHook,
   } = useTradeProducts({
     page: currentPage,
     perPage: pageSize,
@@ -255,14 +245,16 @@ export default function TradeAdmin() {
 
   // ---------- Unique options (จาก data ใน page ปัจจุบัน) ----------
   const uniqueBrands = useMemo(
-    () => ["All", ...uniqueBrandsFromHook],
-    [uniqueBrandsFromHook]
+    () => ["All", ...new Set(data.map((d) => d.Brand))],
+    [data]
   );
-
   const uniqueClasses = ["All", "A", "B", "C", "D", "MD", "N"];
 
   const uniqueBest2025 = useMemo(() => ["All", "Yes", ""], []);
-  const uniqueTradeStatus = ["All", "Normal", "Abnormal"];
+  const uniqueTradeStatus = useMemo(
+    () => ["All", ...new Set(data.map((d) => d.สถานะTrade))],
+    [data]
+  );
   const uniqueSets = useMemo(
     () => ["All", ...new Set(data.map((d) => d.Type))],
     [data]
@@ -352,7 +344,10 @@ export default function TradeAdmin() {
         newMonth = 12 + newMonth;
       }
 
-      const key = `cutoffMonth_${newYear}_${String(newMonth).padStart(2, "0")}`;
+      const key = `cutoffMonth_${newYear}_${String(newMonth).padStart(
+        2,
+        "0"
+      )}`;
       keys.push(key);
     }
 
@@ -476,9 +471,7 @@ export default function TradeAdmin() {
             {/* --- Key Metrics (Condensed Summary) --- */}
             <div className="grid grid-cols-2 md:grid-cols-6 lg:grid-cols-8 gap-4 mb-6">
               <div className="bg-pink-50 p-4 rounded-lg shadow-inner">
-                <p className="text-sm text-pink-600 font-semibold">
-                  Total SKUs
-                </p>
+                <p className="text-sm text-pink-600 font-semibold">Total SKUs</p>
                 <p className="text-2xl font-extrabold text-[#640037]">
                   {formatNumber(totalSKUs)}
                 </p>
@@ -586,7 +579,7 @@ export default function TradeAdmin() {
                     <button
                       onClick={() => {
                         setSearchTerm("");
-                        setSearch(""); // ← ล้างค่าใน API ด้วย
+                        setSearch("");     // ← ล้างค่าใน API ด้วย
                         setCurrentPage(1);
                       }}
                       className="absolute right-2 top-1/2 transform -translate-y-1/2 text-lg text-gray-500 hover:text-red-500 font-bold p-1 leading-none"
@@ -734,7 +727,8 @@ export default function TradeAdmin() {
                       const alloc3 = calcAlloc3M(item);
                       const alloc6 = calcAlloc6M(item);
                       const overflow = calcOverflowScore(item);
-                      const rowNumber = (currentPage - 1) * pageSize + idx + 1;
+                      const rowNumber =
+                        (currentPage - 1) * pageSize + idx + 1;
 
                       return (
                         <tr
@@ -781,20 +775,8 @@ export default function TradeAdmin() {
                               Class {item.Class}
                             </span>
                             <span className="text-xs text-gray-600 block mt-1">
-                              {safeText(item.brand)}
+                              {safeText(item.Type)}
                             </span>
-                          </td>
-
-                          <td className={colClass("pricePerUnit", "p-3")}>
-                            {formatNumber(item.pricePerUnit, 0)}
-                          </td>
-
-                          <td className={colClass("minPricePerUnit", "p-3")}>
-                            {formatNumber(item.minPricePerUnit, 0)}
-                          </td>
-
-                          <td className={colClass("minPromotionPrice", "p-3")}>
-                            {formatNumber(item.minPromotionPrice, 0)}
                           </td>
 
                           <td className={colClass("Best", "p-3 text-center")}>
@@ -830,7 +812,9 @@ export default function TradeAdmin() {
                           <td
                             className={colClass(
                               "DOH",
-                              `p-3 ${getDOHStyle(item.DayOnHand_DOH_Stock2)}`
+                              `p-3 ${getDOHStyle(
+                                item.DayOnHand_DOH_Stock2
+                              )}`
                             )}
                           >
                             {formatNumber(item.DayOnHand_DOH_Stock2, 0)}
@@ -860,12 +844,16 @@ export default function TradeAdmin() {
                           </td>
 
                           <td className={colClass("Stock_Physical", "p-3")}>
-                            {formatNumber(safeNum(item.stockReal))}
+                            {formatNumber(safeNum(item.Stock_จบเหลือจริง))}
                           </td>
 
                           <td className={colClass("Stock_Show", "p-3 text-xs")}>
                             <p className="mb-1">
-                              {formatNumber(safeNum(item.stockShow))}
+                              {formatNumber(
+                                Math.round(
+                                  (safeNum(item.Stock_จบเหลือจริง) || 0) * 0.1
+                                )
+                              )}
                             </p>
                             <button
                               onClick={() => handleShowStockModal(item)}
@@ -877,11 +865,11 @@ export default function TradeAdmin() {
                           </td>
 
                           <td className={colClass("Stock", "p-3")}>
-                            {formatNumber(item.stock_หักจอง)}
+                            {formatNumber(item.Stock_จบเหลือจริง)}
                           </td>
 
                           <td className={colClass("Stock_Cl", "p-3")}>
-                            {formatNumber(item.stockClearance)}
+                            {formatNumber(item.Stock_จบเหลือจริง)}
                           </td>
 
                           <td className={colClass("Alloc_Current", "p-3")}>
@@ -917,7 +905,10 @@ export default function TradeAdmin() {
                           </td>
 
                           <td
-                            className={colClass("SuggestionPurchasing", "p-3")}
+                            className={colClass(
+                              "SuggestionPurchasing",
+                              "p-3"
+                            )}
                           >
                             {item.SuggestionPurchasing ?? "-"}
                           </td>
@@ -957,16 +948,16 @@ export default function TradeAdmin() {
                             <p className="text-xs mb-1 italic truncate">
                               {safeText(item.RemarkTrade)}
                             </p>
-
                             <button
                               onClick={() => openTradeModal(item)}
                               className={`px-3 py-1 text-xs rounded-lg cursor-pointer shadow-md transition font-medium ${
-                                item.RemarkCount > 0
-                                  ? "bg-green-600 text-white hover:bg-green-700"
+                                item.KeyRemarks && item.KeyRemarks.length > 0
+                                  ? "bg-blue-600 text-white hover:bg-blue-700"
                                   : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                               }`}
                             >
-                              บันทึก/ดูการสื่อสาร ({item.RemarkCount || 0})
+                              บันทึก/ดูการสื่อสาร (
+                              {item.KeyRemarks ? item.KeyRemarks.length : 0})
                             </button>
                           </td>
 
@@ -1025,7 +1016,9 @@ export default function TradeAdmin() {
                   ⏮ หน้าแรก
                 </button>
                 <button
-                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  onClick={() =>
+                    setCurrentPage((p) => Math.max(1, p - 1))
+                  }
                   disabled={currentPage === 1}
                   className="px-3 py-1 border rounded-lg disabled:opacity-40"
                 >

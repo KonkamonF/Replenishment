@@ -1,8 +1,5 @@
 import { useState, useEffect } from "react";
 import { API_BASE_URL, API_TOKEN } from "../config/apiConfig.js";
-import { getToken } from "../utils/auth";
-import { authFetch } from "../utils/authFetch";
-
 //  เก็บ cache และสถานะการโหลด (global-level)
 let cachedTotals = null;
 let loadingPromise = null;
@@ -11,8 +8,7 @@ export function useProductTotalByClass({ className = "A", classType = "manual" }
   const [totals, setTotals] = useState(cachedTotals);
   const [loading, setLoading] = useState(!cachedTotals);
   const [error, setError] = useState(null);
-  
-  const token = getToken();
+  const token = API_TOKEN;
 
   useEffect(() => {
     let active = true;
@@ -35,7 +31,7 @@ export function useProductTotalByClass({ className = "A", classType = "manual" }
 
         // เริ่มโหลดใหม่
         const url = `${API_BASE_URL}/count/parameter?groupBy=${classType}Class`;
-        loadingPromise = authFetch(url, {
+        loadingPromise = fetch(url, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",

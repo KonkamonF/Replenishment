@@ -1,30 +1,72 @@
-import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+
 import SupperAdmin from "../SupperAdmin/SupperAdmin";
 import TradeAdmin from "../TradeAdmin/TradeAdmin";
 import KeyAdmin from "../KeyAdmin/KeyAdmin";
+import KeyFC from "../KeyAdmin/KeyFC";
 import Appp from "../Appp";
-import KeyFC from "../KeyAdmin/KeyFC.jsx";
-// import Login from "../SideBar-Modal/Login.jsx";
+import Login from "../Auth/Login";
+
+import ProtectedRoute from "../Auth/ProtectedRoute";
+import RoleGuard from "../Auth/RoleGuard";
 
 const route = createBrowserRouter([
   {
+    path: "/login",
+    element: <Login />,
+  },
+  {
     path: "/",
-    // element: <Login/>,
-    element: <Appp/>,
+    element: (
+      <ProtectedRoute>
+        <Appp />
+      </ProtectedRoute>
+    ),
     children: [
-      { index: true, element: <SupperAdmin /> },
-      { path: "super-admin", element: <SupperAdmin /> },
-      { path: "trade-admin", element: <TradeAdmin /> },
-      { path: "key-admin", element: <KeyAdmin /> },
-      { path: "key-fc", element: <KeyFC /> },
+      {
+        index: true,
+        element: (
+          <RoleGuard allowedRoles={["SuperAdmin", "TradeAdmin", "KeyAc"]}>
+            <SupperAdmin />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: "super-admin",
+        element: (
+          <RoleGuard allowedRoles={["SuperAdmin", "TradeAdmin", "KeyAc"]}>
+            <SupperAdmin />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: "trade-admin",
+        element: (
+          <RoleGuard allowedRoles={["SuperAdmin", "TradeAdmin"]}>
+            <TradeAdmin />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: "key-admin",
+        element: (
+          <RoleGuard allowedRoles={["SuperAdmin", "KeyAc"]}>
+            <KeyAdmin />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: "key-fc",
+        element: (
+          <RoleGuard allowedRoles={["SuperAdmin", "KeyAc"]}>
+            <KeyFC />
+          </RoleGuard>
+        ),
+      },
     ],
   },
 ]);
 
 export default function AppRoute() {
-  return (
-    <div>
-      <RouterProvider router={route} />
-    </div>
-  );
+  return <RouterProvider router={route} />;
 }

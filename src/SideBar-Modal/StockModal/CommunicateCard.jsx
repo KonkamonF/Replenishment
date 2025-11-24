@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Upload } from "lucide-react";
 import { useTradeCommunication } from "../../hooks/useTradeCommunication";
 
@@ -26,12 +26,28 @@ const getStatusStyle = (status) => {
 
 export default function CommunicationCard({ item, onClose }) {
   const itemCode = item?.itemCode || item?.Code;
-  const oldStatus = item?.tradeStatus || "Normal";
+  const oldStatus = item?.tradeStatus ?? "Normal"; // ใช้ nullish merge
 
   const { history, loading, saving, saveAction } =
     useTradeCommunication(itemCode);
 
   const [newStatus, setNewStatus] = useState(oldStatus);
+
+  useEffect(() => {
+    if (history.length > 0) {
+      const latest = history[0]; // ประวัติล่าสุด index 0
+      if (latest.newStatus) {
+        setNewStatus(latest.newStatus);
+        return;
+      }
+    }
+
+    // fallback: ใช้สถานะจาก item
+    if (item?.tradeStatus) {
+      setNewStatus(item.tradeStatus);
+    }
+  }, [history, item]);
+  
   const [remark, setRemark] = useState("");
   const [images, setImages] = useState([]);
 
@@ -61,7 +77,6 @@ export default function CommunicationCard({ item, onClose }) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-2xl w-full max-w-4xl p-6 overflow-y-scroll max-h-full">
-
         {/* HEADER */}
         <div className="flex justify-between items-start mb-4 border-b pb-2">
           <h2 className="text-xl font-bold text-[#640037]">
@@ -128,12 +143,16 @@ export default function CommunicationCard({ item, onClose }) {
                   {h.images?.length > 0 && (
                     <div className="flex gap-2 flex-wrap mt-2">
                       {h.images.map((img, i) => (
-                        <a href={img} target="_blank" rel="noopener noreferrer">
-                            <img
-                                key={i}
-                                src={img}
-                                className="w-16 h-16 rounded border object-cover cursor-pointer hover:opacity-80"
-                            />
+                        <a
+                          key={i}
+                          href={img}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <img
+                            src={img}
+                            className="w-16 h-16 rounded border object-cover cursor-pointer hover:opacity-80"
+                          />
                         </a>
                       ))}
                     </div>
@@ -148,7 +167,6 @@ export default function CommunicationCard({ item, onClose }) {
 
         {/* NEW ACTION */}
         <div className="mt-6 pt-4 border-t border-gray-200">
-
           {/* STATUS SELECT */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -161,8 +179,6 @@ export default function CommunicationCard({ item, onClose }) {
             >
               <option value="Normal">Normal</option>
               <option value="Abnormal">Abnormal</option>
-              <option value="Resolved">Resolved</option>
-              <option value="Pending">Pending</option>
             </select>
           </div>
 
@@ -224,7 +240,6 @@ export default function CommunicationCard({ item, onClose }) {
             </button>
           </div>
         </div>
-
       </div>
     </div>
   );

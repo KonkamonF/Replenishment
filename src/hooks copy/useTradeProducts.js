@@ -1,8 +1,6 @@
 // src/hooks/useTradeProducts.js
 import { useState, useEffect } from "react";
 import { API_BASE_URL, API_TOKEN } from "../config/apiConfig";
-import { getToken } from "../utils/auth";
-import { authFetch } from "../utils/authFetch";
 
 // ---------- Helpers ----------
 const safeNum = (v) => {
@@ -101,7 +99,7 @@ export function useTradeProducts({
 
   const [reloadKey, setReloadKey] = useState(0); // ใช้ trigger reload หลังอัปเดตสถานะ
 
-  const token = getToken();
+  const token = API_TOKEN;
 
   // ============================================================
   //  ดึงข้อมูลตามหน้า (server-side pagination + filters + search)
@@ -131,7 +129,7 @@ export function useTradeProducts({
 
         const url = `${API_BASE_URL}/products/query?${params.toString()}`;
 
-        const res = await authFetch(url, {
+        const res = await fetch(url, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -189,7 +187,7 @@ export function useTradeProducts({
     form.append("itemCode", itemCode);
     form.append("tradeStatus", newStatus);
 
-    await authFetch(`${API_BASE_URL}/products/update-trade-status`, {
+    await fetch(`${API_BASE_URL}/products/update-trade-status`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -222,7 +220,7 @@ export function useTradeProducts({
 
       const url = `${API_BASE_URL}/products/summary?${params.toString()}`;
 
-      const res = await authFetch(url, {
+      const res = await fetch(url, {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: "application/json",
@@ -242,7 +240,7 @@ export function useTradeProducts({
   useEffect(() => {
     const loadBrands = async () => {
       try {
-        const res = await authFetch(`${API_BASE_URL}/products/brands`, {
+        const res = await fetch(`${API_BASE_URL}/products/brands`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "ngrok-skip-browser-warning": "1",

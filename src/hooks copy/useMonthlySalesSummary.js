@@ -15,8 +15,9 @@ export function useMonthlySalesSummary() {
       try {
         const res = await fetch(`${API_BASE_URL}/sales/monthly-summary`, {
           headers: {
-            Authorization: `Bearer ${API_TOKEN}`,
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "1",
           },
         });
 

@@ -1,252 +1,90 @@
-import React, { useState, useMemo, useRef, useEffect } from "react";
+import React, {
+  useState,
+  useMemo,
+  useRef,
+  useEffect,
+} from "react";
 import { Search, Eye, EyeOff, ChevronDown } from "lucide-react";
+
 import StockShowModal from "../SideBar-Modal/StockModal/StockShow.jsx";
 import CommunicationCard from "../SideBar-Modal/StockModal/CommunicateCard.jsx";
-const mockInventoryData = [
-  {
-    Code: "06-0005-01",
-    Type: "TableTop",
-    Class: "B",
-    YN_Best_2025: "",
-    Brand: "Tecno*",
-    Description: "TNS IR 05",
-    SubType: "s2il",
-    ราคา_กลาง_หน่วย: 1390,
-    ราคา_โปรล่าสุด: 1290,
-    DayOnHand_DOH: 1413,
-    DayOnHand_DOH_Stock2: 376.71,
-    TargetSaleUnit_1: 70,
-    SaleOutเฉลี่ยวัน: 1.42,
-    Stock_จบเหลือจริง: 879,
-    SaleOut_มีค68: 43,
-    SaleOut_เมย68: 41,
-    SaleOut_พค68: 48,
-    SaleOut_มิย68: 28,
-    Sale_in_Aging_Tier: "Aging1 M",
-    สถานะTrade: "Abnormal",
-    RemarkTrade: "AC น้อยกว่า FC เกิน 20%",
-    DiffPercent: "-90.48%",
-    LeadTime: 90,
-    ตัดจ่ายเฉลี่ย3เดือน: 6.67,
-    KeyRemarks: [
-      {
-        key: 1,
-        date: "2025-10-01",
-        user: "Admin A",
-        text: "สินค้า DOH สูงมาก ควรทำโปรโมชั่นพิเศษด่วน.",
-      },
-    ],
-  },
-  {
-    Code: "06-0003-01",
-    Type: "TableTop",
-    Class: "B",
-    YN_Best_2025: "Yes",
-    Brand: "Tecno*",
-    Description: "Table top 1",
-    SubType: "s1g1il",
-    ราคา_กลาง_หน่วย: 1290,
-    ราคา_โปรล่าสุด: 1250,
-    DayOnHand_DOH: 310,
-    DayOnHand_DOH_Stock2: 148.32,
-    TargetSaleUnit_1: 140,
-    SaleOutเฉลี่ยวัน: 2.45,
-    Stock_จบเหลือจริง: 670,
-    SaleOut_มีค68: 64,
-    SaleOut_เมย68: 70,
-    SaleOut_พค68: 71,
-    SaleOut_มิย68: 65,
-    Sale_in_Aging_Tier: "No Aging",
-    สถานะTrade: "Abnormal",
-    RemarkTrade: "AC น้อยกว่า FC เกิน 20%",
-    DiffPercent: "-68.12%",
-    LeadTime: 80,
-    ตัดจ่ายเฉลี่ย3เดือน: 38.2,
-    KeyRemarks: [
-      {
-        key: 1,
-        date: "2025-10-02",
-        user: "KeyUser B",
-        text: "ลูกค้าบ่นเรื่องราคาโปร ไม่ดึงดูดใจเท่าที่ควร.",
-      },
-      {
-        key: 2,
-        date: "2025-10-03",
-        user: "Admin A",
-        text: "รับทราบ. จะพิจารณาราคาโปรโมชั่นใหม่สำหรับเดือนหน้า.",
-      },
-    ],
-  },
-  {
-    Code: "06-0003-02",
-    Type: "TableTop",
-    Class: "A",
-    YN_Best_2025: "",
-    Brand: "Tecno*",
-    Description: "Table top 2",
-    SubType: "s2g1il",
-    ราคา_กลาง_หน่วย: 1450,
-    ราคา_โปรล่าสุด: 1390,
-    DayOnHand_DOH: 295,
-    DayOnHand_DOH_Stock2: 160.44,
-    TargetSaleUnit_1: 120,
-    SaleOutเฉลี่ยวัน: 2.88,
-    Stock_จบเหลือจริง: 710,
-    SaleOut_มีค68: 72,
-    SaleOut_เมย68: 76,
-    SaleOut_พค68: 80,
-    SaleOut_มิย68: 78,
-    Sale_in_Aging_Tier: "Fresh",
-    สถานะTrade: "Normal",
-    RemarkTrade: "ยอดขายสอดคล้องกับแผน",
-    DiffPercent: "-25.32%",
-    LeadTime: 75,
-    ตัดจ่ายเฉลี่ย3เดือน: 42.5,
-    KeyRemarks: [],
-  },
-  {
-    Code: "06-0003-03",
-    Type: "TableTop",
-    Class: "C",
-    YN_Best_2025: "",
-    Brand: "Tecno*",
-    Description: "Table top 3",
-    SubType: "s3g2il",
-    ราคา_กลาง_หน่วย: 1100,
-    ราคา_โปรล่าสุด: 990,
-    DayOnHand_DOH: 420,
-    DayOnHand_DOH_Stock2: 190.12,
-    TargetSaleUnit_1: 90,
-    SaleOutเฉลี่ยวัน: 1.95,
-    Stock_จบเหลือจริง: 560,
-    SaleOut_มีค68: 38,
-    SaleOut_เมย68: 42,
-    SaleOut_พค68: 39,
-    SaleOut_มิย68: 40,
-    Sale_in_Aging_Tier: "Aging2 M",
-    สถานะTrade: "Abnormal",
-    RemarkTrade: "สินค้าเคลื่อนไหวน้อย",
-    DiffPercent: "-82.67%",
-    LeadTime: 95,
-    ตัดจ่ายเฉลี่ย3เดือน: 18.6,
-    KeyRemarks: [],
-  },
-  {
-    Code: "06-0003-04",
-    Type: "TableTop",
-    Class: "B",
-    YN_Best_2025: "Yes",
-    Brand: "Tecno*",
-    Description: "Table top 4",
-    SubType: "s4g1il",
-    ราคา_กลาง_หน่วย: 1350,
-    ราคา_โปรล่าสุด: 1320,
-    DayOnHand_DOH: 285,
-    DayOnHand_DOH_Stock2: 140.56,
-    TargetSaleUnit_1: 150,
-    SaleOutเฉลี่ยวัน: 3.12,
-    Stock_จบเหลือจริง: 695,
-    SaleOut_มีค68: 81,
-    SaleOut_เมย68: 79,
-    SaleOut_พค68: 85,
-    SaleOut_มิย68: 83,
-    Sale_in_Aging_Tier: "Fresh",
-    สถานะTrade: "Normal",
-    RemarkTrade: "สินค้าขายดีตามแผน",
-    DiffPercent: "-15.24%",
-    LeadTime: 70,
-    ตัดจ่ายเฉลี่ย3เดือน: 55.4,
-    KeyRemarks: [],
-  },
-];
+
+import { useKeyProducts } from "../hooks/useKeyProducts.js";
 
 const getDOHStyle = (doh) => {
   if (doh === null || doh === undefined) return "text-gray-500";
-  if (doh > 365) return "text-red-600 font-extrabold bg-red-50";
-  if (doh > 180) return "text-orange-600 font-bold";
-  return "text-green-600 font-bold";
+  const n = Number(doh);
+  if (!Number.isFinite(n)) return "text-gray-500";
+  if (n > 365)
+    return "text-red-600 font-extrabold bg-red-50";
+  if (n > 180)
+    return "text-orange-600 font-bold";
+  if (n >= 0)
+    return "text-green-600 font-bold";
+  return "text-gray-500";
 };
 
-const getStatusStyle = (status) => {
-  switch (status) {
-    case "Abnormal":
-      return "bg-red-100 text-red-800 border-red-300";
-    case "Normal":
-      return "bg-green-100 text-green-800 border-green-300";
-    case "Resolved":
-      return "bg-blue-100 text-blue-800 border-blue-300";
-    case "Pending":
-      return "bg-yellow-100 text-yellow-800 border-yellow-300";
-    default:
-      return "bg-gray-100 text-gray-800 border-gray-300";
-  }
+const safeText = (v) => {
+  if (v === null || v === undefined || v === "") return "NDB";
+  return v;
 };
 
-const formatNumber = (num, decimals = 0) => {
-  if (num === null || num === undefined) return "-";
-  return num.toLocaleString("en-US", { maximumFractionDigits: decimals });
+// const getDOHStockStyle = (dohStock) => {
+//   if (dohStock === null || dohStock === undefined) return "text-gray-500";
+//   const n = Number(dohStock);
+//   if (!Number.isFinite(n)) return "text-gray-500";
+//   if (n > 365) return "text-red-600 font-extrabold";
+//   if (n > 180) return "text-orange-600 font-bold";
+//   if (n >= 0) return "text-green-600 font-semibold";
+//   return "text-gray-500";
+// };
+
+const formatNumber = (num, fractionDigits = 0) => {
+  const n = Number(num);
+  if (!Number.isFinite(n)) return "-";
+  return n.toLocaleString("th-TH", {
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits,
+  });
 };
 
-const ALL_COLUMNS = [
-  { key: "No", name: "No.", isAlwaysVisible: true },
-  { key: "Code", name: "ItemCode / Brand / Categories", isAlwaysVisible: true },
-  {
-    key: "Description",
-    name: "Description / Class / Department",
-    isAlwaysVisible: true,
-  },
-  { key: "Best", name: "Best/BestSet", isAlwaysVisible: false },
-  { key: "Forecast", name: "ยอด Forecast", isAlwaysVisible: false },
-  { key: "Actual", name: "ยอด Actual", isAlwaysVisible: false },
-  { key: "DOH", name: "DOH (วัน)", isAlwaysVisible: false },
-  { key: "Price", name: "ราคากลางต่อหน่วย", isAlwaysVisible: false },
-  {
-    key: "PriceOnline",
-    name: "ราคาขาย Online ต่อหน่วย",
-    isAlwaysVisible: false,
-  },
-  { key: "PromotionGood", name: "ของแถม", isAlwaysVisible: false },
-  { key: "SetType", name: "ชุด Set / แตก Set", isAlwaysVisible: false },
-  { key: "Stock_Show", name: "Stock (ตัวโชว์)", isAlwaysVisible: false },
-  { key: "Stock_Physical", name: "Stock (กายภาพ)", isAlwaysVisible: false },
-  { key: "Stock", name: "Stock หักจอง", isAlwaysVisible: false },
-  { key: "Stock_Cl", name: "Stock Clearance", isAlwaysVisible: false },
-  { key: "Forecash", name: "Forecash Now", isAlwaysVisible: false },
-  { key: "Actual", name: "Actual Now", isAlwaysVisible: false },
-  { key: "TradeStatus", name: "สถานะ Trade", isAlwaysVisible: false },
-  { key: "TradeRemark", name: "Remark Trade / Action", isAlwaysVisible: false },
-];
+/**
+ * Column dropdown แบบสไตล์ KeyAdminUI
+ */
+const ColumnToggleDropdown = ({
+  ALL_COLUMNS,
+  hiddenColumns,
+  toggleColumnVisibility,
+}) => {
+  const [open, setOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
-function ColumnToggleDropdown({ hiddenColumns, toggleColumnVisibility }) {
-  const toggleableColumns = ALL_COLUMNS.filter((col) => !col.isAlwaysVisible);
   const hasHiddenColumns = hiddenColumns.length > 0;
   const hiddenCount = hiddenColumns.length;
-  const dropdownRef = useRef(null);
-  const [open, setOpen] = useState(false);
+
   const handleToggle = () => setOpen((prev) => !prev);
-  const handleItemClick = (key) => toggleColumnVisibility(key);
-  const handleClickOutside = (event) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-      setOpen(false);
-    }
-  };
+
   useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setOpen(false);
+      }
     };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
   return (
     <div className="relative inline-block text-left z-10" ref={dropdownRef}>
       <button
         type="button"
         onClick={handleToggle}
         className={`inline-flex justify-center items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition duration-150 shadow-md 
-${
-  hasHiddenColumns
-    ? "bg-red-500 text-white border-red-600 hover:bg-red-600"
-    : "bg-gray-200 text-gray-600 border-gray-300 hover:bg-gray-300"
-}`}
+          ${
+            hasHiddenColumns
+              ? "bg-red-500 text-white border-red-600 hover:bg-red-600"
+              : "bg-gray-200 text-gray-600 border-gray-300 hover:bg-gray-300"
+          }`}
         aria-expanded={open ? "true" : "false"}
       >
         {open || hasHiddenColumns ? (
@@ -254,55 +92,79 @@ ${
         ) : (
           <Eye className="w-4 h-4" />
         )}
-        {`Show/Hide Columns ${hiddenCount > 0 ? `(${hiddenCount})` : ""}`}
+        {`Columns${hiddenCount > 0 ? ` (${hiddenCount} hidden)` : ""}`}
         <ChevronDown className="w-4 h-4 ml-1" />
       </button>
+
       {open && (
-        <div
-          id="column-menu"
-          className="origin-top-right absolute right-0 mt-2 w-72 rounded-lg shadow-2xl bg-white ring-1 ring-pink-800 ring-opacity-20 focus:outline-none z-50"
-          role="menu"
-          aria-orientation="vertical"
-          tabIndex={-1}
-        >
-          <div className="p-2 max-h-60 overflow-y-auto">
-            <p className="px-3 py-1 text-xs text-gray-500 font-bold border-b mb-1">
-              Toggleable Columns
+        <div className="origin-top-right absolute right-0 mt-2 w-64 rounded-lg shadow-2xl bg-white ring-1 ring-pink-800 ring-opacity-20 focus:outline-none z-50">
+          <div className="py-2 px-3 max-h-80 overflow-auto">
+            <p className="text-xs font-semibold text-gray-500 mb-2 border-b pb-1">
+              แสดง / ซ่อนคอลัมน์
             </p>
-            {toggleableColumns.map((col, idx) => (
-              <div
-                key={`${col.key}-${col.name}-${idx}`} // 🚨 แก้ key เพื่อป้องกันการซ้ำ
-                onClick={() => handleItemClick(col.key)}
-                className="flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-pink-100 cursor-pointer transition duration-100 rounded-md"
-                role="menuitem"
+            {ALL_COLUMNS.map((col) => (
+              <button
+                key={col.key}
+                type="button"
+                onClick={() => toggleColumnVisibility(col.key)}
+                className="w-full flex items-center justify-between px-2 py-1.5 text-sm cursor-pointer hover:bg-pink-50 rounded-md"
               >
-                <span className="font-medium">{col.name}</span>
+                <span>{col.label}</span>
                 {hiddenColumns.includes(col.key) ? (
                   <EyeOff className="w-4 h-4 text-red-500" />
                 ) : (
                   <Eye className="w-4 h-4 text-green-500" />
                 )}
-              </div>
+              </button>
             ))}
-            <div className="px-3 py-2 text-xs text-gray-400 border-t mt-2">
-              คอลัมน์ ItemCode และ Description ถูกตั้งค่าให้แสดงเสมอ
+            <div className="px-1 pt-2 mt-1 text-[11px] text-gray-400 border-t">
+              สามารถซ่อนคอลัมน์ที่ไม่ต้องการดูเพื่อลดความรกของตารางได้
             </div>
           </div>
         </div>
       )}
     </div>
   );
-}
+};
+
+/**
+ * ใช้ column เดิมของ KeyAdmin (logic ถูกต้องแล้ว)
+ * แค่ปรับสี / style ให้โทนเหมือน KeyAdminUI
+ */
+const ALL_COLUMNS = [
+  { key: "No", label: "No." },
+  { key: "Code", label: "รหัสสินค้า / Brand" },
+  { key: "Description", label: "รายละเอียด / Class / Type" },
+  { key: "Best", label: "Best/BestSet" },
+  { key: "Categories", label: "Categories" },
+  { key: "Forecast", label: "ยอด Forecast" },
+  { key: "Actual", label: "ยอด Actual" },
+  { key: "DOH", label: "DOH (วัน)" },
+  { key: "SetOrNot", label: "ชุด Set / แตก Set" },
+  { key: "Stock_Show", label: "Stock (ตัวโชว์)" },
+  { key: "Stock_Physical", label: "Stock (กายภาพ)" },
+  { key: "Stock", label: "Stock หักจอง" },
+  { key: "Stock_Cl", label: "Stock Clearance" },
+  { key: "Forecash_Now", label: "Forecash Now" },
+  { key: "Actual_Now", label: "Actual Now" },
+  { key: "TradeStatus", name: "สถานะ Trade" },
+  { key: "TradeRemark", name: "Remark Trade / Action" },
+];
 
 export default function KeyAdmin() {
-  const [data, setData] = useState(mockInventoryData);
+  const roleFromStorage =
+    typeof window !== "undefined" ? localStorage.getItem("role") || "" : "";
+  const isSuperAdmin = roleFromStorage === "SuperAdmin";
+
   const [selectedItem, setSelectedItem] = useState(null);
   const [isStockShow, setIsStockShow] = useState(false);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalData, setModalData] = useState({
     comment: "",
     newStatus: "Pending",
   });
+
   const [filters, setFilters] = useState({
     search: "",
     brand: "All",
@@ -310,68 +172,164 @@ export default function KeyAdmin() {
     best2025: "All",
     tradeStatus: "All",
     set: "All",
+    salesChannelId: "All",
+    keyUsername: "All",
+    showUnassigned: false,
   });
+
   const [hiddenColumns, setHiddenColumns] = useState([]);
-  const CURRENT_USER = "Trade Planner (Key)";
+  const CURRENT_USER = "Trade Planner (Key)"; // ใช้แค่แสดงผล ไม่ผูก logic
+
+  const [pageSize, setPageSize] = useState(50);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const {
+    data,
+    loading,
+    error,
+    totalItems,
+    totalPages,
+    channels,
+    keyUsers,
+    summary,
+    filterOptions,
+  } = useKeyProducts({
+    filters,
+    isSuperAdmin,
+    page: currentPage,
+    perPage: pageSize,
+  });
+
   const toggleColumnVisibility = (key) => {
     setHiddenColumns((prev) =>
       prev.includes(key) ? prev.filter((col) => col !== key) : [...prev, key]
     );
   };
   const isColumnHidden = (key) => hiddenColumns.includes(key);
-  const colClass = (key, base = "") =>
-    isColumnHidden(key) ? `hidden ${base}` : base;
-  const handleFilterChange = (name, value) =>
-    setFilters((prev) => ({ ...prev, [name]: value }));
-  const uniqueBrands = useMemo(
-    () => ["All", ...new Set(data.map((item) => item.Brand))],
-    [data]
-  );
-  const uniqueClasses = useMemo(
-    () => ["All", ...new Set(data.map((item) => item.Class))],
-    [data]
-  );
+
+  const handleFilterChange = (name, value) => {
+    setFilters((prev) => {
+      const next = { ...prev, [name]: value };
+      if (name === "showUnassigned" && value === true) {
+        next.salesChannelId = "All";
+        next.keyUsername = "All";
+      }
+      return next;
+    });
+    setCurrentPage(1);
+  };
+
+  const handleSearchChange = (e) => {
+    handleFilterChange("search", e.target.value);
+  };
+
+  const uniqueBrands = useMemo(() => {
+    if (filterOptions.brands && filterOptions.brands.length > 0) {
+      return ["All", ...filterOptions.brands];
+    }
+    const brands = ["All"];
+    data.forEach((item) => {
+      if (item.Brand && !brands.includes(item.Brand)) {
+        brands.push(item.Brand);
+      }
+    });
+    return brands;
+  }, [filterOptions.brands, data]);
+
+  const uniqueClasses = useMemo(() => {
+    if (filterOptions.classes && filterOptions.classes.length > 0) {
+      return ["All", ...filterOptions.classes];
+    }
+    const classes = ["All"];
+    data.forEach((item) => {
+      if (item.Class && !classes.includes(item.Class)) {
+        classes.push(item.Class);
+      }
+    });
+    return classes;
+  }, [filterOptions.classes, data]);
+
   const uniqueBest2025 = useMemo(() => ["All", "Yes", ""], []);
-  const uniqueTradeStatus = useMemo(
-    () => ["All", ...new Set(data.map((item) => item.สถานะTrade))],
-    [data]
-  );
-  const uniqueSets = useMemo(
-    () => ["All", ...new Set(data.map((item) => item.Type))],
-    [data]
-  );
+
+  const uniqueTradeStatus = useMemo(() => {
+    if (filterOptions.tradeStatuses && filterOptions.tradeStatuses.length > 0) {
+      return ["All", ...filterOptions.tradeStatuses];
+    }
+    const statuses = ["All"];
+    data.forEach((item) => {
+      if (item.สถานะTrade && !statuses.includes(item.สถานะTrade)) {
+        statuses.push(item.สถานะTrade);
+      }
+    });
+    return statuses;
+  }, [filterOptions.tradeStatuses, data]);
+
+  const uniqueSets = useMemo(() => {
+    if (filterOptions.sets && filterOptions.sets.length > 0) {
+      return ["All", ...filterOptions.sets];
+    }
+    const sets = ["All"];
+    data.forEach((item) => {
+      if (item.Type && !sets.includes(item.Type)) {
+        sets.push(item.Type);
+      }
+    });
+    return sets;
+  }, [filterOptions.sets, data]);
+
   const filteredData = useMemo(() => {
     return data.filter((item) => {
-      const searchTerm = filters.search.toLowerCase();
-      const bestValue = item.YN_Best_2025 || "";
-      const matchesSearch =
-        item.Code.toLowerCase().includes(searchTerm) ||
-        item.Description.toLowerCase().includes(searchTerm) ||
-        (item.RemarkTrade &&
-          item.RemarkTrade.toLowerCase().includes(searchTerm));
-      const matchesBrand =
-        filters.brand === "All" || item.Brand === filters.brand;
-      const matchesClass =
-        filters.class === "All" || item.Class === filters.class;
-      const matchesBest2025 =
-        filters.best2025 === "All" || filters.best2025 === bestValue;
-      const matchesTradeStatus =
-        filters.tradeStatus === "All" ||
-        item.สถานะTrade === filters.tradeStatus;
-      const matchesSet = filters.set === "All" || item.Type === filters.set;
-      return (
-        matchesSearch &&
-        matchesBrand &&
-        matchesClass &&
-        matchesBest2025 &&
-        matchesTradeStatus &&
-        matchesSet
-      );
+      const searchTerm = (filters.search || "").toLowerCase();
+
+      if (searchTerm) {
+        const haystack = [
+          item.Code,
+          item.Brand,
+          item.Description,
+          item.RemarkTrade,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+        if (!haystack.includes(searchTerm)) return false;
+      }
+
+      if (filters.brand !== "All" && item.Brand !== filters.brand) return false;
+      if (filters.class !== "All" && item.Class !== filters.class) return false;
+
+      if (
+        filters.tradeStatus !== "All" &&
+        item.สถานะTrade !== filters.tradeStatus
+      )
+        return false;
+
+      if (filters.set !== "All" && item.Type !== filters.set) return false;
+
+      if (filters.best2025 === "Yes" && item.YN_Best_2025 !== "Yes")
+        return false;
+
+      return true;
     });
-  }, [filters, data]);
+  }, [data, filters]);
+
+  const totalSKUs = summary.totalSkus ?? filteredData.length;
+  const totalStock =
+    summary.totalStock ??
+    filteredData.reduce(
+      (sum, item) => sum + (item.Stock_จบเหลือจริง || 0),
+      0
+    );
+  const avgDOH = summary.avgDohWeighted ?? 0;
+  const abnormalCount =
+    summary.abnormalCount ??
+    filteredData.filter((it) => it.สถานะTrade === "Abnormal").length;
+
   const openTradeModal = (item) => {
     setSelectedItem(item);
-    setModalData({ comment: "", newStatus: item.สถานะTrade || "Pending" });
+    setModalData({
+      comment: "",
+      newStatus: item.สถานะTrade || "Pending",
+    });
     setIsModalOpen(true);
   };
 
@@ -380,147 +338,129 @@ export default function KeyAdmin() {
     setSelectedItem(null);
     setModalData({ comment: "", newStatus: "Pending" });
   };
-  const handleModalDataChange = (name, value) =>
-    setModalData((p) => ({ ...p, [name]: value }));
+
   const handleSubmitAction = () => {
-    if (!selectedItem || !modalData.comment.trim()) {
-      console.error("กรุณาเพิ่มข้อความ Remark ก่อนทำการบันทึก Action");
+    if (!selectedItem) return;
+    if (!modalData.comment.trim()) {
+      alert("กรุณากรอก Remark ก่อนบันทึก");
       return;
     }
-    const newRemark = {
-      key: Date.now(),
-      date: new Date().toISOString().slice(0, 10),
-      user: CURRENT_USER,
-      status: modalData.newStatus, // Using newStatus from modalData
-      text: modalData.comment.trim(),
-    };
-    const updated = data.map((it) =>
-      it.Code === selectedItem.Code
-        ? {
-            ...it,
-            สถานะTrade: modalData.newStatus, // Update status
-            RemarkTrade: modalData.comment.trim(), // Update main remark
-            KeyRemarks: [...(it.KeyRemarks || []), newRemark],
-          }
-        : it
+    console.log(
+      `บันทึกการสื่อสารสำหรับ ${selectedItem.Code}, สถานะใหม่ = ${modalData.newStatus}, Remark = ${modalData.comment} (ผู้ใช้งาน: ${CURRENT_USER})`
     );
-    setData(updated);
+    // **สำคัญ**: Logic จริงให้ Backend + WebSocket จัดการ update เอง
     closeTradeModal();
-    console.log(`บันทึกการสื่อสารสำหรับ ${selectedItem.Code} สำเร็จ!`);
   };
 
   const handleShowStockModal = (item) => {
     setSelectedItem(item);
     setIsStockShow(true);
   };
-  const totalSKUs = filteredData.length;
-  const totalStock = filteredData.reduce(
-    (sum, item) => sum + (item.Stock_จบเหลือจริง || 0),
-    0
-  );
-  const avgDOH =
-    totalSKUs > 0
-      ? filteredData.reduce(
-          (sum, item) =>
-            sum + (item.Stock_จบเหลือจริง * item.DayOnHand_DOH_Stock2 || 0),
-          0
-        ) / totalStock
-      : 0;
-  const abnormalCount = filteredData.filter(
-    (item) => item.สถานะTrade === "Abnormal"
-  ).length;
+
+  const handlePageChange = (nextPage) => {
+    if (!nextPage || nextPage < 1) return;
+    const maxPage = totalPages || 1;
+    if (nextPage > maxPage) return;
+    setCurrentPage(nextPage);
+  };
+
+  const handlePageSizeChange = (value) => {
+    const size = Number(value) || 50;
+    setPageSize(size);
+    setCurrentPage(1);
+  };
+
   const visibleColumnCount = ALL_COLUMNS.filter(
     (col) => !isColumnHidden(col.key)
   ).length;
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gradient-to-b from-white via-rose-50 to-pink-50">
       {isStockShow && (
         <StockShowModal
           setIsStockShow={setIsStockShow}
           selectedItem={selectedItem}
         />
       )}
+
       {isModalOpen && selectedItem && (
         <CommunicationCard
           item={selectedItem}
           onClose={closeTradeModal}
           onSubmit={handleSubmitAction}
-          currentData={modalData}
-          onDataChange={handleModalDataChange}
+          modalData={modalData}
+          setModalData={setModalData}
         />
       )}
-      <style>
-        {`
-/* Global styles to ensure compatibility */
-.bg-white input[type="number"], .bg-white input[type="text"] {
-background-color: transparent !important;
-}
-`}
-      </style>
+
+      {loading && (
+        <div className="text-center text-blue-500 font-semibold mt-4">
+          กำลังโหลดข้อมูล...
+        </div>
+      )}
+      {error && (
+        <div className="text-center text-red-500 font-semibold mt-4">
+          เกิดข้อผิดพลาด: {String(error)}
+        </div>
+      )}
+
       <div className="p-8 bg-white shadow-2xl rounded-xl">
+        {/* Header */}
         <header className="mb-6 border-b pb-4">
-          <h1 className="text-3xl font-extrabold text-[#640037] mb-2">
-            Key Account Monitor
-          </h1>
-          <p className="text-gray-500">
-            ข้อมูลคงคลัง (Stock) และยอดขาย (Sale Out)
-            พร้อมช่องทางการบันทึกและติดตาม **Action/Communication**
-          </p>
-        </header>
+          <h1 className="text-3xl font-extrabold text-[#640037] mb-2">Key Account Monitor</h1>
+          <p className="text-gray-500">ข้อมูลคงคลัง (Stock) และยอดขาย (Sale Out) พร้อมช่องทางการบันทึกและติดตาม **Action/Communication**</p>
+        </header>
+
+        {/* Summary cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-8">
           <div className="bg-pink-50 p-4 rounded-lg shadow-inner">
-            <p className="text-sm text-pink-600 font-semibold">Total SKUs</p>
+            <p className="text-sm text-pink-600 font-semibold">Total SKUs</p>
             <p className="text-2xl font-extrabold text-[#640037]">
               {formatNumber(totalSKUs)}
             </p>
           </div>
           <div className="bg-blue-50 p-4 rounded-lg shadow-inner">
-            <p className="text-sm text-blue-600 font-semibold">Total Stock</p>
+            <p className="text-sm text-blue-600 font-semibold">Total Stock</p>
             <p className="text-2xl font-extrabold">
               {formatNumber(totalStock)}
             </p>
           </div>
           <div className="bg-yellow-50 p-4 rounded-lg shadow-inner">
-            <p className="text-sm text-yellow-600 font-semibold">
-              Avg. DOH (Weighted)
-            </p>
-            <p className="text-2xl font-extrabold">
-              {formatNumber(avgDOH, 0)} วัน
+            <p className="text-sm text-yellow-600 font-semibold">Avg. DOH (Weighted)</p>
+            <p className="text-2xl font-extrabold text-yellow-700">
+              {avgDOH.toFixed(1)}
             </p>
           </div>
           <div className="bg-red-50 p-4 rounded-lg shadow-inner">
-            <p className="text-sm text-red-600 font-semibold">Abnormal Count</p>
-            <p className="text-2xl font-extrabold">
+            <p className="text-sm text-red-600 font-semibold">Abnormal Count</p>
+            <p className="text-2xl font-extrabold text-red-700">
               {formatNumber(abnormalCount)}
             </p>
           </div>
           <div className="bg-gray-50 p-4 rounded-lg shadow-inner hidden lg:block">
-            <p className="text-sm text-gray-600 font-semibold">Total Data</p>
+            <p className="text-sm text-gray-600 font-semibold">Total Data</p>
             <p className="text-2xl font-extrabold text-gray-700">
-              {formatNumber(data.length)}
+              {formatNumber(totalItems || data.length)}
             </p>
           </div>
         </div>
+
+        {/* Filter bar (แถวบน) */}
         <div className="grid grid-cols-2 md:grid-cols-7 gap-4 mb-4 items-end p-4 bg-pink-50 rounded-lg border border-pink-200">
           <div className="col-span-2 md:col-span-2">
-            <label className="block text-sm font-bold text-gray-700 mb-1">
-              ค้นหาสินค้า (Code/Desc/Remark)
-            </label>
+            <label className="block text-sm font-bold text-gray-700 mb-1">ค้นหาสินค้า (Code/Desc/Remark)</label>
             <div className="relative w-full">
               <input
                 type="text"
                 placeholder="ค้นหา..."
                 value={filters.search}
-                onChange={(e) => handleFilterChange("search", e.target.value)}
-                className="w-full p-2 pl-9 pr-8 border border-gray-300 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
-              />
+                onChange={handleSearchChange}
+                className="w-full p-2 pl-9 pr-8 border border-gray-300 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500" />
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
               {filters.search && (
                 <button
-                  onClick={() => {
-                    handleFilterChange("search", "");
-                  }}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-lg text-gray-500 hover:text-red-500 font-bold p-1 leading-none"
+                  onClick={() => handleFilterChange("search", "")}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 text-lg font-bold p-1 leading-none"
                   title="ล้างการค้นหา"
                 >
                   &times;
@@ -528,15 +468,13 @@ background-color: transparent !important;
               )}
             </div>
           </div>
+
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
-              Brand
-            </label>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Brand</label>
             <select
               value={filters.brand}
               onChange={(e) => handleFilterChange("brand", e.target.value)}
-              className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
-            >
+              className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500">
               {uniqueBrands.map((brand) => (
                 <option key={brand} value={brand}>
                   {brand}
@@ -544,6 +482,7 @@ background-color: transparent !important;
               ))}
             </select>
           </div>
+
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
               Class
@@ -551,8 +490,7 @@ background-color: transparent !important;
             <select
               value={filters.class}
               onChange={(e) => handleFilterChange("class", e.target.value)}
-              className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
-            >
+              className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500">
               {uniqueClasses.map((cls) => (
                 <option key={cls} value={cls}>
                   {cls}
@@ -560,6 +498,7 @@ background-color: transparent !important;
               ))}
             </select>
           </div>
+
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
               YN Best 2025
@@ -567,15 +506,15 @@ background-color: transparent !important;
             <select
               value={filters.best2025}
               onChange={(e) => handleFilterChange("best2025", e.target.value)}
-              className="w-full p-2 pr-10 border border-gray-300 rounded-lg shadow-sm text-gray-700 bg-white focus:ring-pink-500 focus:border-pink-500"
-            >
-              {uniqueBest2025.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt === "" ? "(Blank)" : opt}
+              className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500">
+              {uniqueBest2025.map((b) => (
+                <option key={b} value={b}>
+                  {b === "" ? "(ว่าง)" : b}
                 </option>
               ))}
             </select>
           </div>
+
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
               สถานะ Trade
@@ -585,15 +524,15 @@ background-color: transparent !important;
               onChange={(e) =>
                 handleFilterChange("tradeStatus", e.target.value)
               }
-              className="w-full p-2 pr-10 border border-gray-300 rounded-lg shadow-sm text-gray-700 bg-white focus:ring-pink-500 focus:border-pink-500"
-            >
-              {uniqueTradeStatus.map((status) => (
-                <option key={status} value={status}>
-                  {status}
+              className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500">
+              {uniqueTradeStatus.map((st) => (
+                <option key={st} value={st}>
+                  {st}
                 </option>
               ))}
             </select>
           </div>
+
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
               ชุด Set / แตก Set
@@ -601,196 +540,369 @@ background-color: transparent !important;
             <select
               value={filters.set}
               onChange={(e) => handleFilterChange("set", e.target.value)}
-              className="w-full p-2 pr-10 border border-gray-300 rounded-lg shadow-sm text-gray-700 bg-white focus:ring-pink-500 focus:border-pink-500"
-            >
-              {uniqueSets.map((type) => (
-                <option key={type} value={type}>
-                  {type}
+              className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500">
+              {uniqueSets.map((setV) => (
+                <option key={setV} value={setV}>
+                  {setV}
                 </option>
               ))}
             </select>
           </div>
         </div>
-        <div className="flex justify-between items-center mb-4">
-          <p className="text-sm text-gray-600 font-medium">
-            แสดงผล **{formatNumber(filteredData.length)}** รายการ จากทั้งหมด **
-            {formatNumber(data.length)}** รายการ
-          </p>
-          <ColumnToggleDropdown
-            hiddenColumns={hiddenColumns}
-            toggleColumnVisibility={toggleColumnVisibility}
-          />
+
+        {/* Filter แถวล่าง: ห้าง + Key + checkbox */}
+        <div className="flex flex-wrap items-center gap-3 mb-4 text-sm bg-white/70 rounded-lg px-3 py-2 border border-gray-200 shadow-sm">
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-gray-700">ห้าง:</span>
+            <select
+              value={filters.salesChannelId}
+              onChange={(e) =>
+                handleFilterChange("salesChannelId", e.target.value)
+              }
+              className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
+              disabled={filters.showUnassigned}
+            >
+              <option value="All">ทุกห้าง</option>
+              {channels.map((ch) => (
+                <option key={ch.id} value={ch.id}>
+                  {ch.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {isSuperAdmin && (
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-gray-700">Key:</span>
+              <select
+                value={filters.keyUsername}
+                onChange={(e) =>
+                  handleFilterChange("keyUsername", e.target.value)
+                }
+                className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
+                disabled={filters.showUnassigned}
+              >
+                <option value="All">ทุก Key</option>
+                {keyUsers.map((u) => (
+                  <option key={u.username} value={u.username}>
+                    {u.username}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          <label className="flex items-center gap-1 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={filters.showUnassigned}
+              onChange={(e) =>
+                handleFilterChange("showUnassigned", e.target.checked)
+              }
+              className="rounded"
+            />
+            <span className="text-gray-700">
+              แสดงเฉพาะสินค้าที่ไม่มี Key ดูแล
+            </span>
+          </label>
         </div>
+
+        {/* Column toggle + page size (บนตาราง) */}
+        
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-2">
+          
+                
+          <div className="flex items-center gap-2 text-sm text-gray-700">
+            <span>แสดงหน้าละ</span>
+            <select
+              value={pageSize}
+              onChange={(e) => handlePageSizeChange(e.target.value)}
+              className="border border-gray-500 rounded-lg px-2 py-1 bg-white shadow-sm"
+            >
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+            </select>
+            <span>รายการ</span>
+
+          </div>
+          <div className="flex items-center gap-2">
+            <p className="text-xs text-gray-500">
+              ซ่อน/แสดงคอลัมน์เพื่อดูเฉพาะข้อมูลที่ต้องการ
+            </p>
+            <ColumnToggleDropdown
+              ALL_COLUMNS={ALL_COLUMNS}
+              hiddenColumns={hiddenColumns}
+              toggleColumnVisibility={toggleColumnVisibility}
+            />
+            
+          </div>
+        </div>
+
+        {/* Table */}
         <div className="overflow-x-auto shadow-xl rounded-xl border border-gray-200">
           <table className="min-w-full table-auto bg-white text-center">
             <thead className="bg-[#640037] text-white sticky top-0 text-sm">
               <tr>
-                {ALL_COLUMNS.map((col, idx) => (
-                  <th
-                    key={`${col.key}-${col.name}-${idx}`}
-                    className={colClass(
-                      col.key,
-                      "p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap"
-                    )}
-                  >
-                    {col.name}
+                {!isColumnHidden("No") && (
+                  <th className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
+                    No.
                   </th>
-                ))}
+                )}
+                {!isColumnHidden("Code") && (
+                  <th className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
+                    ItemCode / Brand
+                  </th>
+                )}
+                {!isColumnHidden("Description") && (
+                  <th className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
+                    Description / Class
+                  </th>
+                )}
+                {!isColumnHidden("Best") && (
+                  <th className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
+                    Best/BestSet
+                  </th>
+                )}
+                {!isColumnHidden("Categories") && (
+                  <th className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
+                    Categories
+                  </th>
+                )}
+                {!isColumnHidden("Forecast") && (
+                  <th className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
+                    ยอด Forecast
+                  </th>
+                )}
+                {!isColumnHidden("Actual") && (
+                  <th className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
+                    ยอด Actual
+                  </th>
+                )}
+                {!isColumnHidden("DOHPerDay") && (
+                  <th className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
+                    DOH (วัน)
+                  </th>
+                )}
+                {!isColumnHidden("SetOrNot") && (
+                  <th className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
+                    ชุด Set / แตก Set
+                  </th>
+                )}
+                {!isColumnHidden("Stock_Show") && (
+                  <th className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
+                    Stock (ตัวโชว์)
+                  </th>
+                )}
+                {!isColumnHidden("Stock_Physical") && (
+                  <th className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
+                    Stock (กายภาพ)
+                  </th>
+                )}
+                {!isColumnHidden("Stock") && (
+                  <th className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
+                    Stock หักจอง
+                  </th>
+                )}
+                {!isColumnHidden("Stock_Cl") && (
+                  <th className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
+                    Stock Clearance
+                  </th>
+                )}
+                {!isColumnHidden("Forecash_Now") && (
+                  <th className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
+                    Forecash Now
+                  </th>
+                )}
+                {!isColumnHidden("Actual_Now") && (
+                  <th className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
+                    Actual Now
+                  </th>
+                )}
+                {!isColumnHidden("TradeStatus") && (
+                  <th className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
+                    สถานะ Trade
+                  </th>
+                )}
+                {!isColumnHidden("TradeRemark") && (
+                  <th className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
+                    Remark Trade / Action
+                  </th>
+                )}
               </tr>
             </thead>
+
             <tbody>
               {filteredData.length > 0 ? (
                 filteredData.map((item, idx) => {
-                  const stockShowValue = formatNumber(
-                    Math.round(item.Stock_จบเหลือจริง * 0.1)
-                  );
+                  const rowNo = (currentPage - 1) * pageSize + idx + 1;
                   return (
                     <tr
                       key={item.Code}
                       className="border-b border-gray-200 hover:bg-pink-50 transition duration-150"
                     >
-                      <td className={colClass("No", "p-3 min-w-[50px]")}>
-                        {idx + 1}
-                      </td>
-                      <td
-                        className={colClass("Code", "p-3 text-left text-sm ")}
-                      >
-                        <span className="font-bold text-[#640037] block">
-                          {item.Code}
-                        </span>
-                        <span className="text-xs text-gray-500">
-                          {item.Brand}
-                        </span>
-                        <span className="text-xs text-gray-500">
-                          // Categories
-                        </span>
-                      </td>
-                      <td
-                        className={colClass(
-                          "Description",
-                          "p-3 text-left text-sm"
-                        )}
-                      >
-                        <span className="block">{item.Description}</span>
-                        <span
-                          className={`ml-1 text-xs  text-white px-2 py-0.5 rounded-full inline-block ${
-                            item.Class === "A" ? "bg-orange-500" : "bg-pink-500"
-                          }`}
-                        >
-                          Class {item.Class}
-                        </span>
-                        <span className="text-xs text-gray-400 block mt-1">
-                          {item.Type} ({item.SubType}) {"KC-Department"}
-                        </span>
-                      </td>
-                      <td className={colClass("Best", "p-3")}>
-                        <span
-                          className={`px-2 py-0.5 rounded-full text-xs  ${
-                            item.YN_Best_2025 === "Yes"
-                              ? "bg-green-100 text-green-700"
-                              : "bg-gray-100 text-gray-500"
-                          }`}
-                        >
-                          {item.YN_Best_2025 || "No"}
-                        </span>
-                      </td>
-                      <td className={colClass("Forecast", "p-3 font-bold")}>
-                        {formatNumber(item.TargetSaleUnit_1)}
-                      </td>
-                      <td className={colClass("Actual", "p-3 text-blue-600")}>
-                        {formatNumber(item.SaleOut_เมย68)}
-                      </td>
-                      <td
-                        className={colClass(
-                          "DOH",
-                          `p-3  ${getDOHStyle(
-                            item.DayOnHand_DOH_Stock2
-                          )} text-right`
-                        )}
-                      >
-                        {formatNumber(item.DayOnHand_DOH_Stock2, 0)}
-                      </td>
-                      <td className={colClass("Stock", "p-3")}>-</td>
-                      <td className={colClass("Stock_Cl", "p-3")}>-</td>
-                      <td className={colClass("Forecash", "p-3")}>-</td>
-                      <td
-                        className={colClass(
-                          "SetType",
-                          "p-3 text-sm text-gray-600"
-                        )}
-                      >
-                        {item.SubType || "-"}
-                      </td>
-                      <td
-                        className={colClass(
-                          "Stock_Show",
-                          "p-3 text-sm text-gray-500 "
-                        )}
-                      >
-                        <p className="text-xs pb-0.5 text-gray-800 ">
-                          {stockShowValue}
-                        </p>
-                        <button
-                          onClick={() => handleShowStockModal(item)}
-                          className="inline-block text-xs rounded-lg cursor-pointer shadow-sm bg-green-500 text-white hover:bg-green-600"
-                          title="ดูตำแหน่งจัดเก็บและรายละเอียด Stock (ตัวโชว์)"
-                        >
-                          Show Location Stock
-                        </button>
-                      </td>
-                      <td
-                        className={colClass("Stock_Physical", "p-3 text-lg ")}
-                      >
-                        {formatNumber(item.Stock_จบเหลือจริง)}
-                      </td>
-                      <td className={colClass("Stock", "p-3")}>-</td>
-                      <td className={colClass("Stock_Cl", "p-3")}>-</td>
-                      <td className={colClass("Forecash", "p-3")}>-</td>
+                      {!isColumnHidden("No") && (
+                        <td className="p-3 min-w-50px">
+                          {rowNo}
+                        </td>
+                      )}
 
-                      <td className={colClass("Actual", "p-3 text-blue-600")}>
-                        {formatNumber(item.SaleOut_เมย68)}
-                      </td>
-                      <td className={colClass("TradeStatus", "p-3 ")}>
-                        <span
-                          className={`px-3 py-1 text-xs font-semibold rounded-full border ${getStatusStyle(
-                            item.สถานะTrade
-                          )}`}
-                        >
-                          {item.สถานะTrade}
-                        </span>
-                        {item.DiffPercent && (
-                          <p
-                            className={`text-xs mt-1 font-bold ${
-                              item.DiffPercent.startsWith("-")
-                                ? "text-red-500"
-                                : "text-green-500"
+                      {!isColumnHidden("Code") && (
+                        <td className="p-3 font-mono text-sm border-r border-gray-200 text-left min-w-[120px]">
+                          <span className="font-bold text-[#640037] block">
+                            {item.Code}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            {item.Brand}
+                          </span>
+                        </td>
+                      )}
+
+                      {!isColumnHidden("Description") && (
+                        <td className="p-3 font-semibold text-gray-700 border-r border-gray-200 text-left min-w-[200px]">
+                          <span className="block">{item.Description}</span>
+                          <span
+                            className={`mt-1 inline-block text-xs font-normal px-2 py-0.5 rounded-full ${
+                              item.Class === "A"
+                                ? "bg-orange-500 text-white"
+                                : item.Class === "B"
+                                ? "bg-blue-500 text-white"
+                                : item.Class === "C"
+                                ? "bg-yellow-500 text-white"
+                                : "bg-pink-500 text-white"
                             }`}
                           >
-                            {item.DiffPercent}
+                            Class {item.Class}
+                          </span>
+                          <span className="text-xs text-gray-400 block mt-1">
+                            {item.Type} ({item.SubType})
+                          </span>
+                        </td>
+                      )}
+
+                      {!isColumnHidden("Best") && (
+                        <td className="p-3">
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
+                              item.YN_Best_2025 === "Yes"
+                                ? "bg-green-100 text-green-700"
+                                : "bg-gray-100 text-gray-500"
+                            }`}
+                          >
+                            {item.YN_Best_2025 === "Yes" ? "Yes" : "No"}
+                          </span>
+                        </td>
+                      )}
+
+                      {!isColumnHidden("Categories") && (
+                        <td className="p-3">
+                            {formatNumber(item.Stock_จบเหลือจริง)}
+                        </td>
+                      )}
+
+                      {!isColumnHidden("Forecast") && (
+                        <td className="p-3 font-bold text-lg border-r border-gray-200 text-right">
+                            {formatNumber(item.Stock_จบเหลือจริง)}
+                        </td>
+                      )}
+
+                      {!isColumnHidden("Actual") && (
+                        <td className="p-3 font-semibold text-lg border-r border-gray-200 text-right text-blue-600">
+                            {formatNumber(item.Stock_จบเหลือจริง)}
+                        </td>
+                      )}
+
+                      {!isColumnHidden("DOH") && (
+                        <td className={`p-3 font-extrabold text-lg border-r border-gray-200 ${getDOHStyle(item.DayOnHand_DOH_Stock2)} text-right`}>
+                            {formatNumber(item.Stock_จบเหลือจริง)}
+                        </td>
+                      )}
+
+                      {!isColumnHidden("SetType") && (
+                        <td className="p-3 text-sm text-gray-600">
+                            {"-"}
+                        </td>
+                      )}
+
+                      {!isColumnHidden("StockShow") && (
+                        <td className="p-3 text-sm text-gray-500">
+                          <div className="font-semibold text-base text-gray-800 mb-1">
+                            {formatNumber(item.Stock_Show_Calc)}
+                          </div>
+                          <button
+                            className="p-2 text-xs rounded-lg cursor-pointer shadow-sm bg-green-500 text-white hover:bg-green-600 transition"
+                            onClick={() => handleShowStockModal(item)}
+                            title="ดูตำแหน่งจัดเก็บและรายละเอียด Stock (ตัวโชว์)"
+                          >
+                            Show Location Stock
+                          </button>
+                        </td>
+                      )}
+
+                      {!isColumnHidden("Stock_Physical") && (
+                        <td className="p-3 font-bold text-lg border-r border-gray-200 text-right">
+                            {formatNumber(item.Stock_จบเหลือจริง)}
+                        </td>
+                      )}
+
+                      {!isColumnHidden("Stock") && (
+                        <td className="p-3 font-bold text-lg border-r border-gray-200 text-right">
+                            {formatNumber(item.Stock_จบเหลือจริง)}
+                        </td>
+                      )}
+
+                      {!isColumnHidden("Stock_Cl") && (
+                        <td className="p-3 font-bold text-lg border-r border-gray-200 text-right">
+                            {formatNumber(item.Stock_จบเหลือจริง)}
+                        </td>
+                      )}
+
+                      {!isColumnHidden("Forecash") && (
+                        <td className="p-3 font-bold border-r border-gray-200">
+                            {"-"}
+                        </td>
+                      )}
+
+                      {!isColumnHidden("Actual") && (
+                        <td className="p-3 font-bold border-r border-gray-200">
+                            {"-"}
+                        </td>
+                      )}
+
+                      {!isColumnHidden("TradeStatus") && (
+                        <td className="p-3 border-r border-gray-200">
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-semibold border ${
+                              item.สถานะTrade === "Abnormal"
+                                ? "bg-red-100 text-red-700 border-red-300"
+                                : item.สถานะTrade === "Normal"
+                                ? "bg-green-100 text-green-700 border-green-300"
+                                : "bg-gray-100 text-gray-700 border-gray-300"
+                            }`}
+                          >
+                            {item.สถานะTrade || "Normal"}
+                          </span>
+                        </td>
+                      )}
+
+                      {!isColumnHidden("RemarkTrade") && (
+                        <td className="p-3 text-xs text-gray-400 border-r border-gray-200">
+                          <p className="text-xs mb-1 italic truncate">
+                            {safeText(item.RemarkTrade)}
                           </p>
-                        )}
-                      </td>
-                      <td
-                        className={colClass(
-                          "TradeRemark",
-                          "p-3 text-sm whitespace-normal text-gray-600 "
-                        )}
-                      >
-                        <p className="text-xs mb-1 italic truncate">
-                          {item.RemarkTrade || "-"}
-                        </p>
-                        <button
-                          onClick={() => openTradeModal(item)}
-                          className={`px-3 py-1 text-xs rounded-lg cursor-pointer shadow-md transition font-medium ${
-                            item.KeyRemarks && item.KeyRemarks.length > 0
-                              ? "bg-blue-600 text-white hover:bg-blue-700"
-                              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                          }`}
-                        >
-                          บันทึก/ดูการสื่อสาร (
-                          {item.KeyRemarks ? item.KeyRemarks.length : 0})
-                        </button>
-                      </td>
+
+                          <button
+                            onClick={() => openTradeModal(item)}
+                            className={`px-3 py-1 text-xs rounded-lg cursor-pointer shadow-md transition font-medium ${
+                              item.RemarkCount > 0
+                                ? "bg-green-600 text-white hover:bg-green-700"
+                                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                            }`}
+                          >
+                            บันทึก/ดูการสื่อสาร ({item.RemarkCount || 0})
+                          </button>
+                        </td>
+                      )}
                     </tr>
                   );
                 })
@@ -807,6 +919,7 @@ background-color: transparent !important;
             </tbody>
           </table>
         </div>
+<<<<<<< HEAD
         <div className="mt-8 p-4 bg-blue-50 rounded-lg text-sm text-gray-700">
           <p>
             💡 **คำอธิบาย DOH (Days On Hand):**
@@ -821,6 +934,78 @@ background-color: transparent !important;
             <span className="text-green-600 font-bold ml-2">
               DOH &lt; 180 วัน
             </span>
+=======
+
+        {/* Pagination ด้านล่าง */}
+        <div className="flex flex-col md:flex-row items-center justify-between mt-4 text-sm text-gray-700 gap-3">
+          <div className="flex items-center gap-2">
+            <span>แสดงหน้าละ</span>
+            <select
+              value={pageSize}
+              onChange={(e) => handlePageSizeChange(e.target.value)}
+              className="border border-gray-500 rounded-lg px-2 py-1 bg-white shadow-sm"
+            >
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+            </select>
+            <span>รายการ</span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => handlePageChange(1)}
+              disabled={currentPage === 1}
+              className="px-2 py-1 border rounded-lg disabled:opacity-40 bg-white hover:bg-gray-50"
+            >
+              ⏮ หน้าแรก
+            </button>
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-3 py-1 border rounded-lg disabled:opacity-40 bg-white hover:bg-gray-50"
+            >
+              ก่อนหน้า
+            </button>
+
+            <span className="px-2">
+              หน้า <strong>{currentPage}</strong> /{" "}
+              <strong>{totalPages || 1}</strong>
+            </span>
+
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === (totalPages || 1)}
+              className="px-2 py-1 border rounded-lg disabled:opacity-40 bg-white hover:bg-gray-50"
+            >
+              ถัดไป
+            </button>
+            <button
+              onClick={() => handlePageChange(totalPages || 1)}
+              disabled={currentPage === (totalPages || 1)}
+              className="px-2 py-1 border rounded-lg disabled:opacity-40 bg-white hover:bg-gray-50"
+            >
+              หน้าสุดท้าย ⏭
+            </button>
+          </div>
+        </div>
+
+        {/* DOH Explain */}
+        <div className="mt-8 p-4 bg-blue-50 rounded-lg text-sm text-gray-700 border border-blue-100">
+          <p>
+            💡 <strong>คำอธิบาย DOH (Days On Hand):</strong>
+            <span className="text-red-600 font-extrabold ml-2">
+              DOH &gt; 365 วัน
+            </span>{" "}
+            (Stock ล้นมาก) |
+            <span className="text-orange-600 font-bold ml-2">
+              180 &lt; DOH &lt; 365 วัน
+            </span>{" "}
+            (ควรระวัง) |
+            <span className="text-green-600 font-bold ml-2">
+              DOH &lt; 180 วัน
+            </span>{" "}
+>>>>>>> a9a73a019b192ef9e1624f44116d90eca9ea3b8f
             (ปกติ)
           </p>
         </div>
