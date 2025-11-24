@@ -5,7 +5,6 @@ import { useTradeProducts } from "../../hooks/useTradeProducts";
 const KEY_MAP = {
   code: "itemCode",
   description: "Description",
-  location: "LocationMock",
   doh: "DayOnHand_DOH",
   price: "pricePerUnit",
   priceOnline: "minPromotionPrice",
@@ -16,7 +15,6 @@ const KEY_MAP = {
   stockClearance: "StockClearance",
   tradeStatus: "tradeStatus",
   tradeRemark: "RemarkTrade",
-  // field ที่ไม่มีในข้อมูลใหม่ แต่ต้องใช้ในการคำนวณ/แสดงผล
   bestSet: "bestSetMock",
   forecast: "forecastMock",
   actual: "actualMock",
