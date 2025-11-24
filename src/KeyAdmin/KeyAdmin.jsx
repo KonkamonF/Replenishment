@@ -919,22 +919,6 @@ export default function KeyAdmin() {
             </tbody>
           </table>
         </div>
-<<<<<<< HEAD
-        <div className="mt-8 p-4 bg-blue-50 rounded-lg text-sm text-gray-700">
-          <p>
-            💡 **คำอธิบาย DOH (Days On Hand):**
-            <span className="text-red-600 font-extrabold ml-2">
-              DOH &gt; 365 วัน
-            </span>
-            (Stock ล้นมาก) |
-            <span className="text-orange-600 font-bold ml-2">
-              180 &lt; DOH &lt; 365 วัน
-            </span>
-            (ควรระวัง) |
-            <span className="text-green-600 font-bold ml-2">
-              DOH &lt; 180 วัน
-            </span>
-=======
 
         {/* Pagination ด้านล่าง */}
         <div className="flex flex-col md:flex-row items-center justify-between mt-4 text-sm text-gray-700 gap-3">
@@ -1005,7 +989,6 @@ export default function KeyAdmin() {
             <span className="text-green-600 font-bold ml-2">
               DOH &lt; 180 วัน
             </span>{" "}
->>>>>>> a9a73a019b192ef9e1624f44116d90eca9ea3b8f
             (ปกติ)
           </p>
         </div>
