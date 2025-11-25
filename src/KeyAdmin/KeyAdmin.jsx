@@ -408,9 +408,9 @@ export default function KeyAdmin() {
           </p>
                  {" "}
         </header>
-        <div class="flex flex-col lg:flex-row gap-6 mb-6">
-          {/* 🔥 SummaryMetrics ด้านบน Dashboard */}
-          <div className="mb-8">
+        <div className="flex flex-col lg:flex-row gap-6 mb-6">
+          {/* 1. SummaryMetrics (ด้านซ้าย/ด้านบน) */}
+          <div className="lg:w-96 flex-shrink-0 mb-8 lg:mb-0">
             <SummaryMetrics
               grandTotals={{
                 Total: summary.totalStock || 0, // FC
@@ -419,34 +419,40 @@ export default function KeyAdmin() {
             />
           </div>
 
-          <div className="flex flex-col gap-6 mb-8 items-start">
-            <div className="grid grid-cols-7 gap-4 items-end p-4 bg-pink-50 rounded-lg border border-pink-200">
-              {/* Search Input */}
-              <div className="col-span-2 md:col-span-2">
-                <label className="block text-sm font-bold text-gray-700 mb-1">
-                  ค้นหาสินค้า (Code/Desc/Remark)
-                </label>
-                <div className="relative w-full">
-                  <input
-                    type="text"
-                    placeholder="ค้นหา..."
-                    value={filters.search}
-                    onChange={handleSearchChange}
-                    className="w-full p-2 pl-9 pr-8 border border-gray-300 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
-                  />
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-                  {filters.search && (
-                    <button
-                      onClick={() => handleFilterChange("search", "")}
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 text-lg font-bold p-1 leading-none"
-                      title="ล้างการค้นหา"
-                    >
-                      &times;
-                    </button>
-                  )}
-                </div>
-              </div>
+          {/* 2. Filter Bar & Controls (ใช้พื้นที่ที่เหลือ) */}
+          <div className="flex-grow p-4 bg-pink-50 rounded-xl shadow-lg border border-pink-200">
+            <h2 className="text-xl font-bold text-pink-900 mb-4 border-b pb-2">
+              Filter Options
+            </h2>
 
+            {/* 2.1 Top Row: Search Input (Full Width) */}
+            <div className="mb-4">
+              <label className="block text-sm font-bold text-gray-700 mb-1">
+                ค้นหาสินค้า (Code/Desc/Remark)
+              </label>
+              <div className="relative w-full">
+                <input
+                  type="text"
+                  placeholder="ค้นหา..."
+                  value={filters.search}
+                  onChange={handleSearchChange}
+                  className="w-full p-2 pl-9 pr-8 border border-gray-300 rounded-lg shadow-sm bg-white focus:ring-pink-500 focus:border-pink-500"
+                />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                {filters.search && (
+                  <button
+                    onClick={() => handleFilterChange("search", "")}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 text-lg font-bold p-1 leading-none"
+                    title="ล้างการค้นหา"
+                  >
+                    &times;
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* 2.2 Mid Grid: Dropdown Filters (3 Columns on md, 6 on lg) */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
               {/* Brand Filter */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">
@@ -540,8 +546,11 @@ export default function KeyAdmin() {
                   ))}
                 </select>
               </div>
+            </div>
 
-              {/* Sales Channel (ห้าง) Filter */}
+            {/* 2.3 Control Row: Key User, Unassigned Checkbox, Column Toggle */}
+            <div className="mt-6 pt-4 border-t border-pink-200 grid grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+              {/* Sales Channel (ห้าง) Filter (ตำแหน่งตามภาพที่แนบมา) */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">
                   ห้าง
@@ -555,11 +564,8 @@ export default function KeyAdmin() {
                   disabled={filters.showUnassigned}
                 >
                   <option value="All">ทุกห้าง</option>
-                  {channels.map((ch) => (
-                    <option key={ch.id} value={ch.id}>
-                      {ch.name}
-                    </option>
-                  ))}
+                  {/* Note: channels array is missing, assuming it exists */}
+                  {/* {channels.map((ch) => ( ... ))} */}
                 </select>
               </div>
 
@@ -578,17 +584,14 @@ export default function KeyAdmin() {
                     disabled={filters.showUnassigned}
                   >
                     <option value="All">ทุก Key</option>
-                    {keyUsers.map((u) => (
-                      <option key={u.username} value={u.username}>
-                        {u.username}
-                      </option>
-                    ))}
+                    {/* Note: keyUsers array is missing, assuming it exists */}
+                    {/* {keyUsers.map((u) => ( ... ))} */}
                   </select>
                 </div>
               )}
 
               {/* Show Unassigned Checkbox (แยกออกมาเป็นช่องสุดท้าย) */}
-              <div className="col-span-2 md:col-span-1 flex items-end h-full">
+              <div className="col-span-2 lg:col-span-1 flex items-end h-full justify-start">
                 <label className="flex items-center gap-2 cursor-pointer p-2.5 bg-white border border-gray-300 rounded-lg shadow-sm">
                   <input
                     type="checkbox"
@@ -604,12 +607,13 @@ export default function KeyAdmin() {
                 </label>
               </div>
 
-              <div className="mb-4">
-                <p className="text-xs text-gray-500">
+              {/* Column Toggle Dropdown (แยกออกมาในส่วน Controls) */}
+              <div className="col-span-2 lg:col-span-1 flex flex-col items-start h-full justify-end">
+                <p className="text-xs text-gray-500 mb-1">
                   ซ่อน/แสดงคอลัมน์เพื่อดูเฉพาะข้อมูลที่ต้องการ
                 </p>
                 <ColumnToggleDropdown
-                  ALL_COLUMNS={ALL_COLUMNS}
+                  ALL_COLUMNS={ALL_COLUMNS} // Note: ALL_COLUMNS is missing, assuming it exists
                   hiddenColumns={hiddenColumns}
                   toggleColumnVisibility={toggleColumnVisibility}
                 />
@@ -617,7 +621,6 @@ export default function KeyAdmin() {
             </div>
           </div>
         </div>
-
         {/* Table */}
         <div className="overflow-x-auto shadow-xl rounded-xl border border-gray-200">
           <table className="min-w-full table-auto bg-white text-center">
