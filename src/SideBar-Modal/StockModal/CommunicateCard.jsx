@@ -47,7 +47,7 @@ export default function CommunicationCard({ item, onClose }) {
       setNewStatus(item.tradeStatus);
     }
   }, [history, item]);
-  
+
   const [remark, setRemark] = useState("");
   const [images, setImages] = useState([]);
 
@@ -75,16 +75,16 @@ export default function CommunicationCard({ item, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-2xl w-full max-w-4xl p-6 overflow-y-scroll max-h-full">
+    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-2">
+      <div className="bg-white rounded-lg shadow-2xl w-full max-w-7xl p-6 overflow-y-auto max-h-full">
         {/* HEADER */}
-        <div className="flex justify-between items-start mb-4 border-b pb-2">
+        <div className="flex justify-between items-start mb-2 border-b ">
           <h2 className="text-xl font-bold text-[#640037]">
             Action & Communication: {itemCode}
           </h2>
           <button
             onClick={onClose}
-            className="text-2xl text-gray-500 cursor-pointer hover:text-red-500 font-light"
+            className="text-3xl text-gray-500 cursor-pointer hover:text-red-500 font-light"
           >
             &times;
           </button>
@@ -95,30 +95,30 @@ export default function CommunicationCard({ item, onClose }) {
         </p>
 
         {/* HISTORY */}
-        <div className="mb-4">
+        <div className="mb-2">
           <h3 className="text-md font-semibold text-gray-700 mb-2">
             ประวัติการสื่อสาร ({history.length})
           </h3>
 
-          <div className="h-48 p-3 border rounded-lg bg-gray-50 space-y-3 overflow-y-scroll">
+          <div className="h-[250px] p-3 border rounded-xl bg-gray-100 space-y-2 overflow-y-scroll">
             {loading ? (
-              <p className="text-gray-400 text-center">กำลังโหลด...</p>
+              <p className="text-gray-500 text-center">กำลังโหลด...</p>
             ) : history.length === 0 ? (
-              <p className="text-gray-500 text-center pt-8">
+              <p className="text-gray-500 text-center pt-4">
                 ยังไม่มีประวัติการสื่อสาร
               </p>
             ) : (
               history.map((h) => (
                 <div
                   key={h.id}
-                  className="border-l-4 border-pink-400 pl-3 py-1 bg-white rounded shadow-sm"
+                  className="border-b-2 border-pink-500 px-3 py-2 bg-white rounded-xl shadow-lg"
                 >
                   <div className="flex justify-between">
-                    <span className="font-semibold text-sm">{h.user}</span>
+                    <span className="font-semibold">{h.user}</span>
 
                     {h.newStatus && (
                       <span
-                        className={`text-xs font-medium px-2 py-0.5 rounded-full ${getStatusStyle(
+                        className={`text-xs px-6 py-1 rounded-full ${getStatusStyle(
                           h.newStatus
                         )}`}
                       >
@@ -131,8 +131,8 @@ export default function CommunicationCard({ item, onClose }) {
                   {h.oldStatus &&
                     h.newStatus &&
                     h.oldStatus !== h.newStatus && (
-                      <p className="text-xs text-blue-600 mt-1">
-                        🔄 เปลี่ยนสถานะ: {h.oldStatus} → {h.newStatus}
+                      <p className="text-sm text-blue-600 mt-1">
+                        เปลี่ยนสถานะ: {h.oldStatus} → {h.newStatus} 🔄
                       </p>
                     )}
 
@@ -141,7 +141,7 @@ export default function CommunicationCard({ item, onClose }) {
 
                   {/* IMAGES */}
                   {h.images?.length > 0 && (
-                    <div className="flex gap-2 flex-wrap mt-2">
+                    <div className="flex items-center gap-2 flex-wrap mt-4">
                       {h.images.map((img, i) => (
                         <a
                           key={i}
@@ -151,14 +151,17 @@ export default function CommunicationCard({ item, onClose }) {
                         >
                           <img
                             src={img}
-                            className="w-16 h-16 rounded border object-cover cursor-pointer hover:opacity-80"
+                            className="w-18 h-18 rounded border object-cover cursor-pointer hover:opacity-80"
                           />
                         </a>
                       ))}
                     </div>
                   )}
-
-                  <p className="text-xs text-gray-500 mt-1">{h.created_at}</p>
+                  <div>
+                    <p className="text-xs text-end text-gray-600 mt-1">
+                      {h.created_at}
+                    </p>
+                  </div>
                 </div>
               ))
             )}
@@ -166,79 +169,83 @@ export default function CommunicationCard({ item, onClose }) {
         </div>
 
         {/* NEW ACTION */}
-        <div className="mt-6 pt-4 border-t border-gray-200">
-          {/* STATUS SELECT */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Change Status:
-            </label>
-            <select
-              value={newStatus}
-              onChange={(e) => setNewStatus(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-lg shadow-sm"
-            >
-              <option value="Normal">Normal</option>
-              <option value="Abnormal">Abnormal</option>
-            </select>
-          </div>
+        <div className="mt-4 ">
+          <div className="flex items-start gap-6">
+            {/* REMARK */}
+            <div className="">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Add Remark
+              </label>
+              <textarea
+                rows="3"
+                value={remark}
+                onChange={(e) => setRemark(e.target.value)}
+                placeholder="พิมพ์บันทึกการสื่อสาร…"
+                className="w-[700px] h-[80px] p-3 border border-gray-300 rounded-lg shadow-sm resize-none"
+              />
+            </div>
 
-          {/* REMARK */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Add Remark:
-            </label>
-            <textarea
-              rows="3"
-              value={remark}
-              onChange={(e) => setRemark(e.target.value)}
-              placeholder="พิมพ์บันทึกการสื่อสาร…"
-              className="w-full p-3 border border-gray-300 rounded-lg shadow-sm resize-none"
-            />
+            {/* STATUS (เล็กลง) */}
+            <div className="w-40 flex justify-center flex-col">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Status
+              </label>
+              <select
+                value={newStatus}
+                onChange={(e) => setNewStatus(e.target.value)}
+                className="p-1.5 text-sm border border-gray-300 rounded-lg shadow-sm"
+              >
+                <option value="Normal">Normal</option>
+                <option value="Abnormal">Abnormal</option>
+              </select>
+            </div>
 
             {/* UPLOAD */}
-            <input
-              type="file"
-              id="imgUploadBox"
-              multiple
-              accept="image/*"
-              className="hidden"
-              onChange={handleFileChange}
-            />
-            <label htmlFor="imgUploadBox">
-              <UploadImgBox />
-            </label>
+            <div className="flex flex-col items-center">
+              <input
+                type="file"
+                id="imgUploadBox"
+                multiple
+                accept="image/*"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+              <label htmlFor="imgUploadBox">
+                <UploadImgBox />
+              </label>
 
-            {/* PREVIEW */}
-            {images.length > 0 && (
-              <div className="flex gap-2 mt-2 flex-wrap">
-                {images.map((f, i) => (
-                  <img
-                    key={i}
-                    src={URL.createObjectURL(f)}
-                    className="w-16 h-16 rounded border"
-                  />
-                ))}
-              </div>
-            )}
+              {/* PREVIEW */}
+              {images.length > 0 && (
+                <div className="flex gap-2 mt-2 justify-center w-full h-26 p-2 overflow-x-scroll">
+                  {images.map((f, i) => (
+                    <img
+                      key={i}
+                      src={URL.createObjectURL(f)}
+                      className="w-18 h-18 rounded border object-cover"
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
+        </div>
 
-          {/* BUTTONS */}
-          <div className="flex justify-end space-x-3">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 text-sm bg-gray-200 rounded-lg"
-            >
-              Cancel
-            </button>
+        {/* BUTTONS */}
+        <div className="flex justify-end space-x-3">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 text-sm bg-gray-200 rounded-lg"
+          >
+            Cancel
+          </button>
 
-            <button
-              onClick={handleSave}
-              disabled={!remark.trim() || saving}
-              className="px-4 py-2 text-sm text-white bg-pink-600 rounded-lg hover:bg-pink-700 disabled:bg-pink-300"
-            >
-              {saving ? "Saving..." : "Save"}
-            </button>
-          </div>
+          <button
+            onClick={handleSave}
+            disabled={!remark.trim() || saving}
+            className="px-4 py-2 text-sm text-white bg-pink-600 rounded-lg hover:bg-pink-700 disabled:bg-pink-300"
+          >
+            {saving ? "Saving..." : "Save"}
+          </button>
         </div>
       </div>
     </div>
