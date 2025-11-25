@@ -346,7 +346,7 @@ export default function KeyFC() {
           </div>
 
           {/* 1.2 Filter Bar */}
-          <div className="flex-grow p-4 bg-pink-50 rounded-xl shadow-lg border border-gray-200">
+          <div className="flex-grow p-4 bg-pink-50 rounded-xl shadow-lg border border-pink-200">
             <h2 className="text-xl font-bold text-pink-900 mb-4 border-b pb-2">
               Filter Options
             </h2>
@@ -471,9 +471,9 @@ export default function KeyFC() {
           </div>
         </div>
         {/* --- Data Table --- */}
-        <div className="relative overflow-x-scroll border-2 border-gray-300 rounded-lg shadow-xl ">
+        <div className="relative overflow-x-scroll border border-gray-300 rounded-2xl shadow-xl ">
           <table className="table-auto text-sm w-full">
-            <thead className="bg-[#640037] text-white">
+            <thead className="bg-[#640037] text-nowrap text-white">
               <tr>
                 {/* Fixed Columns */}
                 <th className="p-3 bg-[#640037] shadow-md">No.</th>
@@ -506,14 +506,14 @@ export default function KeyFC() {
               {paginatedData.map((item, index) => (
                 <tr
                   key={item.Code + index}
-                  className="border-b border-gray-200 hover:bg-pink-50 p-3"
+                  className="border-b text-center border-gray-200 hover:bg-pink-50 p-3"
                 >
                   {/* No. */}
                   <td className="font-bold text-[#640037] p-3 w-36 font-mono text-sm border-r border-gray-200">
                     {(currentPage - 1) * pageSize + index + 1}
                   </td>
                   {/* Code */}
-                  <td className="p-3 w-36 font-mono text-sm border-r border-gray-200">
+                  <td className="p-2 text-nowrap border-r border-gray-200">
                     <span className="font-bold text-[#640037]">
                       {item.Code}
                     </span>

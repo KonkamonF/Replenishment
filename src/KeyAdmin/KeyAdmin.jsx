@@ -85,7 +85,7 @@ const ColumnToggleDropdown = ({
         ) : (
           <Eye className="w-4 h-4" />
         )}
-        {`Columns${hiddenCount > 0 ? ` (${hiddenCount} hidden)` : ""}`}
+        {`Show/Hide Columns${hiddenCount > 0 ? ` (${hiddenCount} hidden)` : ""}`}
         <ChevronDown className="w-4 h-4 ml-1" />
       </button>
 
@@ -365,7 +365,7 @@ export default function KeyAdmin() {
   ).length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-rose-50 to-pink-50">
+    <div className="min-h-screen bg-white rounded-2xl">
       {isStockShow && (
         <StockShowModal
           setIsStockShow={setIsStockShow}
@@ -408,9 +408,9 @@ export default function KeyAdmin() {
           </p>
                  {" "}
         </header>
-        <div className="flex flex-col lg:flex-row gap-6 mb-6">
+        <div className="flex flex-row gap-6 mb-6">
           {/* 1. SummaryMetrics (ด้านซ้าย/ด้านบน) */}
-          <div className="lg:w-96 flex-shrink-0 mb-8 lg:mb-0">
+          <div className="flex-shrink-0 mb-8 ">
             <SummaryMetrics
               grandTotals={{
                 Total: summary.totalStock || 0, // FC
@@ -452,7 +452,7 @@ export default function KeyAdmin() {
             </div>
 
             {/* 2.2 Mid Grid: Dropdown Filters (3 Columns on md, 6 on lg) */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-5 gap-4">
               {/* Brand Filter */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">
@@ -532,7 +532,7 @@ export default function KeyAdmin() {
               {/* Set / แตก Set Filter */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">
-                  ชุด Set / แตก Set
+                  ชุด Set / แตก Set	
                 </label>
                 <select
                   value={filters.set}
@@ -591,8 +591,8 @@ export default function KeyAdmin() {
               )}
 
               {/* Show Unassigned Checkbox (แยกออกมาเป็นช่องสุดท้าย) */}
-              <div className="col-span-2 lg:col-span-1 flex items-end h-full justify-start">
-                <label className="flex items-center gap-2 cursor-pointer p-2.5 bg-white border border-gray-300 rounded-lg shadow-sm">
+              <div className="col-span-2  flex justify-start ">
+                <label className="flex justify-start gap-2 cursor-pointer p-2  w-auto bg-white border border-gray-300 rounded-lg shadow-sm">
                   <input
                     type="checkbox"
                     checked={filters.showUnassigned}
@@ -608,7 +608,7 @@ export default function KeyAdmin() {
               </div>
 
               {/* Column Toggle Dropdown (แยกออกมาในส่วน Controls) */}
-              <div className="col-span-2 lg:col-span-1 flex flex-col items-start h-full justify-end">
+              <div className="col-span-4 flex flex-col items-end justify-end">
                 <p className="text-xs text-gray-500 mb-1">
                   ซ่อน/แสดงคอลัมน์เพื่อดูเฉพาะข้อมูลที่ต้องการ
                 </p>
@@ -627,87 +627,87 @@ export default function KeyAdmin() {
             <thead className="bg-[#640037] text-white sticky top-0 text-sm">
               <tr>
                 {!isColumnHidden("No") && (
-                  <th className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
+                  <th className="p-2 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
                     No.
                   </th>
                 )}
                 {!isColumnHidden("Code") && (
-                  <th className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
+                  <th className="p-2 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
                     ItemCode / Brand
                   </th>
                 )}
                 {!isColumnHidden("Description") && (
-                  <th className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
+                  <th className="p-2 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
                     Description / Class
                   </th>
                 )}
                 {!isColumnHidden("Best") && (
-                  <th className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
+                  <th className="p-2 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
                     Best/BestSet
                   </th>
                 )}
                 {!isColumnHidden("Categories") && (
-                  <th className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
+                  <th className="p-2 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
                     Categories
                   </th>
                 )}
                 {!isColumnHidden("Forecast") && (
-                  <th className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
+                  <th className="p-2 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
                     ยอด Forecast
                   </th>
                 )}
                 {!isColumnHidden("Actual") && (
-                  <th className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
+                  <th className="p-2 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
                     ยอด Actual
                   </th>
                 )}
                 {!isColumnHidden("DOHPerDay") && (
-                  <th className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
+                  <th className="p-2 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
                     DOH (วัน)
                   </th>
                 )}
                 {!isColumnHidden("SetOrNot") && (
-                  <th className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
+                  <th className="p-2 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
                     ชุด Set / แตก Set
                   </th>
                 )}
                 {!isColumnHidden("Stock_Show") && (
-                  <th className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
+                  <th className="p-2 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
                     Stock (ตัวโชว์)
                   </th>
                 )}
                 {!isColumnHidden("Stock_Physical") && (
-                  <th className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
+                  <th className="p-2 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
                     Stock (กายภาพ)
                   </th>
                 )}
                 {!isColumnHidden("Stock") && (
-                  <th className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
+                  <th className="p-2 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
                     Stock หักจอง
                   </th>
                 )}
                 {!isColumnHidden("Stock_Cl") && (
-                  <th className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
+                  <th className="p-2 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
                     Stock Clearance
                   </th>
                 )}
                 {!isColumnHidden("Forecash_Now") && (
-                  <th className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
+                  <th className="p-2 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
                     Forecash 3m
                   </th>
                 )}
                 {!isColumnHidden("Actual_Now") && (
-                  <th className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
+                  <th className="p-2 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
                     Actual 3m
                   </th>
                 )}
                 {!isColumnHidden("TradeStatus") && (
-                  <th className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
+                  <th className="p-2 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
                     สถานะ Trade
                   </th>
                 )}
                 {!isColumnHidden("TradeRemark") && (
-                  <th className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
+                  <th className="p-2 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
                     Remark Trade / Action
                   </th>
                 )}
@@ -724,11 +724,11 @@ export default function KeyAdmin() {
                       className="border-b border-gray-200 hover:bg-pink-50 transition duration-150"
                     >
                       {!isColumnHidden("No") && (
-                        <td className="p-3 min-w-50px">{rowNo}</td>
+                        <td className=" min-w-50px">{rowNo}</td>
                       )}
 
                       {!isColumnHidden("Code") && (
-                        <td className="p-3 font-mono text-sm border-r border-gray-200 text-left min-w-[120px]">
+                        <td className=" font-mono text-sm border-r border-gray-200 text-left min-w-[120px]">
                           <span className="font-bold text-[#640037] block">
                             {item.Code}
                           </span>
@@ -739,7 +739,7 @@ export default function KeyAdmin() {
                       )}
 
                       {!isColumnHidden("Description") && (
-                        <td className="p-3 font-semibold text-gray-700 border-r border-gray-200 text-left min-w-[200px]">
+                        <td className="p-2 font-semibold text-gray-700 border-r border-gray-200 text-left min-w-[200px]">
                           <span className="block">{item.Description}</span>
                           <span
                             className={`mt-1 inline-block text-xs font-normal px-2 py-0.5 rounded-full ${
@@ -761,7 +761,7 @@ export default function KeyAdmin() {
                       )}
 
                       {!isColumnHidden("Best") && (
-                        <td className="p-3">
+                        <td className="">
                           <span
                             className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
                               item.YN_Best_2025 === "Yes"
@@ -775,26 +775,26 @@ export default function KeyAdmin() {
                       )}
 
                       {!isColumnHidden("Categories") && (
-                        <td className="p-3">
+                        <td className="">
                           {formatNumber(item.Stock_จบเหลือจริง)}
                         </td>
                       )}
 
                       {!isColumnHidden("Forecast") && (
-                        <td className="p-3 font-bold text-lg border-r border-gray-200 text-right">
+                        <td className=" font-bold text-lg border-r border-gray-200 text-right">
                           {formatNumber(item.Stock_จบเหลือจริง)}
                         </td>
                       )}
 
                       {!isColumnHidden("Actual") && (
-                        <td className="p-3 font-semibold text-lg border-r border-gray-200 text-right text-blue-600">
+                        <td className=" font-semibold text-lg border-r border-gray-200 text-right text-blue-600">
                           {formatNumber(item.Stock_จบเหลือจริง)}
                         </td>
                       )}
 
                       {!isColumnHidden("DOH") && (
                         <td
-                          className={`p-3 font-extrabold text-lg border-r border-gray-200 ${getDOHStyle(
+                          className={` font-extrabold text-lg border-r border-gray-200 ${getDOHStyle(
                             item.DayOnHand_DOH_Stock2
                           )} text-right`}
                         >
@@ -803,16 +803,16 @@ export default function KeyAdmin() {
                       )}
 
                       {!isColumnHidden("SetType") && (
-                        <td className="p-3 text-sm text-gray-600">{"-"}</td>
+                        <td className=" text-sm text-gray-600">{"-"}</td>
                       )}
 
                       {!isColumnHidden("StockShow") && (
-                        <td className="p-3 text-sm text-gray-500">
+                        <td className=" text-sm text-gray-500">
                           <div className="font-semibold text-base text-gray-800 mb-1">
                             {formatNumber(item.Stock_Show_Calc)}
                           </div>
                           <button
-                            className="p-2 text-xs rounded-lg cursor-pointer shadow-sm bg-green-500 text-white hover:bg-green-600 transition"
+                            className=" text-xs rounded-lg cursor-pointer shadow-sm bg-green-500 text-white hover:bg-green-600 transition"
                             onClick={() => handleShowStockModal(item)}
                             title="ดูตำแหน่งจัดเก็บและรายละเอียด Stock (ตัวโชว์)"
                           >
@@ -822,37 +822,37 @@ export default function KeyAdmin() {
                       )}
 
                       {!isColumnHidden("Stock_Physical") && (
-                        <td className="p-3 font-bold text-lg border-r border-gray-200 text-right">
+                        <td className=" font-bold text-lg border-r border-gray-200 text-right">
                           {formatNumber(item.Stock_จบเหลือจริง)}
                         </td>
                       )}
 
                       {!isColumnHidden("Stock") && (
-                        <td className="p-3 font-bold text-lg border-r border-gray-200 text-right">
+                        <td className=" font-bold text-lg border-r border-gray-200 text-right">
                           {formatNumber(item.Stock_จบเหลือจริง)}
                         </td>
                       )}
 
                       {!isColumnHidden("Stock_Cl") && (
-                        <td className="p-3 font-bold text-lg border-r border-gray-200 text-right">
+                        <td className=" font-bold text-lg border-r border-gray-200 text-right">
                           {formatNumber(item.Stock_จบเหลือจริง)}
                         </td>
                       )}
 
                       {!isColumnHidden("Forecash") && (
-                        <td className="p-3 font-bold border-r border-gray-200">
+                        <td className=" font-bold border-r border-gray-200">
                           {"-"}
                         </td>
                       )}
 
                       {!isColumnHidden("Actual") && (
-                        <td className="p-3 font-bold border-r border-gray-200">
+                        <td className=" font-bold border-r border-gray-200">
                           {"-"}
                         </td>
                       )}
 
                       {!isColumnHidden("TradeStatus") && (
-                        <td className="p-3 border-r border-gray-200">
+                        <td className=" border-r border-gray-200">
                           <span
                             className={`px-3 py-1 rounded-full text-xs font-semibold border ${
                               item.สถานะTrade === "Abnormal"
@@ -868,7 +868,7 @@ export default function KeyAdmin() {
                       )}
 
                       {!isColumnHidden("RemarkTrade") && (
-                        <td className="p-3 text-xs text-gray-400 border-r border-gray-200">
+                        <td className=" text-xs text-gray-400 border-r border-gray-200">
                           <p className="text-xs mb-1 italic truncate">
                             {safeText(item.RemarkTrade)}
                           </p>
