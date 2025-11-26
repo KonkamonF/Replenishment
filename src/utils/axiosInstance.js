@@ -14,7 +14,6 @@
 //   }
 //   return config;
 // });
-
 // export default instance;
 
 import axios from "axios";
