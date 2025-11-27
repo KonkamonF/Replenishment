@@ -10,7 +10,8 @@ import {
   Edit2,
   Plus,
 } from "lucide-react";
-import { useProductEntry } from "../../hooks/useProductEntry.js";
+// สมมติว่าไฟล์นี้อยู่ระดับเดียวกับ EntryProductDate.jsx
+import { useProductEntry } from "../../hooks/useProductEntry.js"; 
 
 const formatDateForInput = (date) => {
   if (!date) return "";
@@ -25,6 +26,43 @@ const convertUrlToPath = (url) => {
   const idx = url.indexOf("/uploads/");
   return url.substring(idx + 1); // ตัดโดเมนออก เหลือ uploads/xxx
 };
+
+// ==============================================
+// 🎯 MOCK DATA และ MOCK FUNCTION
+// ==============================================
+const MOCK_PRODUCTS = {
+  "SKU001": { name: "แผ่นรองเม้าส์ Premium", initialQuantity: 10 },
+  "SKU002": { name: "คีย์บอร์ดไร้สาย Mechanical", initialQuantity: 5 },
+  "SKU003": { name: "หูฟัง Gaming X20", initialQuantity: 20 },
+  "SKU004": { name: "เมาส์ Logitech G Pro", initialQuantity: 8 },
+  "SKU005": { name: "จอ Monitor 27 นิ้ว", initialQuantity: 3 },
+};
+
+// ฟังก์ชันจำลองการดึงข้อมูลสินค้าจากรหัส
+const fetchProductMock = (sku) => {
+  return new Promise((resolve) => {
+    // จำลองการหน่วงเวลา
+    setTimeout(() => {
+      const product = MOCK_PRODUCTS[sku.toUpperCase()];
+      if (product) {
+        resolve({
+          productName: product.name,
+          quantity: product.initialQuantity,
+          description: `รายการนำเข้า: ${sku}`, 
+        });
+      } else {
+        resolve({
+          productName: `**ไม่พบชื่อสินค้า** (${sku})`,
+          quantity: 1, 
+          description: `-`,
+        });
+      }
+    }, 300); // หน่วง 300ms ให้เห็นผลการโหลด
+  });
+};
+// ==============================================
+// ==============================================
+
 
 export default function EntryProductDate({
   setIsEntryProductDate,
@@ -43,6 +81,7 @@ export default function EntryProductDate({
   const [selectedItem, setSelectedItem] = useState(null);
   const [Entries, setEntries] = useState(entries);
 
+  // State เดิม (ใช้ใน Edit Mode)
   const [productName, setProductName] = useState("");
   const [supplier, setSupplier] = useState("");
   const [poNumber, setPoNumber] = useState("");
@@ -53,10 +92,89 @@ export default function EntryProductDate({
   const [imageFiles, setImageFiles] = useState([]);
   const [previews, setPreviews] = useState([]);
   const fileInputRef = useRef(null);
+  
+  // 🎯 STATE ใหม่สำหรับ Multiple Entry
+  const [productNamesInput, setProductNamesInput] = useState(""); // สำหรับ textarea รหัสสินค้า
+  const [newProductList, setNewProductList] = useState([]); // รายการสินค้าที่จะบันทึก
+  const [isFetchingMock, setIsFetchingMock] = useState(false); // สถานะการดึง Mock
 
   useEffect(() => {
     setEntries(entries);
   }, [entries]);
+
+  // 🎯 useEffect สำหรับแปลง Input เป็นตาราง Preview
+  useEffect(() => {
+    const fetchNewProductData = async () => {
+      const skus = productNamesInput
+        .split("\n")
+        .map((item) => item.trim().toUpperCase())
+        .filter((item) => item !== "");
+
+      if (skus.length === 0) {
+        setNewProductList([]);
+        return;
+      }
+      
+      setIsFetchingMock(true);
+
+      const existingMap = new Map(newProductList.map(item => [item.sku, item]));
+
+      const fetchedProducts = await Promise.all(
+        skus.map(async (sku) => {
+          const mockData = await fetchProductMock(sku);
+          const existingItem = existingMap.get(sku);
+          
+          return {
+            sku: sku,
+            productName: mockData.productName,
+            // ใช้ quantity และ description เดิมถ้ามี, ถ้าไม่มีใช้จาก mock
+            quantity: existingItem && existingItem.sku === sku ? existingItem.quantity : mockData.quantity, 
+            description: existingItem && existingItem.sku === sku ? existingItem.description : mockData.description,
+          };
+        })
+      );
+      
+      // กรองรายการที่ไม่ซ้ำกัน
+      const uniqueFetchedProducts = fetchedProducts.filter((item, index, self) => 
+        index === self.findIndex((t) => (
+          t.sku === item.sku
+        ))
+      );
+      
+      setNewProductList(uniqueFetchedProducts);
+      setIsFetchingMock(false);
+    };
+
+    // หน่วงเวลาเล็กน้อยเพื่อไม่ให้เรียกบ่อยเกินไปขณะผู้ใช้พิมพ์
+    const delayDebounceFn = setTimeout(() => {
+        fetchNewProductData();
+    }, 500); 
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [productNamesInput]);
+
+
+  // 🎯 ฟังก์ชันจัดการการเปลี่ยนจำนวนในตาราง Preview
+  const handleQuantityChange = (sku, value) => {
+    setNewProductList(prevList =>
+      prevList.map(item =>
+        item.sku === sku
+          ? { ...item, quantity: parseInt(value) || 0 }
+          : item
+      )
+    );
+  };
+  
+  // 🎯 ฟังก์ชันจัดการการเปลี่ยน Description ในตาราง Preview
+  const handleDescriptionChange = (sku, value) => {
+    setNewProductList(prevList =>
+      prevList.map(item =>
+        item.sku === sku
+          ? { ...item, description: value }
+          : item
+      )
+    );
+  };
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
@@ -82,32 +200,46 @@ export default function EntryProductDate({
     setComments("");
     setImageFiles([]);
     setPreviews([]);
+    setProductNamesInput(""); // 🎯 reset state ใหม่
+    setNewProductList([]); // 🎯 reset state ใหม่
     if (fileInputRef.current) fileInputRef.current.value = null;
   };
   const closeModal = () => {
     setIsEntryProductDate(false);
   };
-  // ===================== HANDLE ADD ======================
+  
+  // ===================== HANDLE ADD (ปรับสำหรับ Multiple Entry) ======================
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!productName) return alert("กรุณากรอกชื่อสินค้า");
+    
+    // กรองรายการที่มีจำนวน > 0 และไม่ใช่ "ไม่พบชื่อสินค้า"
+    const validEntries = newProductList.filter(
+      (item) => item.quantity > 0 && item.productName && !item.productName.includes('**ไม่พบชื่อสินค้า**')
+    );
+
+    if (validEntries.length === 0) return alert("กรุณาป้อนรหัสสินค้าที่ถูกต้องและระบุจำนวนมากกว่า 0");
     if (isSubmitting) return;
 
     setIsSubmitting(true);
     try {
-      await addEntry({
-        productName,
-        poNumber,
-        quantity: parseInt(quantity) || 0,
-        supplier,
-        comments,
-        entryDate,
-        images: imageFiles.map((f) => f.file),
-        status: "F",
-      });
+      // 💡 วนลูปเรียก addEntry สำหรับแต่ละรายการ
+      for (let i = 0; i < validEntries.length; i++) {
+        const item = validEntries[i];
+        await addEntry({
+          productName: item.productName, // ชื่อสินค้าจาก Mock
+          poNumber: item.sku, // ใช้ SKU เป็น PO/รหัสสินค้าหลัก
+          quantity: item.quantity,
+          supplier: supplier, // ใช้ supplier ร่วมกัน
+          comments: item.description + (comments ? ` | Note: ${comments}` : ''), // ผนวก Description และ Comments
+          entryDate,
+          // ส่งรูปภาพทั้งหมดกับรายการแรกเท่านั้น
+          images: i === 0 ? imageFiles.map((f) => f.file) : [], 
+          status: "F",
+        });
+      }
 
       await fetchByDate(entryDate);
-      alert("บันทึกข้อมูลเรียบร้อยแล้ว");
+      alert(`บันทึกข้อมูลสินค้า ${validEntries.length} รายการเรียบร้อยแล้ว`);
       closeModal();
       resetForm();
       setMode("list");
@@ -119,12 +251,6 @@ export default function EntryProductDate({
       setIsSubmitting(false);
     }
   };
-
-  const [productNamesInput, setProductNamesInput] = useState("");
-  const productList = productNamesInput
-    .split("\n") // แยกตามบรรทัดใหม่
-    .map((item) => item.trim()) // ลบช่องว่างหัวท้าย
-    .filter((item) => item !== ""); // กรองรายการว่าง
 
   // ====================== TOGGLE STATUS ======================
   const handleToggleStatus = async (item) => {
@@ -162,7 +288,7 @@ export default function EntryProductDate({
     }
   };
 
-  // ====================== MODE DETAIL ======================
+  // ====================== MODE DETAIL (ปรับปรุง) ======================
   const openDetail = (item) => {
     setSelectedItem(item);
     setMode("detail");
@@ -184,11 +310,9 @@ export default function EntryProductDate({
 
   const handleEditSubmit = async (e) => {
     e.preventDefault();
-    // ⬇️ *** CHANGED HERE ***
     if (isSubmitting) return;
 
     setIsSubmitting(true);
-    // ⬆️ *** CHANGED HERE ***
 
     const keepImages = selectedItem.images.map(convertUrlToPath);
     const newFiles = imageFiles.map((f) => f.file);
@@ -222,9 +346,7 @@ export default function EntryProductDate({
       console.error(err);
       alert("เกิดข้อผิดพลาดในการแก้ไขข้อมูล");
     } finally {
-      // ⬇️ *** CHANGED HERE ***
       setIsSubmitting(false);
-      // ⬆️ *** CHANGED HERE ***
     }
   };
 
@@ -256,7 +378,7 @@ export default function EntryProductDate({
           </button>
         </div>
 
-        {/* ======================== LIST MODE ======================== */}
+        {/* ======================== LIST MODE (โค้ดเดิม) ======================== */}
         {mode === "list" && (
           <div>
             <div className="flex justify-between items-center mb-4">
@@ -264,7 +386,10 @@ export default function EntryProductDate({
                 รายการสินค้าที่จะเข้าวันนี้ ({Entries.length} รายการ)
               </h2>
               <button
-                onClick={() => setMode("add")}
+                onClick={() => {
+                    setMode("add");
+                    resetForm();
+                }}
                 className="flex items-center bg-[#640037] text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition"
               >
                 <Plus size={18} className="mr-1" /> เพิ่มรายการใหม่
@@ -328,12 +453,12 @@ export default function EntryProductDate({
           </div>
         )}
 
-        {/* ======================== ADD MODE ======================== */}
+        {/* ======================== ADD MODE (ปรับปรุงใหม่) ======================== */}
         {mode === "add" && (
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="flex justify-between items-center mb-2">
               <h2 className="text-lg font-bold text-gray-700">
-                เพิ่มรายการสินค้าใหม่
+                เพิ่มรายการสินค้าใหม่ (หลายรายการ)
               </h2>
               <button
                 type="button"
@@ -344,54 +469,121 @@ export default function EntryProductDate({
               </button>
             </div>
 
-            {/* ฟอร์มเหมือนของเดิม */}
-            <div className="grid grid-cols-2 gap-6">
+            {/* 🎯 ส่วนป้อนรหัสสินค้า (ใช้ textarea) */}
+            <div className="grid grid-cols-1 gap-6">
               <div>
                 <label className="text-sm font-semibold text-gray-700 mb-1 flex items-center">
                   <Package className="w-4 h-4 mr-2 text-[#640037]" />
-                  รหัสสินค้า (ป้อนรายการละ 1 บรรทัด)
+                  **รหัสสินค้า (ป้อนรายการละ 1 บรรทัด)***
                 </label>
                 <textarea
                   value={productNamesInput}
                   onChange={(e) => setProductNamesInput(e.target.value)}
+                  placeholder="เช่น&#10;SKU001&#10;SKU002&#10;SKU004"
                   className="w-full p-2 border border-gray-300 rounded-lg h-32"
                   required
                 ></textarea>
               </div>
+            </div>
+            
+            {/* 🎯 ตารางแสดงตัวอย่างข้อมูล (Preview Table) */}
+            {newProductList.length > 0 && (
+                <div className="border p-4 rounded-lg bg-yellow-50/50">
+                    <h3 className="text-lg font-bold text-gray-700 mb-3 flex items-center">
+                      <Edit2 className="w-4 h-4 mr-2 text-gray-600" /> ตรวจสอบและแก้ไขจำนวน/รายละเอียด
+                      {isFetchingMock && <span className="ml-3 text-sm text-gray-500 italic">กำลังโหลดข้อมูล...</span>}
+                    </h3>
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full text-sm text-left text-gray-500">
+                            <thead className="text-xs text-gray-700 uppercase bg-gray-100">
+                                <tr>
+                                    <th scope="col" className="px-3 py-2 w-24">
+                                        รหัสสินค้า
+                                    </th>
+                                    <th scope="col" className="px-3 py-2 min-w-[200px]">
+                                        ชื่อสินค้า
+                                    </th>
+                                    <th scope="col" className="px-3 py-2 w-28">
+                                        จำนวน*
+                                    </th>
+                                    <th scope="col" className="px-3 py-2 min-w-[250px]">
+                                        ชื่อสินค้า Description
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {newProductList.map((item) => (
+                                    <tr 
+                                      key={item.sku} 
+                                      className={`bg-white border-b ${item.productName.includes('**ไม่พบชื่อสินค้า**') ? 'bg-red-50/50' : ''}`}
+                                    >
+                                        <td className="px-3 py-2 font-medium text-gray-900 whitespace-nowrap">
+                                            {item.sku}
+                                        </td>
+                                        <td className="px-3 py-2">
+                                            {item.productName}
+                                        </td>
+                                        <td className="px-3 py-2">
+                                            <input
+                                                type="number"
+                                                value={item.quantity}
+                                                onChange={(e) => handleQuantityChange(item.sku, e.target.value)}
+                                                className="w-full p-1 border border-gray-300 rounded-lg text-center"
+                                                required
+                                                min="0"
+                                            />
+                                        </td>
+                                        <td className="px-3 py-2">
+                                            <input
+                                                type="text"
+                                                value={item.description}
+                                                onChange={(e) => handleDescriptionChange(item.sku, e.target.value)}
+                                                className="w-full p-1 border border-gray-300 rounded-lg"
+                                            />
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
+            {/* ⬆️ สิ้นสุดตาราง Preview ⬆️ */}
 
+
+            <div className="grid grid-cols-2 gap-6">
+                {/* 🎯 ซัพพลายเออร์ (ใช้ร่วมกัน) */}
               <div>
                 <label className="text-sm font-semibold text-gray-700 mb-1 flex items-center">
-                  <Hash className="w-4 h-4 mr-2 text-[#640037]" />
-                  ชื่อสินค้า Description
+                  <User className="w-4 h-4 mr-2 text-[#640037]" />
+                  ซัพพลายเออร์ (ใช้ร่วมกัน)
                 </label>
                 <input
                   type="text"
-                  value={poNumber}
-                  onChange={(e) => setPoNumber(e.target.value)}
+                  value={supplier}
+                  onChange={(e) => setSupplier(e.target.value)}
                   className="w-full p-2 border border-gray-300 rounded-lg"
                 />
               </div>
-
-              <div>
+                {/* 🎯 วันที่สินค้าเข้า */}
+                <div>
                 <label className="text-sm font-semibold text-gray-700 mb-1 flex items-center">
                   <Hash className="w-4 h-4 mr-2 text-[#640037]" />
-                  จำนวน (Stock)*
+                  วันที่สินค้าเข้า
                 </label>
                 <input
-                  type="number"
-                  value={quantity}
-                  onChange={(e) => setQuantity(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-lg"
-                  required
+                  type="date"
+                  value={entryDate}
+                  onChange={(e) => setEntryDate(e.target.value)}
+                  className="p-2 border border-gray-300 rounded-lg"
                 />
               </div>
-
             </div>
 
             <div>
               <label className="text-sm font-semibold text-gray-700 mb-1 flex items-center">
                 <MessageSquare className="w-4 h-4 mr-2 text-[#640037]" />
-                หมายเหตุ
+                หมายเหตุ (หมายเหตุหลัก/ใช้ร่วมกัน)
               </label>
               <textarea
                 rows="3"
@@ -400,21 +592,61 @@ export default function EntryProductDate({
                 className="w-full p-2 border border-gray-300 rounded-lg"
               ></textarea>
             </div>
+            
+            {/* 🎯 ส่วนอัปโหลดรูปภาพ */}
+            <div>
+              <label className="text-sm font-semibold text-gray-700 mb-2 flex items-center">
+                <UploadCloud className="mr-2 text-[#640037]" />
+                เพิ่มรูปภาพแนบ
+              </label>
 
+              {previews.length > 0 && (
+                <div className="flex overflow-x-auto gap-3 pb-2">
+                  {previews.map((img) => (
+                    <div
+                      key={img.id}
+                      className="relative flex-shrink-0 border rounded-lg overflow-hidden"
+                    >
+                      <img
+                        src={img.url}
+                        alt="preview"
+                        className="w-40 h-28 object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(img.id)}
+                        className="absolute top-1 right-1 bg-black bg-opacity-60 text-white rounded-full p-1 hover:bg-red-600"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={handleImageChange}
+                className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-pink-50 file:text-pink-700 hover:file:bg-pink-100"
+              />
+            </div>
 
             <div className="pt-2 border-t flex justify-end">
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || newProductList.length === 0 || isFetchingMock}
                 className="bg-[#640037] text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-opacity-90 transition disabled:opacity-70"
               >
-                {isSubmitting ? "กำลังบันทึก..." : "บันทึกข้อมูล"}
+                {isSubmitting ? "กำลังบันทึก..." : `บันทึกข้อมูล (${newProductList.length} รายการ)`}
               </button>
             </div>
           </form>
         )}
 
-        {/* ======================== DETAIL MODE ======================== */}
+        {/* ======================== DETAIL MODE (ปรับปรุง) ======================== */}
         {mode === "detail" && selectedItem && (
           <div>
             <div className="flex justify-between mb-4">
@@ -438,6 +670,10 @@ export default function EntryProductDate({
                   <span className="font-bold text-red-600">ยังไม่ได้รับ</span>
                 )}
               </p>
+                {/* 🎯 PO Number คือรหัสสินค้าที่ป้อน */}
+              <p>
+                <strong>รหัสสินค้า (SKU):</strong> {selectedItem.poNumber || "-"}
+              </p>
               <p>
                 <strong>ชื่อสินค้า:</strong> {selectedItem.productName}
               </p>
@@ -445,13 +681,10 @@ export default function EntryProductDate({
                 <strong>จำนวน:</strong> {selectedItem.quantity} ชิ้น
               </p>
               <p>
-                <strong>PO:</strong> {selectedItem.poNumber || "-"}
-              </p>
-              <p>
                 <strong>ซัพพลายเออร์:</strong> {selectedItem.supplier || "-"}
               </p>
               <p>
-                <strong>หมายเหตุ:</strong> {selectedItem.comments || "-"}
+                <strong>หมายเหตุ (รวม Description):</strong> {selectedItem.comments || "-"}
               </p>
             </div>
 
@@ -480,9 +713,7 @@ export default function EntryProductDate({
               </button>
               <button
                 onClick={async () => {
-                  await deleteEntry(selectedItem.id, entryDate);
-                  await fetchByDate(entryDate);
-                  setMode("list");
+                  await handleDelete(selectedItem);
                 }}
                 className="flex items-center bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
               >
@@ -492,7 +723,7 @@ export default function EntryProductDate({
           </div>
         )}
 
-        {/* ======================== EDIT MODE ======================== */}
+        {/* ======================== EDIT MODE (โค้ดเดิม) ======================== */}
         {mode === "edit" && selectedItem && (
           <form onSubmit={handleEditSubmit} className="space-y-6">
             <div className="flex justify-between items-center mb-2">
@@ -526,7 +757,7 @@ export default function EntryProductDate({
               <div>
                 <label className="text-sm font-semibold text-gray-700 mb-1 flex items-center">
                   <Hash className="w-4 h-4 mr-2 text-[#640037]" />
-                  เลขที่ PO
+                  เลขที่ PO (รหัสสินค้า)
                 </label>
                 <input
                   type="text"
@@ -668,7 +899,6 @@ export default function EntryProductDate({
             </div>
 
             <div className="pt-2 border-t flex justify-end">
-              {/* ⬇️ *** CHANGED HERE *** */}
               <button
                 type="submit"
                 disabled={isSubmitting}
