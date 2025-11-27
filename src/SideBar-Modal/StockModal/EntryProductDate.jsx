@@ -11,7 +11,7 @@ import {
   Plus,
 } from "lucide-react";
 // สมมติว่าไฟล์นี้อยู่ระดับเดียวกับ EntryProductDate.jsx
-import { useProductEntry } from "../../hooks/useProductEntry.js"; 
+import { useProductEntry } from "../../hooks/useProductEntry.js";
 
 const formatDateForInput = (date) => {
   if (!date) return "";
@@ -31,11 +31,11 @@ const convertUrlToPath = (url) => {
 // 🎯 MOCK DATA และ MOCK FUNCTION
 // ==============================================
 const MOCK_PRODUCTS = {
-  "SKU001": { name: "แผ่นรองเม้าส์ Premium", initialQuantity: 10 },
-  "SKU002": { name: "คีย์บอร์ดไร้สาย Mechanical", initialQuantity: 5 },
-  "SKU003": { name: "หูฟัง Gaming X20", initialQuantity: 20 },
-  "SKU004": { name: "เมาส์ Logitech G Pro", initialQuantity: 8 },
-  "SKU005": { name: "จอ Monitor 27 นิ้ว", initialQuantity: 3 },
+  SKU1: { name: "แผ่นรองเม้าส์ Premium", initialQuantity: 10 },
+  SKU2: { name: "คีย์บอร์ดไร้สาย Mechanical", initialQuantity: 5 },
+  SKU3: { name: "หูฟัง Gaming X20", initialQuantity: 20 },
+  SKU4: { name: "เมาส์ Logitech G Pro", initialQuantity: 8 },
+  SKU5: { name: "จอ Monitor 27 นิ้ว", initialQuantity: 3 },
 };
 
 // ฟังก์ชันจำลองการดึงข้อมูลสินค้าจากรหัส
@@ -48,12 +48,12 @@ const fetchProductMock = (sku) => {
         resolve({
           productName: product.name,
           quantity: product.initialQuantity,
-          description: `รายการนำเข้า: ${sku}`, 
+          description: `รายการนำเข้า: ${sku}`,
         });
       } else {
         resolve({
           productName: `**ไม่พบชื่อสินค้า** (${sku})`,
-          quantity: 1, 
+          quantity: 1,
           description: `-`,
         });
       }
@@ -62,7 +62,6 @@ const fetchProductMock = (sku) => {
 };
 // ==============================================
 // ==============================================
-
 
 export default function EntryProductDate({
   setIsEntryProductDate,
@@ -92,7 +91,7 @@ export default function EntryProductDate({
   const [imageFiles, setImageFiles] = useState([]);
   const [previews, setPreviews] = useState([]);
   const fileInputRef = useRef(null);
-  
+
   // 🎯 STATE ใหม่สำหรับ Multiple Entry
   const [productNamesInput, setProductNamesInput] = useState(""); // สำหรับ textarea รหัสสินค้า
   const [newProductList, setNewProductList] = useState([]); // รายการสินค้าที่จะบันทึก
@@ -114,64 +113,66 @@ export default function EntryProductDate({
         setNewProductList([]);
         return;
       }
-      
+
       setIsFetchingMock(true);
 
-      const existingMap = new Map(newProductList.map(item => [item.sku, item]));
+      const existingMap = new Map(
+        newProductList.map((item) => [item.sku, item])
+      );
 
       const fetchedProducts = await Promise.all(
         skus.map(async (sku) => {
           const mockData = await fetchProductMock(sku);
           const existingItem = existingMap.get(sku);
-          
+
           return {
             sku: sku,
             productName: mockData.productName,
             // ใช้ quantity และ description เดิมถ้ามี, ถ้าไม่มีใช้จาก mock
-            quantity: existingItem && existingItem.sku === sku ? existingItem.quantity : mockData.quantity, 
-            description: existingItem && existingItem.sku === sku ? existingItem.description : mockData.description,
+            quantity:
+              existingItem && existingItem.sku === sku
+                ? existingItem.quantity
+                : mockData.quantity,
+            description:
+              existingItem && existingItem.sku === sku
+                ? existingItem.description
+                : mockData.description,
           };
         })
       );
-      
+
       // กรองรายการที่ไม่ซ้ำกัน
-      const uniqueFetchedProducts = fetchedProducts.filter((item, index, self) => 
-        index === self.findIndex((t) => (
-          t.sku === item.sku
-        ))
+      const uniqueFetchedProducts = fetchedProducts.filter(
+        (item, index, self) =>
+          index === self.findIndex((t) => t.sku === item.sku)
       );
-      
+
       setNewProductList(uniqueFetchedProducts);
       setIsFetchingMock(false);
     };
 
     // หน่วงเวลาเล็กน้อยเพื่อไม่ให้เรียกบ่อยเกินไปขณะผู้ใช้พิมพ์
     const delayDebounceFn = setTimeout(() => {
-        fetchNewProductData();
-    }, 500); 
+      fetchNewProductData();
+    }, 500);
 
     return () => clearTimeout(delayDebounceFn);
   }, [productNamesInput]);
 
-
   // 🎯 ฟังก์ชันจัดการการเปลี่ยนจำนวนในตาราง Preview
   const handleQuantityChange = (sku, value) => {
-    setNewProductList(prevList =>
-      prevList.map(item =>
-        item.sku === sku
-          ? { ...item, quantity: parseInt(value) || 0 }
-          : item
+    setNewProductList((prevList) =>
+      prevList.map((item) =>
+        item.sku === sku ? { ...item, quantity: parseInt(value) || 0 } : item
       )
     );
   };
-  
+
   // 🎯 ฟังก์ชันจัดการการเปลี่ยน Description ในตาราง Preview
   const handleDescriptionChange = (sku, value) => {
-    setNewProductList(prevList =>
-      prevList.map(item =>
-        item.sku === sku
-          ? { ...item, description: value }
-          : item
+    setNewProductList((prevList) =>
+      prevList.map((item) =>
+        item.sku === sku ? { ...item, description: value } : item
       )
     );
   };
@@ -207,17 +208,21 @@ export default function EntryProductDate({
   const closeModal = () => {
     setIsEntryProductDate(false);
   };
-  
+
   // ===================== HANDLE ADD (ปรับสำหรับ Multiple Entry) ======================
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // กรองรายการที่มีจำนวน > 0 และไม่ใช่ "ไม่พบชื่อสินค้า"
     const validEntries = newProductList.filter(
-      (item) => item.quantity > 0 && item.productName && !item.productName.includes('**ไม่พบชื่อสินค้า**')
+      (item) =>
+        item.quantity > 0 &&
+        item.productName &&
+        !item.productName.includes("**ไม่พบชื่อสินค้า**")
     );
 
-    if (validEntries.length === 0) return alert("กรุณาป้อนรหัสสินค้าที่ถูกต้องและระบุจำนวนมากกว่า 0");
+    if (validEntries.length === 0)
+      return alert("กรุณาป้อนรหัสสินค้าที่ถูกต้องและระบุจำนวนมากกว่า 0");
     if (isSubmitting) return;
 
     setIsSubmitting(true);
@@ -230,10 +235,10 @@ export default function EntryProductDate({
           poNumber: item.sku, // ใช้ SKU เป็น PO/รหัสสินค้าหลัก
           quantity: item.quantity,
           supplier: supplier, // ใช้ supplier ร่วมกัน
-          comments: item.description + (comments ? ` | Note: ${comments}` : ''), // ผนวก Description และ Comments
+          comments: item.description + (comments ? ` | Note: ${comments}` : ""), // ผนวก Description และ Comments
           entryDate,
           // ส่งรูปภาพทั้งหมดกับรายการแรกเท่านั้น
-          images: i === 0 ? imageFiles.map((f) => f.file) : [], 
+          images: i === 0 ? imageFiles.map((f) => f.file) : [],
           status: "F",
         });
       }
@@ -387,8 +392,8 @@ export default function EntryProductDate({
               </h2>
               <button
                 onClick={() => {
-                    setMode("add");
-                    resetForm();
+                  setMode("add");
+                  resetForm();
                 }}
                 className="flex items-center bg-[#640037] text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition"
               >
@@ -485,88 +490,88 @@ export default function EntryProductDate({
                 ></textarea>
               </div>
             </div>
-            
+
             {/* 🎯 ตารางแสดงตัวอย่างข้อมูล (Preview Table) */}
             {newProductList.length > 0 && (
-                <div className="border p-4 rounded-lg bg-yellow-50/50">
-                    <h3 className="text-lg font-bold text-gray-700 mb-3 flex items-center">
-                      <Edit2 className="w-4 h-4 mr-2 text-gray-600" /> ตรวจสอบและแก้ไขจำนวน/รายละเอียด
-                      {isFetchingMock && <span className="ml-3 text-sm text-gray-500 italic">กำลังโหลดข้อมูล...</span>}
-                    </h3>
-                    <div className="overflow-x-auto">
-                        <table className="min-w-full text-sm text-left text-gray-500">
-                            <thead className="text-xs text-gray-700 uppercase bg-gray-100">
-                                <tr>
-                                    <th scope="col" className="px-3 py-2 w-24">
-                                        รหัสสินค้า
-                                    </th>
-                                    <th scope="col" className="px-3 py-2 min-w-[200px]">
-                                        ชื่อสินค้า
-                                    </th>
-                                    <th scope="col" className="px-3 py-2 w-28">
-                                        จำนวน*
-                                    </th>
-                                    <th scope="col" className="px-3 py-2 min-w-[250px]">
-                                        ชื่อสินค้า Description
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {newProductList.map((item) => (
-                                    <tr 
-                                      key={item.sku} 
-                                      className={`bg-white border-b ${item.productName.includes('**ไม่พบชื่อสินค้า**') ? 'bg-red-50/50' : ''}`}
-                                    >
-                                        <td className="px-3 py-2 font-medium text-gray-900 whitespace-nowrap">
-                                            {item.sku}
-                                        </td>
-                                        <td className="px-3 py-2">
-                                            {item.productName}
-                                        </td>
-                                        <td className="px-3 py-2">
-                                            <input
-                                                type="number"
-                                                value={item.quantity}
-                                                onChange={(e) => handleQuantityChange(item.sku, e.target.value)}
-                                                className="w-full p-1 border border-gray-300 rounded-lg text-center"
-                                                required
-                                                min="0"
-                                            />
-                                        </td>
-                                        <td className="px-3 py-2">
-                                            <input
-                                                type="text"
-                                                value={item.description}
-                                                onChange={(e) => handleDescriptionChange(item.sku, e.target.value)}
-                                                className="w-full p-1 border border-gray-300 rounded-lg"
-                                            />
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+              <div className="border p-4 rounded-lg bg-yellow-50/50">
+                <h3 className="text-lg font-bold text-gray-700 mb-3 flex items-center">
+                  <Edit2 className="w-4 h-4 mr-2 text-gray-600" />{" "}
+                  ตรวจสอบและแก้ไขจำนวน/รายละเอียด
+                  {isFetchingMock && (
+                    <span className="ml-3 text-sm text-gray-500 italic">
+                      กำลังโหลดข้อมูล...
+                    </span>
+                  )}
+                </h3>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full text-sm text-left text-gray-500">
+                    <thead className="text-xs text-gray-700 uppercase bg-gray-100">
+                      <tr>
+                        <th scope="col" className="px-3 py-2 w-24">
+                          รหัสสินค้า
+                        </th>
+                        <th scope="col" className="px-3 py-2 min-w-[200px]">
+                          ชื่อสินค้า
+                        </th>
+                        <th scope="col" className="px-3 py-2 w-28">
+                          จำนวน*
+                        </th>
+                        <th scope="col" className="px-3 py-2 min-w-[250px]">
+                          ชื่อสินค้า Description
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {newProductList.map((item) => (
+                        <tr
+                          key={item.sku}
+                          className={`bg-white border-b ${
+                            item.productName.includes("**ไม่พบชื่อสินค้า**")
+                              ? "bg-red-50/50"
+                              : ""
+                          }`}
+                        >
+                          <td className="px-3 py-2 font-medium text-gray-900 whitespace-nowrap">
+                            {item.sku}
+                          </td>
+                          <td className="px-3 py-2">{item.productName}</td>
+                          <td className="px-3 py-2">
+                            <input
+                              type="number"
+                              value={item.quantity}
+                              onChange={(e) =>
+                                handleQuantityChange(item.sku, e.target.value)
+                              }
+                              className="w-full p-1 border border-gray-300 rounded-lg text-center"
+                              required
+                              min="0"
+                            />
+                          </td>
+                          <td className="px-3 py-2">
+                            <input
+                              type="text"
+                              value={item.description}
+                              onChange={(e) =>
+                                handleDescriptionChange(
+                                  item.sku,
+                                  e.target.value
+                                )
+                              }
+                              className="w-full p-1 border border-gray-300 rounded-lg"
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
+              </div>
             )}
             {/* ⬆️ สิ้นสุดตาราง Preview ⬆️ */}
 
-
             <div className="grid grid-cols-2 gap-6">
-                {/* 🎯 ซัพพลายเออร์ (ใช้ร่วมกัน) */}
+              {/* 🎯 วันที่สินค้าเข้า */}
               <div>
-                <label className="text-sm font-semibold text-gray-700 mb-1 flex items-center">
-                  <User className="w-4 h-4 mr-2 text-[#640037]" />
-                  ซัพพลายเออร์ (ใช้ร่วมกัน)
-                </label>
-                <input
-                  type="text"
-                  value={supplier}
-                  onChange={(e) => setSupplier(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-lg"
-                />
-              </div>
-                {/* 🎯 วันที่สินค้าเข้า */}
-                <div>
                 <label className="text-sm font-semibold text-gray-700 mb-1 flex items-center">
                   <Hash className="w-4 h-4 mr-2 text-[#640037]" />
                   วันที่สินค้าเข้า
@@ -592,55 +597,18 @@ export default function EntryProductDate({
                 className="w-full p-2 border border-gray-300 rounded-lg"
               ></textarea>
             </div>
-            
-            {/* 🎯 ส่วนอัปโหลดรูปภาพ */}
-            <div>
-              <label className="text-sm font-semibold text-gray-700 mb-2 flex items-center">
-                <UploadCloud className="mr-2 text-[#640037]" />
-                เพิ่มรูปภาพแนบ
-              </label>
-
-              {previews.length > 0 && (
-                <div className="flex overflow-x-auto gap-3 pb-2">
-                  {previews.map((img) => (
-                    <div
-                      key={img.id}
-                      className="relative flex-shrink-0 border rounded-lg overflow-hidden"
-                    >
-                      <img
-                        src={img.url}
-                        alt="preview"
-                        className="w-40 h-28 object-cover"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeImage(img.id)}
-                        className="absolute top-1 right-1 bg-black bg-opacity-60 text-white rounded-full p-1 hover:bg-red-600"
-                      >
-                        <X size={14} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <input
-                ref={fileInputRef}
-                type="file"
-                multiple
-                accept="image/*"
-                onChange={handleImageChange}
-                className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-pink-50 file:text-pink-700 hover:file:bg-pink-100"
-              />
-            </div>
 
             <div className="pt-2 border-t flex justify-end">
               <button
                 type="submit"
-                disabled={isSubmitting || newProductList.length === 0 || isFetchingMock}
+                disabled={
+                  isSubmitting || newProductList.length === 0 || isFetchingMock
+                }
                 className="bg-[#640037] text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-opacity-90 transition disabled:opacity-70"
               >
-                {isSubmitting ? "กำลังบันทึก..." : `บันทึกข้อมูล (${newProductList.length} รายการ)`}
+                {isSubmitting
+                  ? "กำลังบันทึก..."
+                  : `บันทึกข้อมูล (${newProductList.length} รายการ)`}
               </button>
             </div>
           </form>
@@ -670,9 +638,10 @@ export default function EntryProductDate({
                   <span className="font-bold text-red-600">ยังไม่ได้รับ</span>
                 )}
               </p>
-                {/* 🎯 PO Number คือรหัสสินค้าที่ป้อน */}
+              {/* 🎯 PO Number คือรหัสสินค้าที่ป้อน */}
               <p>
-                <strong>รหัสสินค้า (SKU):</strong> {selectedItem.poNumber || "-"}
+                <strong>รหัสสินค้า (SKU):</strong>{" "}
+                {selectedItem.poNumber || "-"}
               </p>
               <p>
                 <strong>ชื่อสินค้า:</strong> {selectedItem.productName}
@@ -680,29 +649,12 @@ export default function EntryProductDate({
               <p>
                 <strong>จำนวน:</strong> {selectedItem.quantity} ชิ้น
               </p>
+
               <p>
-                <strong>ซัพพลายเออร์:</strong> {selectedItem.supplier || "-"}
-              </p>
-              <p>
-                <strong>หมายเหตุ (รวม Description):</strong> {selectedItem.comments || "-"}
+                <strong>หมายเหตุ (รวม Description):</strong>{" "}
+                {selectedItem.comments || "-"}
               </p>
             </div>
-
-            {selectedItem.images?.length > 0 && (
-              <div className="mt-4">
-                <h3 className="font-semibold mb-2">รูปภาพแนบ:</h3>
-                <div className="flex overflow-x-auto gap-3">
-                  {selectedItem.images.map((url, i) => (
-                    <img
-                      key={i}
-                      src={url}
-                      alt="preview"
-                      className="w-40 h-28 object-cover rounded border"
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
 
             <div className="pt-4 flex gap-2 border-t mt-4">
               <button
@@ -740,58 +692,31 @@ export default function EntryProductDate({
             </div>
 
             <div className="grid grid-cols-2 gap-6">
-              <div>
-                <label className="text-sm font-semibold text-gray-700 mb-1 flex items-center">
-                  <Package className="w-4 h-4 mr-2 text-[#640037]" />
-                  ชื่อสินค้า / SKU*
-                </label>
-                <input
-                  type="text"
-                  value={productName}
-                  onChange={(e) => setProductName(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-lg"
-                  required
-                />
-              </div>
+              <div className="space-y-2 text-gray-700">
+                <p>
+                  <strong>สถานะ:</strong>
+                  {selectedItem.status === "T" ? (
+                    <span className="font-bold text-green-600">รับแล้ว</span>
+                  ) : (
+                    <span className="font-bold text-red-600">ยังไม่ได้รับ</span>
+                  )}
+                </p>
+                {/* 🎯 PO Number คือรหัสสินค้าที่ป้อน */}
+                <p>
+                  <strong>รหัสสินค้า (SKU):</strong>
+                  {selectedItem.poNumber || "-"}
+                </p>
+                <p>
+                  <strong>ชื่อสินค้า:</strong> {selectedItem.productName}
+                </p>
+                <p>
+                  <strong>จำนวน:</strong> {selectedItem.quantity} ชิ้น
+                </p>
 
-              <div>
-                <label className="text-sm font-semibold text-gray-700 mb-1 flex items-center">
-                  <Hash className="w-4 h-4 mr-2 text-[#640037]" />
-                  เลขที่ PO (รหัสสินค้า)
-                </label>
-                <input
-                  type="text"
-                  value={poNumber}
-                  onChange={(e) => setPoNumber(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-lg"
-                />
-              </div>
-
-              <div>
-                <label className="text-sm font-semibold text-gray-700 mb-1 flex items-center">
-                  <Hash className="w-4 h-4 mr-2 text-[#640037]" />
-                  จำนวน (Stock)*
-                </label>
-                <input
-                  type="number"
-                  value={quantity}
-                  onChange={(e) => setQuantity(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-lg"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="text-sm font-semibold text-gray-700 mb-1 flex items-center">
-                  <User className="w-4 h-4 mr-2 text-[#640037]" />
-                  ซัพพลายเออร์
-                </label>
-                <input
-                  type="text"
-                  value={supplier}
-                  onChange={(e) => setSupplier(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-lg"
-                />
+                <p>
+                  <strong>หมายเหตุ (รวม Description):</strong>{" "}
+                  {selectedItem.comments || "-"}
+                </p>
               </div>
             </div>
 
@@ -819,83 +744,6 @@ export default function EntryProductDate({
                 onChange={(e) => setComments(e.target.value)}
                 className="w-full p-2 border border-gray-300 rounded-lg"
               ></textarea>
-            </div>
-
-            {/* รูปเดิม */}
-            {selectedItem.images?.length > 0 && (
-              <div>
-                <label className="text-sm font-semibold text-gray-700 mb-2">
-                  รูปภาพเดิม
-                </label>
-                <div className="flex overflow-x-auto gap-3 pb-2">
-                  {selectedItem.images.map((url, i) => (
-                    <div
-                      key={i}
-                      className="relative flex-shrink-0 border rounded-lg overflow-hidden"
-                    >
-                      <img
-                        src={url}
-                        alt="old"
-                        className="w-40 h-28 object-cover"
-                      />
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setSelectedItem((prev) => ({
-                            ...prev,
-                            images: prev.images.filter((x) => x !== url),
-                          }))
-                        }
-                        className="absolute top-1 right-1 bg-black bg-opacity-60 text-white rounded-full p-1 hover:bg-red-600"
-                      >
-                        <X size={14} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* รูปใหม่ */}
-            <div>
-              <label className="text-sm font-semibold text-gray-700 mb-2 flex items-center">
-                <UploadCloud className="mr-2 text-[#640037]" />
-                เพิ่มรูปใหม่
-              </label>
-
-              {previews.length > 0 && (
-                <div className="flex overflow-x-auto gap-3 pb-2">
-                  {previews.map((img) => (
-                    <div
-                      key={img.id}
-                      className="relative flex-shrink-0 border rounded-lg overflow-hidden"
-                    >
-                      <img
-                        src={img.url}
-                        alt="preview"
-                        className="w-40 h-28 object-cover"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeImage(img.id)}
-                        className="absolute top-1 right-1 bg-black bg-opacity-60 text-white rounded-full p-1 hover:bg-red-600"
-                      >
-                        <X size={14} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <input
-                ref={fileInputRef}
-                type="file"
-                multiple
-                accept="image/*"
-                onChange={handleImageChange}
-                className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-pink-50 file:text-pink-700 hover:file:bg-pink-100"
-              />
             </div>
 
             <div className="pt-2 border-t flex justify-end">
