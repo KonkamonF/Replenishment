@@ -362,7 +362,7 @@ export default function EntryProductDate({
               <div>
                 <label className="text-sm font-semibold text-gray-700 mb-1 flex items-center">
                   <Hash className="w-4 h-4 mr-2 text-[#640037]" />
-                  เลขที่ PO
+                  ชื่อสินค้า Description
                 </label>
                 <input
                   type="text"
@@ -401,7 +401,6 @@ export default function EntryProductDate({
               ></textarea>
             </div>
 
-  
 
             <div className="pt-2 border-t flex justify-end">
               <button
