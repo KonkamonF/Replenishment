@@ -9,6 +9,7 @@ import Login from "../Auth/Login";
 
 import ProtectedRoute from "../Auth/ProtectedRoute";
 import RoleGuard from "../Auth/RoleGuard";
+import Tradeshipping from "../TradeAdmin/Tradeshipping";
 
 const route = createBrowserRouter([
   {
@@ -44,6 +45,14 @@ const route = createBrowserRouter([
         element: (
           <RoleGuard allowedRoles={["SuperAdmin", "TradeAdmin"]}>
             <TradeAdmin />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: "trade-shipping",
+        element: (
+          <RoleGuard allowedRoles={["SuperAdmin", "TradeAdmin"]}>
+            <Tradeshipping/>
           </RoleGuard>
         ),
       },
