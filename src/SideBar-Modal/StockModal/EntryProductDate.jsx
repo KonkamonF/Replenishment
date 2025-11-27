@@ -31,11 +31,9 @@ const convertUrlToPath = (url) => {
 // 🎯 MOCK DATA และ MOCK FUNCTION
 // ==============================================
 const MOCK_PRODUCTS = {
-  SKU1: { name: "แผ่นรองเม้าส์ Premium", initialQuantity: 10 },
-  SKU2: { name: "คีย์บอร์ดไร้สาย Mechanical", initialQuantity: 5 },
-  SKU3: { name: "หูฟัง Gaming X20", initialQuantity: 20 },
-  SKU4: { name: "เมาส์ Logitech G Pro", initialQuantity: 8 },
-  SKU5: { name: "จอ Monitor 27 นิ้ว", initialQuantity: 3 },
+"09-4418-01": { name: "SINK TNP 4418 BLACK", initialQuantity: 20 },
+  "09-4521-01": { name: "SINK TNP 784521 BLACK", initialQuantity: 30 },
+  "09-0001-01": { name: "SINK TNP GIN 1B1D BLACK", initialQuantity: 140 },
 };
 
 // ฟังก์ชันจำลองการดึงข้อมูลสินค้าจากรหัส
@@ -457,7 +455,6 @@ export default function EntryProductDate({
             </div>
           </div>
         )}
-
         {/* ======================== ADD MODE (ปรับปรุงใหม่) ======================== */}
         {mode === "add" && (
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -473,7 +470,6 @@ export default function EntryProductDate({
                 ← กลับไปหน้ารายการ
               </button>
             </div>
-
             {/* 🎯 ส่วนป้อนรหัสสินค้า (ใช้ textarea) */}
             <div className="grid grid-cols-1 gap-6">
               <div>
@@ -484,7 +480,7 @@ export default function EntryProductDate({
                 <textarea
                   value={productNamesInput}
                   onChange={(e) => setProductNamesInput(e.target.value)}
-                  placeholder="เช่น&#10;SKU001&#10;SKU002&#10;SKU004"
+                  placeholder="เช่น&#10;09-4418-01&#10;09-4418-01&#10;09-4418-01"
                   className="w-full p-2 border border-gray-300 rounded-lg h-32"
                   required
                 ></textarea>
