@@ -31,9 +31,9 @@ const convertUrlToPath = (url) => {
 // 🎯 MOCK DATA และ MOCK FUNCTION
 // ==============================================
 const MOCK_PRODUCTS = {
-  "09-4418-01": { name: "SINK TNP 4418 BLACK", initialQuantity: 20 },
-  "09-4521-01": { name: "SINK TNP 784521 BLACK", initialQuantity: 30 },
-  "09-0001-01": { name: "SINK TNP GIN 1B1D BLACK", initialQuantity: 140 },
+  "09-4418-01": { name: "SINK TNP 4418 BLACK",class : "A", initialQuantity: 20 },
+  "09-4521-01": { name: "SINK TNP 784521 BLACK",class : "B", initialQuantity: 30 },
+  "09-0001-01": { name: "SINK TNP GIN 1B1D BLACK",class : "B", initialQuantity: 140 },
 };
 
 // ฟังก์ชันจำลองการดึงข้อมูลสินค้าจากรหัส
@@ -508,6 +508,8 @@ export default function EntryProductDate({
                         </th>
                         <th scope="col" className="px-3 py-2 min-w-[200px]">
                           ชื่อสินค้า
+                        </th>   <th scope="col" className="px-3 py-2 min-w-[200px]">
+                          Class
                         </th>
                         <th scope="col" className="px-3 py-2 w-28">
                           จำนวน*
@@ -531,6 +533,8 @@ export default function EntryProductDate({
                             {item.sku}
                           </td>
                           <td className="px-3 py-2">{item.productName}</td>
+                                                    <td className="px-3 py-2">{item.class}</td>
+
                           <td className="px-3 py-2">
                             <input
                               type="number"
@@ -563,7 +567,6 @@ export default function EntryProductDate({
                 </div>
               </div>
             )}
-            {/* ⬆️ สิ้นสุดตาราง Preview ⬆️ */}
 
             <div className="grid grid-cols-2 gap-6">
               {/* 🎯 วันที่สินค้าเข้า */}
