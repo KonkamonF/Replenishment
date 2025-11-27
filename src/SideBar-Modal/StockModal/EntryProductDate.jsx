@@ -31,7 +31,7 @@ const convertUrlToPath = (url) => {
 // 🎯 MOCK DATA และ MOCK FUNCTION
 // ==============================================
 const MOCK_PRODUCTS = {
-"09-4418-01": { name: "SINK TNP 4418 BLACK", initialQuantity: 20 },
+  "09-4418-01": { name: "SINK TNP 4418 BLACK", initialQuantity: 20 },
   "09-4521-01": { name: "SINK TNP 784521 BLACK", initialQuantity: 30 },
   "09-0001-01": { name: "SINK TNP GIN 1B1D BLACK", initialQuantity: 140 },
 };
@@ -635,21 +635,68 @@ export default function EntryProductDate({
                 )}
               </p>
               {/* 🎯 PO Number คือรหัสสินค้าที่ป้อน */}
-              <p>
-                <strong>รหัสสินค้า (SKU):</strong>{" "}
-                {selectedItem.poNumber || "-"}
-              </p>
-              <p>
-                <strong>ชื่อสินค้า:</strong> {selectedItem.productName}
-              </p>
-              <p>
-                <strong>จำนวน:</strong> {selectedItem.quantity} ชิ้น
-              </p>
-
-              <p>
-                <strong>หมายเหตุ (รวม Description):</strong>{" "}
-                {selectedItem.comments || "-"}
-              </p>
+           <div className="overflow-x-auto">
+                  <table className="min-w-full text-sm text-left text-gray-500">
+                    <thead className="text-xs text-gray-700 uppercase bg-gray-100">
+                      <tr>
+                        <th scope="col" className="px-3 py-2 w-24">
+                          รหัสสินค้า
+                        </th>
+                        <th scope="col" className="px-3 py-2 min-w-[200px]">
+                          ชื่อสินค้า
+                        </th>
+                        <th scope="col" className="px-3 py-2 w-28">
+                          จำนวน*
+                        </th>
+                        <th scope="col" className="px-3 py-2 min-w-[250px]">
+                          ชื่อสินค้า Description
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {newProductList.map((item) => (
+                        <tr
+                          key={item.sku}
+                          className={`bg-white border-b ${
+                            item.productName.includes("**ไม่พบชื่อสินค้า**")
+                              ? "bg-red-50/50"
+                              : ""
+                          }`}
+                        >
+                          <td className="px-3 py-2 font-medium text-gray-900 whitespace-nowrap">
+                            {item.sku}
+                          </td>
+                          <td className="px-3 py-2">{item.productName}</td>
+                          <td className="px-3 py-2">
+                            <input
+                              type="number"
+                              value={item.quantity}
+                              onChange={(e) =>
+                                handleQuantityChange(item.sku, e.target.value)
+                              }
+                              className="w-full p-1 border border-gray-300 rounded-lg text-center"
+                              required
+                              min="0"
+                            />
+                          </td>
+                          <td className="px-3 py-2">
+                            <input
+                              type="text"
+                              value={item.description}
+                              onChange={(e) =>
+                                handleDescriptionChange(
+                                  item.sku,
+                                  e.target.value
+                                )
+                              }
+                              className="w-full p-1 border border-gray-300 rounded-lg"
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
             </div>
 
             <div className="pt-4 flex gap-2 border-t mt-4">
@@ -697,22 +744,68 @@ export default function EntryProductDate({
                     <span className="font-bold text-red-600">ยังไม่ได้รับ</span>
                   )}
                 </p>
-                {/* 🎯 PO Number คือรหัสสินค้าที่ป้อน */}
-                <p>
-                  <strong>รหัสสินค้า (SKU):</strong>
-                  {selectedItem.poNumber || "-"}
-                </p>
-                <p>
-                  <strong>ชื่อสินค้า:</strong> {selectedItem.productName}
-                </p>
-                <p>
-                  <strong>จำนวน:</strong> {selectedItem.quantity} ชิ้น
-                </p>
-
-                <p>
-                  <strong>หมายเหตุ (รวม Description):</strong>{" "}
-                  {selectedItem.comments || "-"}
-                </p>
+               <div className="overflow-x-auto">
+                  <table className="min-w-full text-sm text-left text-gray-500">
+                    <thead className="text-xs text-gray-700 uppercase bg-gray-100">
+                      <tr>
+                        <th scope="col" className="px-3 py-2 w-24">
+                          รหัสสินค้า
+                        </th>
+                        <th scope="col" className="px-3 py-2 min-w-[200px]">
+                          ชื่อสินค้า
+                        </th>
+                        <th scope="col" className="px-3 py-2 w-28">
+                          จำนวน*
+                        </th>
+                        <th scope="col" className="px-3 py-2 min-w-[250px]">
+                          ชื่อสินค้า Description
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {newProductList.map((item) => (
+                        <tr
+                          key={item.sku}
+                          className={`bg-white border-b ${
+                            item.productName.includes("**ไม่พบชื่อสินค้า**")
+                              ? "bg-red-50/50"
+                              : ""
+                          }`}
+                        >
+                          <td className="px-3 py-2 font-medium text-gray-900 whitespace-nowrap">
+                            {item.sku}
+                          </td>
+                          <td className="px-3 py-2">{item.productName}</td>
+                          <td className="px-3 py-2">
+                            <input
+                              type="number"
+                              value={item.quantity}
+                              onChange={(e) =>
+                                handleQuantityChange(item.sku, e.target.value)
+                              }
+                              className="w-full p-1 border border-gray-300 rounded-lg text-center"
+                              required
+                              min="0"
+                            />
+                          </td>
+                          <td className="px-3 py-2">
+                            <input
+                              type="text"
+                              value={item.description}
+                              onChange={(e) =>
+                                handleDescriptionChange(
+                                  item.sku,
+                                  e.target.value
+                                )
+                              }
+                              className="w-full p-1 border border-gray-300 rounded-lg"
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
 
