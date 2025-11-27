@@ -386,18 +386,6 @@ export default function EntryProductDate({
                 />
               </div>
 
-              <div>
-                <label className="text-sm font-semibold text-gray-700 mb-1 flex items-center">
-                  <User className="w-4 h-4 mr-2 text-[#640037]" />
-                  ซัพพลายเออร์
-                </label>
-                <input
-                  type="text"
-                  value={supplier}
-                  onChange={(e) => setSupplier(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-lg"
-                />
-              </div>
             </div>
 
             <div>
@@ -413,45 +401,7 @@ export default function EntryProductDate({
               ></textarea>
             </div>
 
-            <div>
-              <label className="text-sm font-semibold text-gray-700 mb-2 flex items-center">
-                <UploadCloud className="mr-2 text-[#640037]" />
-                แนบรูปภาพ (ไม่จำกัดจำนวน)
-              </label>
-
-              {previews.length > 0 && (
-                <div className="flex overflow-x-auto gap-3 pb-2">
-                  {previews.map((img) => (
-                    <div
-                      key={img.id}
-                      className="relative flex-shrink-0 border rounded-lg overflow-hidden"
-                    >
-                      <img
-                        src={img.url}
-                        alt="preview"
-                        className="w-40 h-28 object-cover"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeImage(img.id)}
-                        className="absolute top-1 right-1 bg-black bg-opacity-60 text-white rounded-full p-1 hover:bg-red-600"
-                      >
-                        <X size={14} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <input
-                ref={fileInputRef}
-                type="file"
-                multiple
-                accept="image/*"
-                onChange={handleImageChange}
-                className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-pink-50 file:text-pink-700 hover:file:bg-pink-100"
-              />
-            </div>
+  
 
             <div className="pt-2 border-t flex justify-end">
               <button
