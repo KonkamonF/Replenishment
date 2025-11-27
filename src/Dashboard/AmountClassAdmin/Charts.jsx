@@ -1,4 +1,3 @@
-// src/AmountAdmin/Charts.jsx
 import React from "react";
 import {
   Tooltip,

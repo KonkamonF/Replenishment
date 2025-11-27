@@ -105,7 +105,7 @@ export default function SuperAdmin() {
           <div className="bg-white p-6 rounded-xl shadow-lg border-4  border-[#640037]">
             {/* The chart component itself */}
             <AcAndFc />
-            <Charts />
+            {/* <Charts /> */}
             {/* Button to view the data behind the chart */}
             <div className="mt-4 flex justify-end">
               <button

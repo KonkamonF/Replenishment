@@ -225,7 +225,6 @@ export default function EntryProductDate({
 
     setIsSubmitting(true);
     try {
-      // 💡 วนลูปเรียก addEntry สำหรับแต่ละรายการ
       for (let i = 0; i < validEntries.length; i++) {
         const item = validEntries[i];
         await addEntry({
