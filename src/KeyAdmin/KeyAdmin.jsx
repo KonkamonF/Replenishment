@@ -132,6 +132,7 @@ const ALL_COLUMNS = [
   { key: "Categories", label: "Categories" },
   { key: "Forecast", label: "ยอด Forecast" },
   { key: "Actual", label: "ยอด Actual" },
+  { key: "Actual", label: "ยอด ห้าง" },
   { key: "DOH", label: "DOH (วัน)" },
   { key: "SetOrNot", label: "ชุด Set / แตก Set" },
   { key: "Stock_Show", label: "Stock (ตัวโชว์)" },
@@ -661,6 +662,11 @@ export default function KeyAdmin() {
                     ยอด Actual
                   </th>
                 )}
+                 {!isColumnHidden("ActualMall") && (
+                  <th className="p-2 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
+                    ยอด Actual ห้าง
+                  </th>
+                )}
                 {!isColumnHidden("DOHPerDay") && (
                   <th className="p-2 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap">
                     DOH (วัน)
@@ -789,6 +795,12 @@ export default function KeyAdmin() {
                       {!isColumnHidden("Actual") && (
                         <td className=" font-semibold text-lg border-r border-gray-200 text-right text-blue-600">
                           {formatNumber(item.Stock_จบเหลือจริง)}
+                        </td>
+                      )}
+
+                       {!isColumnHidden("Actualห้าง") && (
+                        <td className=" font-semibold text-lg border-r border-gray-200 text-right text-blue-600">
+                          -
                         </td>
                       )}
 
