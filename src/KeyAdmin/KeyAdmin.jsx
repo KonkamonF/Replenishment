@@ -173,7 +173,7 @@ export default function KeyAdmin() {
   const [hiddenColumns, setHiddenColumns] = useState([]);
   const CURRENT_USER = "Trade Planner (Key)"; // ใช้แค่แสดงผล ไม่ผูก logic
 
-  const [pageSize, setPageSize] = useState(50);
+  const [pageSize, setPageSize] = useState(20);
   const [currentPage, setCurrentPage] = useState(1);
 
   const {
