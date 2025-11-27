@@ -34,13 +34,8 @@ export default function EntryProductDate({
   fetchByDate,
 }) {
   const token = import.meta.env.VITE_API_TOKEN;
-  const {
-    addEntry,
-    updateEntry,
-    deleteEntry,
-    toggleStatus,
-    prefetchMonth,
-  } = useProductEntry(token);
+  const { addEntry, updateEntry, deleteEntry, toggleStatus, prefetchMonth } =
+    useProductEntry(token);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loadingItemId, setLoadingItemId] = useState(null);
@@ -124,6 +119,12 @@ export default function EntryProductDate({
       setIsSubmitting(false);
     }
   };
+
+  const [productNamesInput, setProductNamesInput] = useState("");
+  const productList = productNamesInput
+    .split("\n") // แยกตามบรรทัดใหม่
+    .map((item) => item.trim()) // ลบช่องว่างหัวท้าย
+    .filter((item) => item !== ""); // กรองรายการว่าง
 
   // ====================== TOGGLE STATUS ======================
   const handleToggleStatus = async (item) => {
@@ -303,7 +304,9 @@ export default function EntryProductDate({
                     >
                       <span
                         className={`block w-4 h-4 bg-white rounded-full shadow-md transform ${
-                          item.status === "T" ? "translate-x-5" : "translate-x-0"
+                          item.status === "T"
+                            ? "translate-x-5"
+                            : "translate-x-0"
                         }`}
                       />
                     </button>
@@ -329,7 +332,9 @@ export default function EntryProductDate({
         {mode === "add" && (
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="flex justify-between items-center mb-2">
-              <h2 className="text-lg font-bold text-gray-700">เพิ่มรายการสินค้าใหม่</h2>
+              <h2 className="text-lg font-bold text-gray-700">
+                เพิ่มรายการสินค้าใหม่
+              </h2>
               <button
                 type="button"
                 onClick={() => setMode("list")}
@@ -344,15 +349,14 @@ export default function EntryProductDate({
               <div>
                 <label className="text-sm font-semibold text-gray-700 mb-1 flex items-center">
                   <Package className="w-4 h-4 mr-2 text-[#640037]" />
-                  ชื่อสินค้า / SKU*
+                  รหัสสินค้า (ป้อนรายการละ 1 บรรทัด)
                 </label>
-                <input
-                  type="text"
-                  value={productName}
-                  onChange={(e) => setProductName(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-lg"
+                <textarea
+                  value={productNamesInput}
+                  onChange={(e) => setProductNamesInput(e.target.value)}
+                  className="w-full p-2 border border-gray-300 rounded-lg h-32"
                   required
-                />
+                ></textarea>
               </div>
 
               <div>
@@ -543,7 +547,9 @@ export default function EntryProductDate({
         {mode === "edit" && selectedItem && (
           <form onSubmit={handleEditSubmit} className="space-y-6">
             <div className="flex justify-between items-center mb-2">
-              <h2 className="text-lg font-bold text-gray-700">แก้ไขรายการสินค้า</h2>
+              <h2 className="text-lg font-bold text-gray-700">
+                แก้ไขรายการสินค้า
+              </h2>
               <button
                 type="button"
                 onClick={() => setMode("detail")}
