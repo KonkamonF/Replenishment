@@ -11,6 +11,7 @@ import AcAndFc from "../Dashboard/AmountClassAdmin/AcAndFc.jsx";
 import Charts from "../Dashboard/AmountClassAdmin/Charts.jsx";
 import Calendar from "../Dashboard/Calendar/Calendar.jsx";
 import Test2 from "../a-Test-All/Test2.jsx";
+import SalesChartWithMonthSelector from "../a-Test-All/TradeAdmin เก่า.jsx";
 
 export default function SuperAdmin() {
   // Functions to handle button clicks (you'll implement the actual logic here)
@@ -24,15 +25,6 @@ export default function SuperAdmin() {
     // Logic for exporting data to Excel file
   };
 
-  // New function for viewing chart data
-  const handleViewChartData = () => {
-    // ในการใช้งานจริง จะเปิด Modal แสดงตารางข้อมูลดิบของกราฟ
-    alert(
-      "Functionality to show the underlying chart data (e.g., in a table or modal) will go here! (Show Data Table)"
-    );
-    // Logic to display the chart's data
-  };
-
   return (
     // Main container, using 'min-h-screen' for full height and a light background
     <div className=" bg-white shadow-2xl rounded-xl p-6">
@@ -41,25 +33,21 @@ export default function SuperAdmin() {
         <h1 className="text-xl font-extrabold text-[#640037]">
           Super Admin Dashboard
         </h1>
-
-        {/* <div className="space-x-4 ">
-          <button
-            onClick={handleImport}
-            className="text-sm px-4 py-2 bg-[#640037] cursor-pointer text-white rounded-lg shadow-md hover:shadow-xl hover:bg-pink-600"
-          >
-            Import Excel
-          </button>
-          <button
-            onClick={handleExport}
-            className="text-sm px-4 py-2 bg-pink-800 cursor-pointer text-white rounded-lg shadow-md hover:shadow-xl hover:bg-pink-600 "
-          >
-            Export Excel
-          </button>
-        </div> */}
       </header>
 
       {/* --- Main Content Layout (Unchanged) --- */}
       <div className="flex flex-col gap-8">
+        <div className="">
+          <h2 className=" font-bold mb-6 text-[#640037]">
+            Analysis & Forecast (Interactive Charts)
+          </h2>
+          <div className="bg-white p-6 rounded-xl shadow-lg border-4  border-[#640037]">
+            {/* The chart component itself */}
+            <AcAndFc />
+            {/* <Charts /> */}
+          </div>
+        </div>
+        <hr />
         {/* --- Left Column: Summary Cards (Unchanged) --- */}
         <div className="text-[#640037]">
           <h2 className=" font-bold mb-6 text-[#640037]">Summary Metrics</h2>
@@ -96,42 +84,9 @@ export default function SuperAdmin() {
         </div>
         <hr />
         <Calendar />
-        <hr />
+
         {/* --- Right Column: Primary Component (AcAndFc) - FOCUS OF CHANGE --- */}
-        <div className="">
-          <h2 className="text-xl text-center font-bold mb-6 text-[#640037]">
-            Analysis & Forecast (Interactive Charts)
-          </h2>
-          <div className="bg-white p-6 rounded-xl shadow-lg border-4  border-[#640037]">
-            {/* The chart component itself */}
-            <AcAndFc />
-            {/* <Charts /> */}
-            {/* Button to view the data behind the chart */}
-            <div className="mt-4 flex justify-end">
-              <button
-                onClick={handleViewChartData}
-                className="mt-6 flex items-center cursor-pointer space-x-1 px-3 py-1 text-sm text-[#640037] border border-pink-300 rounded-md hover:bg-pink-50 transition duration-150"
-                aria-label="View underlying chart data"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M4 6h16M4 10h16M4 14h16M4 18h16"
-                  />
-                </svg>
-                <span>View Data Table</span>
-              </button>
-            </div>
-          </div>
-        </div>
+
         {/* <Test2 /> */}
       </div>
     </div>

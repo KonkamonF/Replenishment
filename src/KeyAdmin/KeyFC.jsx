@@ -1,6 +1,7 @@
-import React, { useState, useMemo, useEffect } from "react";
-import { Search, Eye, EyeOff, ChevronDown } from "lucide-react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
+import { Search, Eye, EyeOff, ChevronDown, Plus } from "lucide-react";
 import { SummaryMetrics } from "../SideBar-Modal/StockModal/SummaryMetrics.jsx";
+import KeyFCMultiEntryModal from "../SideBar-Modal/StockModal/KeyFCMultiEntryModal.jsx";
 
 // Mock AC data for completeness
 const initialKeyFCData = Array.from({ length: 200 }, (_, i) => ({
@@ -11,7 +12,7 @@ const initialKeyFCData = Array.from({ length: 200 }, (_, i) => ({
   Total: 5000 + Math.floor(Math.random() * 1500),
   AC: 5500 + Math.floor(Math.random() * 1000), // Mock AC (Actual) data
 
-  "New Code Item": "09-0055-" + 1 + Math.floor(Math.random() * 10),
+  "New Code Item": 10 + Math.floor(Math.random() * 10), // Mock numerical value
   ราคากลางต่อหน่วย: 5000 + Math.floor(Math.random() * 300),
   ราคาต่ำสุดต่อหน่วย: 4800 + Math.floor(Math.random() * 200),
   ราคาโปรโมชั่นต่ำสุด: 4500 + Math.floor(Math.random() * 300),
@@ -66,9 +67,17 @@ const calculateTotal = (item) => {
   );
 };
 
-// --- Component สำหรับ Dropdown Toggle Column (คงเดิม) ---
+// --- Helpers (ย้ายมาด้านบน) ---
+const safeNum = (v) => {
+  if (v === null || v === undefined || v === "") return 0;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : 0;
+};
+const isColumnHidden = (hiddenColumns, columnKey) => !!hiddenColumns[columnKey];
+
+// --- Column Toggle Dropdown (แก้ไขให้ใช้ Props ถูกต้อง) ---
 const ColumnToggleDropdown = ({
-  hiddenColumnsList,
+  hiddenColumns,
   isColumnHidden,
   toggleColumnVisibility,
   editableChannels,
@@ -83,59 +92,177 @@ const ColumnToggleDropdown = ({
 
   const hasHiddenColumns = allColumns.some((col) => isColumnHidden(col.key));
 
+  const hiddenCount = useMemo(() => {
+    return hideableColumns.filter((c) => isColumnHidden(hiddenColumns, c))
+      .length;
+  }, [hiddenColumns, hideableColumns]);
+
+  const dropdownRef = useRef(null);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const onOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target))
+        setOpen(false);
+    };
+    document.addEventListener("mousedown", onOutside);
+    return () => document.removeEventListener("mousedown", onOutside);
+  }, []);
+
   return (
-    <div className="relative inline-block text-left">
+    <div className="relative inline-block text-left z-50" ref={dropdownRef}>
       <button
         type="button"
-        onClick={() =>
-          document.getElementById("column-menu").classList.toggle("hidden")
-        }
+        onClick={() => setOpen((p) => !p)}
         className={`inline-flex justify-center items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition duration-150 shadow-md 
           ${
             hasHiddenColumns
               ? "bg-red-500 text-white border-red-600 hover:bg-red-600"
               : "bg-gray-200 text-gray-600 border-gray-300 hover:bg-gray-300"
           }`}
+        aria-expanded={open}
       >
         {hasHiddenColumns ? (
           <EyeOff className="w-4 h-4" />
         ) : (
           <Eye className="w-4 h-4" />
         )}
-        {`Show/Hide Columns ${
-          hasHiddenColumns ? `(${hiddenColumnsList.split(", ").length})` : ""
-        }`}
+        {`Show/Hide Columns ${hiddenCount > 0 ? `(${hiddenCount})` : ""}`}
         <ChevronDown className="w-4 h-4 ml-1" />
       </button>
 
-      <div
-        id="column-menu"
-        className="hidden origin-top-right absolute right-0 mt-2 w-72 rounded-lg shadow-2xl bg-white ring-1 ring-pink-800 ring-opacity-20 focus:outline-none z-50"
-        role="menu"
-        aria-orientation="vertical"
-        aria-labelledby="menu-button"
-      >
-        <div className="py-1 max-h-60 overflow-y-auto">
-          {allColumns.map((col) => (
-            <div
-              key={col.key}
-              onClick={() => toggleColumnVisibility(col.key)}
-              className="flex items-center justify-between px-4 py-2 text-sm text-gray-600 hover:bg-pink-100 cursor-pointer transition duration-100"
-              role="menuitem"
-            >
-              <span className="font-medium">{col.name}</span>
-              {isColumnHidden(col.key) ? (
-                <EyeOff className="w-4 h-4 text-red-500" />
-              ) : (
-                <Eye className="w-4 h-4 text-green-500" />
-              )}
-            </div>
-          ))}
+      {open && (
+        <div
+          id="column-menu"
+          className="origin-top-right absolute right-0 mt-2 w-72 rounded-lg shadow-2xl bg-white ring-1 ring-pink-800 ring-opacity-20 focus:outline-none z-50"
+        >
+          <div className="p-2 max-h-60 overflow-y-auto">
+            {allColumns.map((col) => (
+              <div
+                key={col.key}
+                onClick={() => toggleColumnVisibility(col.key)}
+                className="flex items-center justify-between px-4 py-2 text-sm text-gray-600 hover:bg-pink-100 cursor-pointer transition duration-100"
+              >
+                <span className="font-medium">{col.name}</span>
+                {isColumnHidden(col.key) ? (
+                  <EyeOff className="w-4 h-4 text-red-500" />
+                ) : (
+                  <Eye className="w-4 h-4 text-green-500" />
+                )}
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
+
+// --- Class Checkbox Popover Logic ---
+
+function ClassCheckboxGroup({ uniqueClasses, selectedClasses, onClassChange }) {
+  const [open, setOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  const classesWithoutAll = uniqueClasses.filter((c) => c !== "All");
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleCheckboxChange = (value) => {
+    if (value === "All") {
+      if (selectedClasses.length < classesWithoutAll.length) {
+        onClassChange(classesWithoutAll);
+      } else {
+        onClassChange([]);
+      }
+    } else {
+      if (selectedClasses.includes(value)) {
+        const newSelection = selectedClasses.filter((c) => c !== value);
+        onClassChange(newSelection);
+      } else {
+        let newSelection = [...selectedClasses, value];
+        onClassChange(newSelection);
+      }
+    }
+  };
+
+  const displayLabel =
+    selectedClasses.length === 0 ||
+    selectedClasses.length === classesWithoutAll.length
+      ? "All"
+      : `${selectedClasses.length} Selected`;
+
+  return (
+    <div className="relative inline-block text-left w-full" ref={dropdownRef}>
+      <button
+        type="button"
+        onClick={() => setOpen((p) => !p)}
+        className="w-full p-2.5 pr-10 border border-gray-300 text-gray-700 rounded-xl shadow-sm bg-white flex justify-between items-center text-sm"
+        aria-expanded={open}
+      >
+        <span className="font-medium">{displayLabel}</span>
+        <ChevronDown className="w-4 h-4 text-gray-500" />
+      </button>
+
+      {open && (
+        <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20">
+          <div className="py-1 max-h-60 overflow-y-auto">
+            {/* ตัวเลือก All */}
+            <div
+              className="flex items-center px-4 py-2 cursor-pointer hover:bg-pink-100"
+              onClick={() => handleCheckboxChange("All")}
+            >
+              <input
+                type="checkbox"
+                checked={
+                  selectedClasses.length === 0 ||
+                  selectedClasses.length === classesWithoutAll.length
+                }
+                onChange={() => handleCheckboxChange("All")}
+                className="mr-2 rounded text-[#640037] focus:ring-[#640037]"
+              />
+              <span
+                className={
+                  selectedClasses.length === 0
+                    ? "font-bold text-[#640037]"
+                    : "font-normal"
+                }
+              >
+                All
+              </span>
+            </div>
+            <hr className="my-1 border-gray-200" />
+
+            {/* ตัวเลือก Classes A, B, C, ... */}
+            {classesWithoutAll.map((c) => (
+              <div
+                key={c}
+                className="flex items-center px-4 py-2 cursor-pointer hover:bg-pink-100"
+                onClick={() => handleCheckboxChange(c)}
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedClasses.includes(c)}
+                  onChange={() => handleCheckboxChange(c)}
+                  className="mr-2 rounded text-[#640037] focus:ring-[#640037]"
+                />
+                {c}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+// --- END Class Checkbox Popover Logic ---
 
 // --- Main Component ---
 export default function KeyFC() {
@@ -143,7 +270,8 @@ export default function KeyFC() {
   const [isDataChanged, setIsDataChanged] = useState(false);
   const [filters, setFilters] = useState({
     search: "",
-    class: "All",
+    // 🔑 FIXED: Class ใช้ Array ว่างเป็นค่าเริ่มต้นสำหรับ Multi-Select
+    class: [],
     brand: "All",
     ynBest: "All",
     type: "All",
@@ -151,11 +279,57 @@ export default function KeyFC() {
   const [hiddenColumns, setHiddenColumns] = useState({});
 
   // --- Pagination States ---
-  const [pageSize, setPageSize] = useState(20); // แก้ไขเป็น 20 รายการต่อหน้า
+  const [pageSize, setPageSize] = useState(20);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // ช่องที่ต้องนับรวมจริง ๆ
+  // --- Class Checkbox Props ---
+  const uniqueClasses = useMemo(() => ["All", ...availableClasses], []);
+  const selectedClasses = filters.class; // Array ที่เก็บค่าที่เลือก
+
+  // 🔑 ฟังก์ชันสำหรับอัปเดต Class จาก Checkbox
+  const onClassChange = (newClasses) => {
+    // 🔑 เมื่อรับ Array ใหม่จาก Checkbox ให้เรียก handleFilterChange
+    handleFilterChange("class", newClasses);
+  };
+  // --- END Class Checkbox Props ---
+
+  const handleMultiEntrySubmit = (newEntries, mainComment) => {
+    setIsDataChanged(true);
+
+    const newData = [...data];
+
+    newEntries.forEach((entry) => {
+      const existingIndex = newData.findIndex(
+        (item) => item.Code === entry.sku
+      );
+
+      if (existingIndex !== -1) {
+        newData[existingIndex] = {
+          ...newData[existingIndex],
+          // อัปเดตยอด FC
+          "New Code Item": entry.quantity,
+          // อัปเดตยอดสั่งซื้อ
+          "Traget Sale Unit": entry.requiredQuantity,
+          Description: entry.description,
+          Class: entry.class,
+          Total: calculateTotal({
+            ...newData[existingIndex],
+            "New Code Item": entry.quantity,
+          }),
+        };
+      } else {
+        console.warn(
+          `SKU ${entry.sku} not found in current data. Skipping entry.`
+        );
+      }
+    });
+
+    setData(newData);
+    setIsModalOpen(false);
+  };
+
   const contributingChannels = [
     "Other(K Beer)",
     "GBH Beer",
@@ -171,15 +345,10 @@ export default function KeyFC() {
     "Online All",
   ];
 
-  const calculateTotal = (item) => {
-    return contributingChannels.reduce(
-      (sum, channel) => sum + (parseInt(item[channel]) || 0),
-      0
-    );
-  };
+  // --- Logic การกรองข้อมูลหลัก ---
 
   const filteredData = useMemo(() => {
-    let currentData = [...data]; // ✅ clone array ไม่ใช่ boolean
+    let currentData = [...data];
 
     const lowerCaseSearch = filters.search.toLowerCase();
 
@@ -192,14 +361,30 @@ export default function KeyFC() {
       );
     }
 
-    // 2. กรองด้วย Class Filter
-    if (filters.class !== "All") {
-      currentData = currentData.filter((item) => item.Class === filters.class);
+    // 2. 🔑 FIXED: กรองด้วย Class Filter (รองรับ Array Multi-Select)
+    // ถ้า Array ไม่ว่าง (filters.class.length > 0) ให้กรอง
+    if (filters.class.length > 0) {
+      currentData = currentData.filter((item) =>
+        filters.class.includes(item.Class)
+      );
     }
 
     // 3. กรองด้วย Type Filter
     if (filters.type !== "All") {
       currentData = currentData.filter((item) => item.Type === filters.type);
+    }
+
+    // 4. กรอง YN Best
+    if (filters.ynBest !== "All") {
+      const checkValue =
+        filters.ynBest === "Y"
+          ? "Yes"
+          : filters.ynBest === "N"
+          ? ""
+          : filters.ynBest;
+      currentData = currentData.filter(
+        (item) => (item.YN_Best_2025 || "") === checkValue
+      );
     }
 
     return currentData;
@@ -223,16 +408,13 @@ export default function KeyFC() {
 
   // --- Logic สำหรับการแบ่งหน้าและแสดงผล ---
 
-  // 1. คำนวณจำนวนหน้ารวมและอัปเดต state เมื่อ filteredData หรือ pageSize เปลี่ยน
   useEffect(() => {
     const newTotalPages = Math.ceil(filteredData.length / pageSize);
     setTotalPages(newTotalPages);
 
-    // ปรับหน้าปัจจุบันหากหน้าที่เลือกเกินจำนวนหน้ารวม
     if (currentPage > newTotalPages && newTotalPages > 0) {
       setCurrentPage(newTotalPages);
     } else if (newTotalPages === 0 && filteredData.length > 0) {
-      // กรณี filteredData.length > 0 แต่ newTotalPages ถูกคำนวณเป็น 0 (ไม่น่าเกิด แต่ป้องกันไว้)
       setCurrentPage(1);
     } else if (currentPage === 0 && filteredData.length > 0) {
       setCurrentPage(1);
@@ -257,7 +439,7 @@ export default function KeyFC() {
   const handlePageSizeChange = (value) => {
     const size = Number(value) || 20;
     setPageSize(size);
-    setCurrentPage(1); // กลับไปหน้า 1 เสมอเมื่อเปลี่ยนขนาดหน้า
+    setCurrentPage(1);
   };
 
   // Function จัดการการเปลี่ยนแปลงค่าในช่อง Input (คงเดิม)
@@ -277,7 +459,7 @@ export default function KeyFC() {
     setData(newData);
   };
 
-  // Function จัดการการเปลี่ยนแปลง Class (เหมือนเดิม)
+  // Function จัดการการเปลี่ยนแปลง Class (Dropdown Selector)
   const handleClassChange = (code, newClass) => {
     setIsDataChanged(true);
 
@@ -314,18 +496,25 @@ export default function KeyFC() {
 
   // คอลัมน์ที่ถูกซ่อนอยู่
   const hiddenColumnsList = hideableColumns
-    .filter(isColumnHidden)
+    .filter((c) => isColumnHidden(c))
     .map((c) => c.split("(")[0].trim())
     .join(", ");
 
   // --- UPDATED: Unified Filter Handler ---
   const handleFilterChange = (name, value) => {
     setFilters((prev) => ({ ...prev, [name]: value }));
-    setCurrentPage(1); // **สำคัญ:** กลับไปหน้า 1 เสมอเมื่อมีการกรอง/ค้นหา
+    setCurrentPage(1);
   };
 
   return (
     <>
+      {/* 🔑 Modal Component (แสดงผลเป็น Overlay) */}
+      <KeyFCMultiEntryModal
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
+        onSubmitProducts={handleMultiEntrySubmit}
+      />
+
       <div className="p-8 bg-white shadow-2xl rounded-xl">
         {/* --- Header with Title and Info --- */}
         <header className="mb-6 border-b pb-4">
@@ -410,23 +599,16 @@ export default function KeyFC() {
                   <option value="Hood">Hood</option>
                 </select>
               </div>
-              {/* Class Filter */}
+              {/* 🔑 Class Filter (Multi-Select Popover) */}
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1">
                   Class
                 </label>
-                <select
-                  value={filters.class}
-                  onChange={(e) => handleFilterChange("class", e.target.value)}
-                  className="p-2.5 pr-10 text-gray-700 border border-gray-300 rounded-xl focus:border-pink-500 focus:ring-pink-500 bg-white shadow-sm w-full"
-                >
-                  <option value="All">All Classes</option>
-                  {availableClasses.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
-                    </option>
-                  ))}
-                </select>
+                <ClassCheckboxGroup
+                  uniqueClasses={uniqueClasses}
+                  selectedClasses={selectedClasses}
+                  onClassChange={onClassChange}
+                />
               </div>
               {/* YN Best 2025 (Mock Filter) */}
               <div>
@@ -444,11 +626,20 @@ export default function KeyFC() {
                 </select>
               </div>
             </div>
+
             {/* --- Column Toggle Bar & Save Button --- */}
             <div className="flex justify-end items-end mt-12 gap-4">
+              {/* ปุ่มสำหรับเปิด Modal */}
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-semibold shadow-lg transition duration-200"
+              >
+                <Plus size={18} className="mr-1" /> ป้อน FC หลายรายการ
+              </button>
+
               <div className="flex gap-4">
                 <ColumnToggleDropdown
-                  hiddenColumnsList={hiddenColumnsList}
+                  hiddenColumns={hiddenColumns}
                   isColumnHidden={isColumnHidden}
                   toggleColumnVisibility={toggleColumnVisibility}
                   editableChannels={editableChannels}
@@ -458,11 +649,11 @@ export default function KeyFC() {
                   onClick={handleSubmit}
                   disabled={!isDataChanged}
                   className={`px-4 py-2 rounded-lg font-semibold shadow-lg text-sm transition duration-200
-                ${
-                  isDataChanged
-                    ? "bg-green-600 text-white hover:bg-green-700 transform hover:scale-105"
-                    : "bg-gray-200 text-gray-600 cursor-not-allowed"
-                }`}
+                  ${
+                    isDataChanged
+                      ? "bg-green-600 text-white hover:bg-green-700 transform hover:scale-105"
+                      : "bg-gray-200 text-gray-600 cursor-not-allowed"
+                  }`}
                 >
                   {isDataChanged ? "🔒 Save Forecast" : "No Changes"}
                 </button>
@@ -470,29 +661,35 @@ export default function KeyFC() {
             </div>
           </div>
         </div>
+
         {/* --- Data Table --- */}
         <div className="relative overflow-x-scroll border border-gray-300 rounded-2xl shadow-xl ">
           <table className="table-auto text-sm w-full">
-            <thead className="bg-[#640037] text-nowrap text-white">
-              <tr>
+            {/* 🔑 แก้ไข: เพิ่ม sticky top-0 และ z-10 ให้ Header ตรึงอยู่กับที่ */}
+            <thead className="bg-[#640037] text-nowrap text-white sticky top-0 z-10">
+              <tr className="bg-[#640037]">
                 {/* Fixed Columns */}
                 <th className="p-3 bg-[#640037] shadow-md">No.</th>
                 <th className="p-3 bg-[#640037] shadow-md">Code</th>
                 {/* Visible/Hideable Columns */}
                 {!isColumnHidden("Description") && (
-                  <th className="p-3">Description</th>
+                  <th className="p-3 bg-[#640037]">Description</th>
                 )}
-                {!isColumnHidden("Type") && <th className="p-3">Type</th>}
-                {!isColumnHidden("Class") && <th className="p-3">Class</th>}
+                {!isColumnHidden("Type") && (
+                  <th className="p-3 bg-[#640037]">Type</th>
+                )}
+                {!isColumnHidden("Class") && (
+                  <th className="p-3 bg-[#640037]">Class</th>
+                )}
                 {/* Total Columns */}
-                <th className="p-3">Total FC</th>
-                <th className="p-3">Total AC</th>
+                <th className="p-3 bg-[#640037]">Total FC</th>
+                <th className="p-3 bg-[#640037]">Total AC</th>
                 {/* Editable Channel Headers */}
                 {editableChannels.map((channel) =>
                   !isColumnHidden(channel) ? (
                     <th
                       key={channel}
-                      className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap min-w-[120px]"
+                      className="p-3 border-l border-gray-500/30 first:border-l-0 whitespace-nowrap min-w-[120px] bg-[#640037]"
                     >
                       {channel}
                     </th>

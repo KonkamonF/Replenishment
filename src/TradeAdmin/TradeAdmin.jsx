@@ -3,7 +3,7 @@ import { Search, Eye, EyeOff, ChevronDown } from "lucide-react";
 import StockShowModal from "../SideBar-Modal/StockModal/StockShow.jsx";
 import CommunicationCard from "../SideBar-Modal/StockModal/CommunicateCard.jsx";
 import { useTradeProducts } from "../hooks/useTradeProducts.js";
-import { p } from "motion/react-client";
+// import { p } from "motion/react-client"; // ตัวแปร p ไม่ได้ถูกใช้งาน และถูกลบออก
 
 // --- Helpers ---
 const safeNum = (v) => {
@@ -67,7 +67,8 @@ const getSaleInAgingTierStyle = (tier) => {
 const ALL_COLUMNS = [
   { key: "No", name: "No.", isAlwaysVisible: true },
   { key: "Code", name: "ItemCode / Brand", isAlwaysVisible: true },
-  { key: "Description", name: "Description / Class", isAlwaysVisible: true },
+  { key: "Description", name: "Description", isAlwaysVisible: true },
+  { key: "Class", name: "Class", isAlwaysVisible: true },
   { key: "pricePerUnit", name: "ราคาต่อ/ชิ้น", isAlwaysVisible: false },
   { key: "minPricePerUnit", name: "ราคาต่ำสุด/ชิ้น", isAlwaysVisible: false },
   {
@@ -82,13 +83,14 @@ const ALL_COLUMNS = [
   { key: "TargetLast", name: "Target Last Mount", isAlwaysVisible: false },
   { key: "Price", name: "ราคากลางต่อหน่วย", isAlwaysVisible: false },
   { key: "Promotion", name: "Promotion ต่ำสุด", isAlwaysVisible: false },
-
   { key: "DOH", name: "DOH (วัน)", isAlwaysVisible: false },
   { key: "POH", name: "PO on Hand", isAlwaysVisible: false },
-  { key: "SetType", name: "ชุด Set / แตก Set", isAlwaysVisible: false },
+  { key: "Stock_A", name: "Stock", isAlwaysVisible: false },
   { key: "Stock_Physical", name: "Stock (กายภาพ)", isAlwaysVisible: false },
-  { key: "Stock_Show", name: "Stock (ตัวโชว์)", isAlwaysVisible: false },
-  { key: "Stock", name: "Stock หักจอง", isAlwaysVisible: false },
+  { key: "Stock_Show", name: "Stock (ตัวโชว์ห้าง)", isAlwaysVisible: false },
+  { key: "Stock_Show", name: "Stock (ตัวโชว์คลัง)", isAlwaysVisible: false },
+  { key: "Stock_Show", name: "Stock QC", isAlwaysVisible: false },
+  { key: "Stock_B", name: "Stock หักจอง", isAlwaysVisible: false },
   { key: "Stock_Cl", name: "Stock Clearance", isAlwaysVisible: false },
   { key: "Alloc_Current", name: "ตัดจ่ายปัจจุบัน", isAlwaysVisible: false },
   { key: "Alloc_3M", name: "ตัดจ่ายย้อนหลัง 3 เดือน", isAlwaysVisible: false },
@@ -103,6 +105,7 @@ const ALL_COLUMNS = [
   { key: "TradeStatus", name: "สถานะ Trade", isAlwaysVisible: false },
   { key: "TradeRemark", name: "Remark Trade / Action", isAlwaysVisible: false },
   { key: "InterTrade", name: "InterTrade Owner", isAlwaysVisible: false },
+  { key: "Supplier", name: "Supplier contact name", isAlwaysVisible: false },
 ];
 
 // --- Column Toggle Dropdown ---
@@ -186,10 +189,10 @@ export default function TradeAdmin() {
   // search แยกออกจาก filters (ใช้ server-side search)
   const [searchTerm, setSearchTerm] = useState(""); // สิ่งที่ผู้ใช้พิมพ์
   const [search, setSearch] = useState(""); // ค่าที่ใช้ยิง API (กด Enter)
-
   const [filters, setFilters] = useState({
     brand: "All",
-    class: "All",
+    // 🔑 แก้ไข: เปลี่ยนค่าเริ่มต้นของ class เป็น Array ว่าง
+    class: [],
     best2025: "All",
     tradeStatus: "All",
     set: "All",
@@ -201,12 +204,18 @@ export default function TradeAdmin() {
     newStatus: "Pending",
   });
   const CURRENT_USER = "Trade Planner (Key)";
+  const apiFilters = useMemo(() => {
+    const classValue =
+      filters.class.length === 0 ? "All" : filters.class.join(",");
+    return {
+      ...filters,
+      class: classValue,
+    };
+  }, [filters]);
 
   // Pagination state (ใช้กับ API)
   const [pageSize, setPageSize] = useState(20); // 10 / 20 / 50
   const [currentPage, setCurrentPage] = useState(1);
-
-  // ---------- ใช้ hook ดึงข้อมูลจาก API ----------
   const {
     data,
     loading,
@@ -220,9 +229,44 @@ export default function TradeAdmin() {
   } = useTradeProducts({
     page: currentPage,
     perPage: pageSize,
-    filters,
+    filters: apiFilters, // 🔑 ใช้อันใหม่ที่ถูกแปลงค่าแล้ว
     search,
   });
+
+  // 🔑 2. ฟังก์ชันกรองข้อมูลในฝั่ง Client (ใช้ในการคำนวณ paginatedData)
+  const filterTableData = (dataToFilter, selectedClasses) => {
+    // ถ้าไม่มีการเลือก (Array ว่าง) ให้แสดงข้อมูลทั้งหมด
+    if (selectedClasses.length === 0) {
+      return dataToFilter;
+    }
+
+    // กรองข้อมูล: แสดงเฉพาะรายการที่ Class ตรงกับหนึ่งใน Class ที่ถูกเลือก
+    return dataToFilter.filter((item) => {
+      // ตรวจสอบว่า item.Class มีค่าอยู่ใน selectedClasses Array หรือไม่
+      // ตัวอย่าง: ถ้า selectedClasses = ['A', 'B'], item.Class='A' จะเป็น true
+      return selectedClasses.includes(item.Class);
+    });
+  };
+
+  // 🔑 3. ข้อมูลที่ถูกกรองแล้ว (ใช้ useMemo)
+  const paginatedData = useMemo(() => {
+    // data คือข้อมูลที่มาจาก API (หลัง search/filters หลัก)
+    // filters.class คือ Array เช่น ['A', 'B']
+    return filterTableData(data, filters.class);
+  }, [data, filters.class]); // Depend on data from API and selected classes
+
+  const pageItemCount = paginatedData.length;
+
+  // ... (Rest of the component's functions and JSX)
+
+  // ---------- ใช้ hook ดึงข้อมูลจาก API ----------
+
+  // ... (useEffect โค้ดเดิม)
+  useEffect(() => {
+    // 🔑 ต้องเปลี่ยน loadSummary ให้รับ apiFilters ด้วย
+    loadSummary(apiFilters, search);
+  }, [apiFilters, search]);
+  // ...
 
   // ดึง summary ทุกครั้งที่ filters หรือ search เปลี่ยน
   useEffect(() => {
@@ -249,9 +293,80 @@ export default function TradeAdmin() {
     );
   const isColumnHidden = (key) => hiddenColumns.includes(key);
 
+  // 🔑 แก้ไข: handleFilterChange ต้องรองรับการอัปเดตค่า 'class' เป็น Array
   const handleFilterChange = (name, value) => {
-    setFilters((p) => ({ ...p, [name]: value }));
-    setCurrentPage(1); // เปลี่ยน filter → เด้งไปหน้าแรก
+    // 🔑 ถ้าเป็นการเปลี่ยน Class จะรับค่าเป็น Array โดยตรง
+    if (name === "class" && Array.isArray(value)) {
+      setFilters((p) => ({ ...p, [name]: value }));
+    } else {
+      // สำหรับฟิลด์อื่น ๆ (Brand, TradeStatus ฯลฯ)
+      setFilters((p) => ({ ...p, [name]: value }));
+    }
+    setCurrentPage(1);
+  };
+
+  // 🔑 ฟังก์ชันสำหรับอัปเดต Class จาก Checkbox
+  const onClassChange = (newClasses) => {
+    handleFilterChange("class", newClasses);
+  };
+
+  // 🔑 กำหนด uniqueClasses
+  const uniqueClasses = ["All", "A", "B", "C", "D", "MD", "N"];
+
+  // 🔑 กำหนด selectedClasses และ displayLabel จาก State
+  const selectedClasses = filters.class;
+
+  const displayLabel = useMemo(() => {
+    if (
+      selectedClasses.length === 0 ||
+      selectedClasses.length === uniqueClasses.length - 1
+    ) {
+      return "All";
+    }
+    return `${selectedClasses.length} Selected`;
+  }, [selectedClasses, uniqueClasses.length]);
+
+  // 🔑 นำ logic สำหรับ Dropdown/Checkbox Popover มาไว้ใน Component หลัก
+  const [open, setOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // 🔑 Logic จัดการการเปลี่ยนแปลงเมื่อเลือก/ยกเลิก Checkbox
+  const handleCheckboxChange = (value) => {
+    const classesWithoutAll = uniqueClasses.filter((c) => c !== "All");
+
+    if (value === "All") {
+      // ถ้าเลือก All ให้สลับระหว่างเลือกทั้งหมด (classesWithoutAll) กับไม่มีเลย ([])
+      if (selectedClasses.length < classesWithoutAll.length) {
+        // เลือกทั้งหมด
+        handleFilterChange("class", classesWithoutAll);
+      } else {
+        // เคลียร์ทั้งหมด
+        handleFilterChange("class", []);
+      }
+    } else {
+      if (selectedClasses.includes(value)) {
+        // ลบออก
+        const newSelection = selectedClasses.filter((c) => c !== value);
+        handleFilterChange("class", newSelection);
+      } else {
+        // เพิ่มเข้า
+        let newSelection = [...selectedClasses, value];
+
+        // ตรวจสอบว่าเลือกครบทุกตัวแล้วหรือไม่
+        // (ถ้าเลือกครบ มันควรจะคงเป็น Array ที่มีสมาชิกครบอยู่แล้ว)
+        handleFilterChange("class", newSelection);
+      }
+    }
   };
 
   // ---------- Unique options (จาก data ใน page ปัจจุบัน) ----------
@@ -260,8 +375,7 @@ export default function TradeAdmin() {
     [uniqueBrandsFromHook]
   );
 
-  const uniqueClasses = ["All", "A", "B", "C", "D", "MD", "N"];
-
+  // ... (uniqueBest2025, uniqueTradeStatus, uniqueSets โค้ดเดิม)
   const uniqueBest2025 = useMemo(() => ["All", "Yes", ""], []);
   const uniqueTradeStatus = ["All", "Normal", "Abnormal"];
   const uniqueSets = useMemo(
@@ -270,16 +384,13 @@ export default function TradeAdmin() {
   );
 
   // ตอนนี้กรองหลักทำที่ server แล้ว → data = หน้าปัจจุบันหลัง filter+search
-  const paginatedData = data;
-  const pageItemCount = paginatedData.length;
+  // const paginatedData = data;
+  // const pageItemCount = paginatedData.length;
 
   // ---------- summary จาก /api/products/summary ----------
   const totalSKUs = summary?.totalSKUs ?? totalItems ?? 0;
   const totalStock = summary?.totalStock ?? 0;
   const avgDOH = summary?.avgDOH ?? 0;
-  const totalAllocCurrent = summary?.totalAllocCurrent ?? 0;
-  const totalAlloc3M = summary?.totalAlloc3M ?? 0;
-  const totalAlloc6M = summary?.totalAlloc6M ?? 0;
   const overflowCount = summary?.overflowCount ?? 0;
   const avgOverflowScore = summary?.avgOverflowScore ?? 0;
 
@@ -457,7 +568,7 @@ export default function TradeAdmin() {
       )}
 
       {loading || error ? (
-        <div className="absolute  text-center text-lg text-gray-600">
+        <div className="absolute  text-center text-lg text-gray-600">
           {loading ? "กำลังโหลดข้อมูล..." : `เกิดข้อผิดพลาด: ${error}`}
         </div>
       ) : (
@@ -495,65 +606,39 @@ export default function TradeAdmin() {
           </div>
 
           <div className="bg-yellow-50 p-4 rounded-lg shadow-inner">
-            <p className="text-sm text-yellow-600 font-semibold">
-              Avg. DOH (Weighted)
-            </p>
-            <p className="text-2xl font-extrabold">
-              {formatNumber(avgDOH, 0)} วัน
-            </p>
-          </div>
-
-          <div className="bg-red-50 p-4 rounded-lg shadow-inner">
-            <p className="text-sm text-red-600 font-semibold">Abnormal Count</p>
-            <p className="text-2xl font-extrabold">
-              {formatNumber(abnormalCount)}
-            </p>
-          </div>
-
-          <div className="bg-green-50 p-3 rounded-lg shadow-inner col-span-2 md:col-span-2">
-            <p className="text-xs text-green-700 font-semibold">
-              Total Alloc Current
-            </p>
-            <p className="text-lg font-extrabold text-green-800">
-              {formatNumber(totalAllocCurrent)}
-            </p>
-            <p className="text-xs text-gray-500 mt-1">
-              รวมตัดจ่ายปัจจุบันของรายการที่แสดง
-            </p>
-          </div>
-
-          <div className="bg-sky-50 p-3 rounded-lg shadow-inner">
-            <p className="text-xs text-sky-700 font-semibold">Total 3M</p>
-            <p className="text-lg font-extrabold text-sky-800">
-              {formatNumber(totalAlloc3M)}
-            </p>
-          </div>
-
-          <div className="bg-orange-50 p-3 rounded-lg shadow-inner">
-            <p className="text-xs text-orange-700 font-semibold">Total 6M</p>
-            <p className="text-lg font-extrabold text-orange-800">
-              {formatNumber(totalAlloc6M)}
-            </p>
+            <p className="text-sm text-yellow-600 font-semibold">PO On Hand</p>
+            <p className="text-2xl font-extrabold">{formatNumber(avgDOH, 0)}</p>
           </div>
 
           <div className="bg-purple-50 p-3 rounded-lg shadow-inner hidden lg:block">
             <p className="text-xs text-purple-700 font-semibold">
-              Overflow Count (&gt;100%)
+              จำนวนสินค้าเบิกเปลี่ยนทั้งหมด
             </p>
             <p className="text-lg font-extrabold text-purple-800">
               {formatNumber(overflowCount)}
-            </p>
-            <p className="text-xs text-gray-500 mt-1">
-              จำนวนรายการที่ Stock มากกว่า 3M alloc 100%
             </p>
           </div>
 
           <div className="bg-gray-50 p-3 rounded-lg shadow-inner hidden lg:block">
             <p className="text-xs text-gray-700 font-semibold">
-              Avg Overflow Score
+              สินค้าตัวโชว์ห้าง
             </p>
             <p className="text-lg font-extrabold text-gray-800">
-              {formatNumber(avgOverflowScore)}%
+              {formatNumber(avgOverflowScore - 500)}
+            </p>
+          </div>
+          <div className="bg-gray-50 p-3 rounded-lg shadow-inner hidden lg:block">
+            <p className="text-xs text-gray-700 font-semibold">
+              สินค้าตัวโชว์คลัง
+            </p>
+            <p className="text-lg font-extrabold text-gray-800">
+              {formatNumber(avgOverflowScore - 800)}
+            </p>
+          </div>
+          <div className="bg-red-50 p-4 rounded-lg shadow-inner">
+            <p className="text-sm text-red-600 font-semibold">Abnormal Count</p>
+            <p className="text-2xl font-extrabold">
+              {formatNumber(abnormalCount)}
             </p>
           </div>
         </div>
@@ -616,17 +701,70 @@ export default function TradeAdmin() {
             <label className="block text-sm font-semibold text-gray-700 mb-1">
               Class
             </label>
-            <select
-              value={filters.class}
-              onChange={(e) => handleFilterChange("class", e.target.value)}
-              className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white"
+            {/* 🔑 ส่วนที่ถูกแก้ไข: Checkbox Dropdown Popover */}
+            <div
+              className="relative inline-block text-left w-full"
+              ref={dropdownRef}
             >
-              {uniqueClasses.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
+              <button
+                type="button"
+                onClick={() => setOpen((p) => !p)}
+                className="w-full p-2 pr-10 border border-gray-300 text-gray-700 rounded-lg shadow-sm bg-white flex justify-between items-center"
+                aria-expanded={open}
+              >
+                {/* 🔑 แก้ไข: ใช้ displayLabel ที่ถูกคำนวณแล้ว */}
+                <span className="font-medium">{displayLabel}</span>
+                <ChevronDown className="w-4 h-4 text-gray-500" />
+              </button>
+
+              {open && (
+                <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20">
+                  <div className="py-1 max-h-60 overflow-y-auto">
+                    {/* ตัวเลือก All */}
+                    <div
+                      className="flex items-center px-4 py-2 cursor-pointer hover:bg-pink-100"
+                      onClick={() => handleCheckboxChange("All")}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedClasses.length === 0} // ถ้า Array ว่าง = เลือก All
+                        onChange={() => handleCheckboxChange("All")}
+                        className="mr-2 rounded text-[#640037] focus:ring-[#640037]"
+                      />
+                      <span
+                        className={
+                          selectedClasses.length === 0
+                            ? "font-bold text-[#640037]"
+                            : "font-normal"
+                        }
+                      >
+                        All
+                      </span>
+                    </div>
+                    <hr className="my-1 border-gray-200" />
+
+                    {/* ตัวเลือก Classes A, B, C, ... */}
+                    {uniqueClasses
+                      .filter((c) => c !== "All")
+                      .map((c) => (
+                        <div
+                          key={c}
+                          className="flex items-center px-4 py-2 cursor-pointer hover:bg-pink-100"
+                          onClick={() => handleCheckboxChange(c)}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={selectedClasses.includes(c)}
+                            onChange={() => handleCheckboxChange(c)}
+                            className="mr-2 rounded text-[#640037] focus:ring-[#640037]"
+                          />
+                          {c}
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           <div>
@@ -698,266 +836,330 @@ export default function TradeAdmin() {
         </div>
 
         {/* --- Data Table --- */}
-        <div className="overflow-x-auto shadow-xl rounded-xl border border-gray-200">
-          <table
-            className="min-w-full table-auto bg-white text-center 
-                [&_th]:border-r [&_th]:border-gray-200
-                [&_td]:border-r [&_td]:border-gray-200
-                [&_th:last-child]:border-r-0
-                [&_td:last-child]:border-r-0"
-          >
-            <thead className="bg-[#640037] text-white sticky top-0 text-sm">
-              <tr>
-                {ALL_COLUMNS.map((col) => (
-                  <th
-                    key={col.key}
-                    className={colClass(
-                      col.key,
-                      "p-3 text-sm whitespace-nowrap"
-                    )}
-                  >
-                    {col.name}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-
-            <tbody>
-              {paginatedData.length > 0 ? (
-                paginatedData.map((item, idx) => {
-                  const allocCurrent = calcAllocCurrent(item);
-                  const alloc3 = calcAlloc3M(item);
-                  const alloc6 = calcAlloc6M(item);
-                  const overflow = calcOverflowScore(item);
-                  const rowNumber = (currentPage - 1) * pageSize + idx + 1;
-
-                  return (
-                    <tr
-                      key={item.Code}
-                      className="border-b border-gray-300 hover:bg-pink-50 transition duration-100"
+        <div className="overflow-x-auto h-[800px] shadow-xl rounded-xl border border-gray-200">
+          <div className="overflow-x-auto h-[800px] shadow-xl rounded-xl border border-gray-200">
+            <table
+              className="min-w-full table-auto bg-white text-center 
+              [&_th]:border-r [&_th]:border-gray-200
+              [&_td]:border-r [&_td]:border-gray-200
+              [&_th:last-child]:border-r-0
+              [&_td:last-child]:border-r-0"
+            >
+              <thead className="bg-[#640037] text-white text-sm sticky top-0">
+                <tr className="bg-[#640037]">
+                  {ALL_COLUMNS.map((col) => (
+                    <th
+                      key={col.key + col.name} // ใช้ name ร่วมกับ key เพื่อจัดการคีย์ซ้ำ
+                      className={colClass(
+                        col.key,
+                        "p-3 text-sm whitespace-nowrap bg-[#640037] border-r border-gray-500"
+                      )}
                     >
-                      <td
-                        className={colClass("No", "p-3 text-sm text-gray-600")}
+                      {col.name}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+
+              <tbody>
+                {paginatedData.length > 0 ? (
+                  paginatedData.map((item, idx) => {
+                    const allocCurrent = calcAllocCurrent(item);
+                    const alloc3 = calcAlloc3M(item);
+                    const alloc6 = calcAlloc6M(item);
+                    const overflow = calcOverflowScore(item);
+                    const rowNumber = (currentPage - 1) * pageSize + idx + 1;
+
+                    return (
+                      <tr
+                        key={item.Code}
+                        className="border-b border-gray-300 hover:bg-pink-50 transition duration-100"
                       >
-                        {rowNumber}
-                      </td>
-                      <td
-                        className={colClass(
-                          "Code",
-                          "p-3 font-mono text-sm text-left"
-                        )}
-                      >
-                        <span className="font-bold text-[#640037] block">
-                          {item.Code}
-                        </span>
-                        <span className="text-xs text-gray-600">
-                          {safeText(item.Brand)}
-                        </span>
-                      </td>
-                      <td
-                        className={colClass(
-                          "Description",
-                          "p-3 text-gray-700 text-left min-w-[250px]"
-                        )}
-                      >
-                        <span className="font-bold">
-                          {safeText(item.Description || item.description)}
-                        </span>
-                        <span
-                          className={`ml-1 text-xs text-white px-2 py-0.5 rounded-full inline-block ${getClassStyle(
-                            item.Class
-                          )}`}
+                        {/* 1. No */}
+                        <td
+                          className={colClass(
+                            "No",
+                            "p-3 text-sm text-gray-600"
+                          )}
                         >
-                          Class {item.Class}
-                        </span>
-                        <span className="text-xs text-gray-600 block mt-1">
-                          {safeText(item.brand)}
-                        </span>
-                      </td>
-                      <td className={colClass("pricePerUnit", "p-3")}>
-                        {formatNumber(item.pricePerUnit, 0)}
-                      </td>
-                      <td className={colClass("minPricePerUnit", "p-3")}>
-                        {formatNumber(item.minPricePerUnit, 0)}
-                      </td>
-                      <td className={colClass("minPromotionPrice", "p-3")}>
-                        {formatNumber(item.minPromotionPrice, 0)}
-                      </td>
-                      <td className={colClass("Best", "p-3 text-center")}>
-                        <span
-                          className={`px-3 py-0.5 block rounded-full text-xs ${
-                            item.YN_Best_2025 === "Yes"
-                              ? "bg-green-200 text-green-900"
-                              : "bg-gray-100 text-gray-500"
-                          }`}
+                          {rowNumber}
+                        </td>
+
+                        {/* 2. Code / Brand */}
+                        <td
+                          className={colClass(
+                            "Code",
+                            "p-3 font-mono text-sm text-left"
+                          )}
                         >
-                          {item.YN_Best_2025 === "Yes" ? "Yes" : "No Data Best"}
-                        </span>
-                      </td>
-                      <td className={colClass("Forecast", "p-3")}>
-                        รอระบบคีย์
-                      </td>
-                      <td className={colClass("Actual", "p-3")}>
-                        {formatNumber(getActual(item))}
-                      </td>
-                      <td className={colClass("Target", "p-3")}>
-                        {formatNumber(getTargetNow(item))}
-                      </td>
-                      <td className={colClass("TargetLast", "p-3")}>
-                        {formatNumber(getTargetLast(item))}
-                      </td>
-                      <td
-                        className={colClass(
-                          "DOH",
-                          `p-3 ${getDOHStyle(item.DayOnHand_DOH_Stock2)}`
-                        )}
-                      >
-                        {formatNumber(item.DayOnHand_DOH_Stock2, 0)}
-                      </td>
-                      <td
-                        className={colClass(
-                          "POH",
-                          `p-3 ${getDOHStyle(
-                            safeNum(item.DayOnHand_DOH_Stock2) + 50
-                          )}`
-                        )}
-                      >
-                        {formatNumber(
-                          safeNum(item.DayOnHand_DOH_Stock2) + 50,
-                          0
-                        )}
-                      </td>
-                      <td className={colClass("Forecast", "p-3")}>
-                        รอระบบคีย์
-                      </td>{" "}
-                      <td className={colClass("Forecast", "p-3")}>
-                        รอระบบคีย์
-                      </td>
-                      <td
-                        className={colClass(
-                          "SetType",
-                          "p-3 text-sm text-gray-600"
-                        )}
-                      >
-                        ยังไม่มีข้อมูล
-                      </td>
-                      <td className={colClass("Stock_Physical", "p-3")}>
-                        {formatNumber(safeNum(item.stockReal))}
-                      </td>
-                      <td className={colClass("Stock_Show", "p-3 text-xs")}>
-                        <p className="mb-1">
-                          {formatNumber(safeNum(item.location))}
-                        </p>
-                        <button
-                          onClick={() => handleShowStockModal(item)}
-                          className="text-xs rounded-lg cursor-pointer shadow-sm bg-green-500 text-[#114232] hover:bg-green-600 transition"
-                          title="ดูตำแหน่งจัดเก็บและรายละเอียด Stock (ตัวโชว์)"
-                        >
-                          Show Location Stock
-                        </button>
-                      </td>
-                      <td className={colClass("Stock", "p-3")}>
-                        {formatNumber(item.stock_หักจอง)}
-                      </td>
-                      <td className={colClass("Stock_Cl", "p-3")}>
-                        {formatNumber(item.stockClearance)}
-                      </td>
-                      <td className={colClass("Alloc_Current", "p-3")}>
-                        {formatNumber(allocCurrent)}
-                      </td>
-                      <td className={colClass("Alloc_3M", "p-3")}>
-                        {formatNumber(alloc3)}
-                      </td>
-                      <td className={colClass("Alloc_6M", "p-3")}>
-                        {formatNumber(alloc6)}
-                      </td>
-                      <td className={colClass("OverflowScore", "p-3")}>
-                        {overflow === null ? (
-                          <span className="text-gray-400">-</span>
-                        ) : (
-                          <span className={getOverflowStyle(overflow)}>
-                            {overflow}%
+                          <span className="font-bold text-[#640037] block">
+                            {item.Code}
                           </span>
-                        )}
-                      </td>
-                      <td className={colClass("SaleInAgingTier", "p-3")}>
-                        <span
-                          className={`inline-flex px-2 py-0.5 rounded-full text-xs font-semibold border ${getSaleInAgingTierStyle(
-                            getSaleInAgingTier(item)
-                          )}`}
+                          <span className="text-xs text-gray-600">
+                            {safeText(item.Brand)}
+                          </span>
+                        </td>
+
+                        {/* 3. Description */}
+                        <td
+                          className={colClass(
+                            "Description",
+                            "p-3 text-gray-700 text-left min-w-[250px]"
+                          )}
                         >
-                          {getSaleInAgingTier(item)}
-                        </span>
-                      </td>
-                      <td className={colClass("SuggestionPurchasing", "p-3")}>
-                        {item.SuggestionPurchasing ?? "-"}
-                      </td>
-                      <td
-                        className={colClass("TradeStatus", "p-3 text-center")}
-                      >
-                        <p
-                          className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full border ${getStatusStyleLocal(
-                            item.สถานะTrade
-                          )}`}
-                        >
-                          {safeText(item.สถานะTrade)}
-                        </p>
-                        {item.DiffPercent && (
-                          <p
-                            className={`text-xs mt-1 font-bold ${
-                              String(item.DiffPercent).startsWith("-")
-                                ? "text-red-500"
-                                : "text-green-500"
+                          <span className="font-bold">
+                            {safeText(item.Description || item.description)}
+                          </span>
+
+                          <span className="text-xs text-gray-600 block mt-1">
+                            {safeText(item.brand)}
+                          </span>
+                        </td>
+
+                        {/* 4. Class */}
+                        <td className={colClass("Class", "p-3 text-gray-700")}>
+                          <span
+                            className={`text-xs text-white px-2 py-0.5 rounded-full inline-block ${getClassStyle(
+                              item.Class
+                            )}`}
+                          >
+                            Class {item.Class}
+                          </span>
+                        </td>
+
+                        {/* 5-7. Price */}
+                        <td className={colClass("pricePerUnit", "p-3")}>
+                          {formatNumber(item.pricePerUnit, 0)}
+                        </td>
+                        <td className={colClass("minPricePerUnit", "p-3")}>
+                          {formatNumber(item.minPricePerUnit, 0)}
+                        </td>
+                        <td className={colClass("minPromotionPrice", "p-3")}>
+                          {formatNumber(item.minPromotionPrice, 0)}
+                        </td>
+
+                        {/* 8. Best/BestSet */}
+                        <td className={colClass("Best", "p-3 text-center")}>
+                          <span
+                            className={`px-3 py-0.5 block rounded-full text-xs ${
+                              item.YN_Best_2025 === "Yes"
+                                ? "bg-green-200 text-green-900"
+                                : "bg-gray-100 text-gray-500"
                             }`}
                           >
-                            {item.DiffPercent}
-                          </p>
-                        )}
-                      </td>
-                      <td
-                        className={colClass(
-                          "TradeRemark",
-                          "p-3 text-xs text-gray-400"
-                        )}
-                      >
-                        <p className="text-xs mb-1 italic truncate">
-                          {safeText(item.RemarkTrade)}
-                        </p>
+                            {item.YN_Best_2025 === "Yes"
+                              ? "Yes"
+                              : "No Data Best"}
+                          </span>
+                        </td>
 
-                        <button
-                          onClick={() => openTradeModal(item)}
-                          className={`px-3 py-1 text-xs rounded-lg cursor-pointer shadow-md transition font-medium ${
-                            item.RemarkCount > 0
-                              ? "bg-green-600 text-white hover:bg-green-700"
-                              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                          }`}
+                        {/* 9. Forecast */}
+                        <td className={colClass("Forecast", "p-3")}>
+                          {/* ⚠️ คีย์ใน ALL_COLUMNS มี Forecast ซ้ำ */}
+                          รอระบบคีย์
+                        </td>
+
+                        {/* 10-14. Actual, Target, Price, Promotion */}
+                        <td className={colClass("Actual", "p-3 font-bold")}>
+                          {formatNumber(getActual(item))}
+                        </td>
+                        <td className={colClass("Target", "p-3 font-bold")}>
+                          {formatNumber(getTargetNow(item))}
+                        </td>
+                        <td className={colClass("TargetLast", "p-3 font-bold")}>
+                          {formatNumber(getTargetLast(item))}
+                        </td>
+                        <td className={colClass("Price", "p-3")}>
+                          {formatNumber(item.Price, 0)}
+                        </td>
+                        <td className={colClass("Promotion", "p-3")}>
+                          {formatNumber(item.Promotion, 0)}
+                        </td>
+
+                        {/* 15-16. DOH, POH */}
+                        <td
+                          className={colClass(
+                            "DOH",
+                            `p-3 ${getDOHStyle(item.DayOnHand_DOH_Stock2)}`
+                          )}
                         >
-                          บันทึก/ดูการสื่อสาร ({item.RemarkCount || 0})
-                        </button>
-                      </td>
-                      <td
-                        className={colClass(
-                          "InterTrade",
-                          "p-3 border-r border-gray-200 text-base text-gray-700 font-medium"
-                        )}
-                      >
-                        {safeText(item.interTrade ?? item.InterTrade)}
-                      </td>
-                    </tr>
-                  );
-                })
-              ) : (
-                <tr>
-                  <td
-                    colSpan={visibleColumnCount}
-                    className="p-6 text-center text-lg text-gray-500"
-                  >
-                    ไม่พบข้อมูลสินค้าที่ตรงกับเงื่อนไขการกรอง
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                          {formatNumber(item.DayOnHand_DOH_Stock2, 0)}
+                        </td>
+                        <td
+                          className={colClass(
+                            "POH",
+                            `p-3 ${getDOHStyle(
+                              safeNum(item.DayOnHand_DOH_Stock2) + 50
+                            )}`
+                          )}
+                        >
+                          {formatNumber(
+                            safeNum(item.DayOnHand_DOH_Stock2) + 50,
+                            0
+                          )}
+                        </td>
+
+                        {/* 17. Stock A */}
+                        <td className={colClass("Stock_A", "p-3")}>
+                          {formatNumber(item.stockA || item.Stock_A)}{" "}
+                          {/* สมมติคีย์ */}
+                        </td>
+
+                        {/* 18. Stock Physical */}
+                        <td className={colClass("Stock_Physical", "p-3")}>
+                          {formatNumber(safeNum(item.stockReal))}
+                        </td>
+
+                        {/* 19-21. Stock Show (ห้าง), Stock Show (คลัง), Stock QC */}
+                        {/* ⚠️ คีย์ใน ALL_COLUMNS ซ้ำกัน: 'Stock_Show' */}
+                        <td className={colClass("Stock_Show", "p-3 text-xs")}>
+                          {formatNumber(
+                            safeNum(item.stockShowMall || item.location)
+                          )}{" "}
+                          {/* Stock ตัวโชว์ห้าง */}
+                          <button
+                            onClick={() => handleShowStockModal(item)}
+                            className="text-xs rounded-lg cursor-pointer shadow-sm p-1 bg-green-500 text-[#114232] hover:bg-green-600 transition mt-1"
+                            title="ดูตำแหน่งจัดเก็บและรายละเอียด Stock (ตัวโชว์)"
+                          >
+                            Show Location Stock
+                          </button>
+                        </td>
+                        <td className={colClass("Stock_Show", "p-3 text-xs")}>
+                          {formatNumber(safeNum(item.stockShowWH))}{" "}
+                          {/* Stock ตัวโชว์คลัง */}
+                          <button
+                            onClick={() => handleShowStockModal(item)}
+                            className="text-xs rounded-lg cursor-pointer shadow-sm p-1 bg-green-500 text-[#114232] hover:bg-green-600 transition mt-1"
+                            title="ดูตำแหน่งจัดเก็บและรายละเอียด Stock (ตัวโชว์)"
+                          >
+                            Show Location Stock
+                          </button>
+                        </td>
+                        <td className={colClass("Stock_Show", "p-3 text-xs")}>
+                          {formatNumber(safeNum(item.stockQC))} {/* Stock QC */}
+                        </td>
+
+                        {/* 22. Stock หักจอง */}
+                        <td className={colClass("Stock_B", "p-3")}>
+                          {formatNumber(item.stock_หักจอง)}
+                        </td>
+
+                        {/* 23-26. Clearance, Allocations, Overflow */}
+                        <td className={colClass("Stock_Cl", "p-3")}>
+                          {formatNumber(item.stockClearance)}
+                        </td>
+                        <td className={colClass("Alloc_Current", "p-3")}>
+                          {formatNumber(allocCurrent)}
+                        </td>
+                        <td className={colClass("Alloc_3M", "p-3")}>
+                          {formatNumber(alloc3)}
+                        </td>
+                        <td className={colClass("Alloc_6M", "p-3")}>
+                          {formatNumber(alloc6)}
+                        </td>
+
+                        {/* 27. OverflowScore */}
+                        <td className={colClass("OverflowScore", "p-3")}>
+                          {overflow === null ? (
+                            <span className="text-gray-400">-</span>
+                          ) : (
+                            <span className={getOverflowStyle(overflow)}>
+                              {overflow}%
+                            </span>
+                          )}
+                        </td>
+
+                        {/* 28-32. AgingTier, Suggestion, Trade Status, Remark, InterTrade, Supplier */}
+                        <td className={colClass("SaleInAgingTier", "p-3")}>
+                          <span
+                            className={`inline-flex px-2 py-0.5 rounded-full text-xs font-semibold border ${getSaleInAgingTierStyle(
+                              getSaleInAgingTier(item)
+                            )}`}
+                          >
+                            {getSaleInAgingTier(item)}
+                          </span>
+                        </td>
+                        <td className={colClass("SuggestionPurchasing", "p-3")}>
+                          {item.SuggestionPurchasing ?? "-"}
+                        </td>
+                        <td
+                          className={colClass("TradeStatus", "p-3 text-center")}
+                        >
+                          <p
+                            className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full border ${getStatusStyleLocal(
+                              item.สถานะTrade
+                            )}`}
+                          >
+                            {safeText(item.สถานะTrade)}
+                          </p>
+                          {item.DiffPercent && (
+                            <p
+                              className={`text-xs mt-1 font-bold ${
+                                String(item.DiffPercent).startsWith("-")
+                                  ? "text-red-500"
+                                  : "text-green-500"
+                              }`}
+                            >
+                              {item.DiffPercent}
+                            </p>
+                          )}
+                        </td>
+                        <td
+                          className={colClass(
+                            "TradeRemark",
+                            "p-3 text-xs text-gray-400"
+                          )}
+                        >
+                          <p className="text-xs mb-1 italic truncate">
+                            {safeText(item.RemarkTrade)}
+                          </p>
+
+                          <button
+                            onClick={() => openTradeModal(item)}
+                            className={`px-3 py-1 text-xs rounded-lg cursor-pointer shadow-md transition font-medium ${
+                              item.RemarkCount > 0
+                                ? "bg-green-600 text-white hover:bg-green-700"
+                                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                            }`}
+                          >
+                            บันทึก/ดูการสื่อสาร ({item.RemarkCount || 0})
+                          </button>
+                        </td>
+                        <td
+                          className={colClass(
+                            "InterTrade",
+                            "p-3 border-r border-gray-200 text-base text-gray-700 font-medium"
+                          )}
+                        >
+                          {safeText(item.interTrade ?? item.InterTrade)}
+                        </td>
+
+                        {/* 32. Supplier contact name (New) */}
+                        <td
+                          className={colClass(
+                            "Supplier",
+                            "p-3 border-r border-gray-200 text-base text-gray-700 font-medium"
+                          )}
+                        >
+                          {safeText(item.Supplier || item.SupplierContactName)}
+                        </td>
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={visibleColumnCount}
+                      className="p-6 text-center text-lg text-gray-500"
+                    >
+                      ไม่พบข้อมูลสินค้าที่ตรงกับเงื่อนไขการกรอง
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {/* Pagination controls */}
