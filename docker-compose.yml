@@ -1,0 +1,10 @@
+services:
+  frontend:
+    build: .               # ✅ ใช้โฟลเดอร์ปัจจุบันที่มี Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app             # ✅ mount โฟลเดอร์ปัจจุบันเข้า container
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
