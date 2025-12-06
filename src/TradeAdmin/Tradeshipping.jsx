@@ -804,10 +804,10 @@ export default function Tradeshipping() {
             <tbody>
               {/* Grand Totals Row */}
               <tr className="bg-yellow-100/50 border-y border-yellow-700/50 font-bold text-yellow-800 sticky z-[5]">
-                <td className="p-3 sticky left-0 bg-yellow-100/50 border-r border-gray-200 text-center font-extrabold text-sm min-w-[50px]">
+                <td className="p-3 sticky left-0 bg-yellow-100 border-r border-gray-200 text-center font-extrabold text-sm min-w-[50px]">
                   SUM
                 </td>
-                <td className="p-3 sticky left-[50px] bg-yellow-100/50 border-r border-gray-200 text-left font-extrabold text-sm min-w-[200px]">
+                <td className="p-3 sticky left-[50px] bg-yellow-100 border-r border-gray-200 text-left font-extrabold text-sm min-w-[200px]">
                   GRAND TOTALS
                 </td>
                 
